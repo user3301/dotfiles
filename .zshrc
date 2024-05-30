@@ -100,6 +100,9 @@ source ~/.config/envman/load.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+#
+# this command is used for dotfile bare repository
+alias config='/usr/bin/git --git-dir=$HOME/.myconf/ --work-tree=$HOME'
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
 # Generated for envman. Do not edit.
