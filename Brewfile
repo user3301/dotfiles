@@ -1,3 +1,5 @@
+tap 'homebrew/cask-fonts'
+
 brew 'neovim'
 brew 'fzf'
 brew 'lazygit'
@@ -7,4 +9,4 @@ brew 'jq'
 brew 'ripgrep'
 
 cask 'alacritty'
-
+cask 'font-zed-mono'
