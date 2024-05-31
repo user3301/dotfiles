@@ -4,4 +4,16 @@ This is a bare git repository that tracks my dotfiles.
 
 Inspired by https://www.atlassian.com/git/tutorials/dotfiles
 
+1. git init --bare $HOME/.myconf
+2. echo "alias config='/usr/bin/git --git-dir=$HOME/.myconf/ --work-tree=$HOME'" >> $HOME/.zshrc
+3. config config status.showUntracedFiles no
 
+Then I can version control my dotfiles like: 
+
+config status
+
+config add .gitconfig
+
+config commit -m "add git config"
+
+config push
