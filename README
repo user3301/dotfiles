@@ -17,3 +17,9 @@ config add .gitconfig
 config commit -m "add git config"
 
 config push
+
+To install dotfiles onto a new system 
+
+1. echo "alias config='/usr/bin/git --git-dir=$HOME/.myconf/ --work-tree=$HOME'" >> $HOME/.zshrc
+2. git clone --bare <git-repo-url> $HOME/.myconf
+3. config checkout
