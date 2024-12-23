@@ -8,5 +8,5 @@ brew 'bat'
 brew 'jq'
 brew 'ripgrep'
 
-cask 'alacritty'
 cask 'font-zed-mono'
+cask 'wezterm'
