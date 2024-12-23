@@ -1,5 +1,6 @@
 tap 'homebrew/cask-fonts'
 
+brew 'stow'
 brew 'neovim'
 brew 'fzf'
 brew 'lazygit'
