@@ -11,6 +11,8 @@ config.color_scheme = "Gruvbox Dark (Gogh)"
 
 config.window_decorations = "INTEGRATED_BUTTONS"
 
+config.scrollback_lines = 5000
+
 config.font = wezterm.font("JetBrains Mono", { bold = false, italic = false })
 config.font_size = 14.5
 
