@@ -10,6 +10,7 @@ brew 'jq'
 brew 'ripgrep'
 brew 'asdf'
 
+cask 'nikitabobko/tap/aerospace'
 cask 'font-zed-mono'
 cask 'wezterm'
 cask 'visual-studio-code'
