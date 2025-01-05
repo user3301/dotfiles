@@ -2,20 +2,14 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="sonicradish"
 
-plugins=(git z colored-man-pages tmux)
+plugins=(git z colored-man-pages tmux asdf)
 
 ZSH_TMUX_AUTOSTART=true
 
 source $ZSH/oh-my-zsh.sh
-source ~/.zshenv
-source ~/.config/envman/load.sh
 
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-
-# Generated for envman. Do not edit.
-[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
-
-. ~/.asdf/plugins/golang/set-env.zsh
+ENVFILE="$HOME/.zshenv"
+[[ -s $ENVFILE ]] && source "$ENVFILE"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/gaiz/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/gaiz/google-cloud-sdk/path.zsh.inc'; fi
