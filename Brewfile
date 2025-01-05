@@ -9,6 +9,7 @@ brew 'bat'
 brew 'jq'
 brew 'ripgrep'
 brew 'asdf'
+brew 'mcfly'
 
 cask 'font-zed-mono'
 cask 'wezterm'
