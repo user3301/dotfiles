@@ -4,7 +4,10 @@ ZSH_THEME="sonicradish"
 
 plugins=(git z colored-man-pages tmux asdf)
 
-ZSH_TMUX_AUTOSTART=true
+if [ $TERM_PROGRAM = 'ghostty' ] || [ $TERM_PROGRAM = 'WezTerm' ]
+then
+   ZSH_TMUX_AUTOSTART=true
+fi
 
 source $ZSH/oh-my-zsh.sh
 
