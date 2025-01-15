@@ -7,6 +7,7 @@ plugins=(git z colored-man-pages tmux asdf)
 if [ "$TERM_PROGRAM" = 'ghostty' ] || [ "$TERM_PROGRAM" = 'WezTerm' ]
 then
    ZSH_TMUX_AUTOSTART=true
+   ZSH_TMUX_AUTOCONNECT=false
 fi
 
 source $ZSH/oh-my-zsh.sh
