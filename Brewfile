@@ -10,6 +10,7 @@ brew 'jq'
 brew 'ripgrep'
 brew 'asdf'
 brew 'mcfly'
+brew 'yazi'
 
 cask 'font-zed-mono'
 cask 'wezterm'
