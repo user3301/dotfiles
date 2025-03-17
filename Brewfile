@@ -1,5 +1,3 @@
-tap 'homebrew/cask-fonts'
-
 brew 'stow'
 brew 'neovim'
 brew 'fzf'
@@ -14,5 +12,5 @@ brew 'yazi'
 
 cask 'font-zed-mono'
 cask 'wezterm'
-cask 'visual-studio-code'
+cask 'visual-studio-code@insiders'
 cask 'zed'
