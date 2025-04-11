@@ -3,12 +3,7 @@ export EDITOR="lvim"
 
 ZSH_THEME="sonicradish"
 
-plugins=(git z colored-man-pages tmux asdf)
-
-if [ "$TERM_PROGRAM" = 'ghostty' ] || [ "$TERM_PROGRAM" = 'WezTerm' ]
-then
-   ZSH_TMUX_AUTOSTART=true
-fi
+plugins=(git z colored-man-pages asdf)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -21,6 +16,8 @@ ENVFILE="$HOME/.zshenv"
 [[ -s $ENVFILE ]] && source "$ENVFILE"
 
 eval "$(mcfly init zsh)"
+
+eval "$(zellij setup --generate-auto-start zsh)"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
