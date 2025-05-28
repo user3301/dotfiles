@@ -5,3 +5,5 @@
 local opts = vim.opt
 
 opts.relativenumber = false
+opts.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opts.foldmethod = "expr"
