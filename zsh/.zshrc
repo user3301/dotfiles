@@ -1,5 +1,5 @@
 export ZSH="$HOME/.oh-my-zsh"
-export EDITOR="lvim"
+export EDITOR="nvim"
 
 ZSH_THEME="sonicradish"
 
