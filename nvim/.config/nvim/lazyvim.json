@@ -2,12 +2,11 @@
   "extras": [
     "lazyvim.plugins.extras.ai.copilot-chat",
     "lazyvim.plugins.extras.lang.go",
-    "lazyvim.plugins.extras.lang.markdown",
     "lazyvim.plugins.extras.test.core"
   ],
   "install_version": 8,
   "news": {
-    "NEWS.md": "10960"
+    "NEWS.md": "11866"
   },
   "version": 8
 }
