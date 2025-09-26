@@ -7,7 +7,6 @@ plugins=(git z colored-man-pages asdf vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
-
 ENVFILE="$HOME/.zshenv"
 [[ -s $ENVFILE ]] && source "$ENVFILE"
 
