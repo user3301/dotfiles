@@ -3,7 +3,7 @@ export EDITOR="nvim"
 
 ZSH_THEME="sonicradish"
 
-plugins=(git z colored-man-pages asdf)
+plugins=(git z colored-man-pages asdf vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -19,6 +19,8 @@ eval "$(mcfly init zsh)"
 
 #eval "$(zellij setup --generate-auto-start zsh)"
 
+# Load local specific zsh env && exports if exists
+[[ -f "$HOME/dotfiles/zsh/.zshenv.local" ]] && source "$HOME/dotfiles/zsh/.zshenv.local"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
