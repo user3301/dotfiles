@@ -1,8 +1,11 @@
+# General environment variables
+export PATH="/opt/homebrew/opt/openssl/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+export CLOUDSDK_PYTHON=/usr/bin/python3
 
-# Aliases
+# General aliases
 alias vim="nvim"
 
-export PATH="$HOME/snap/bin:$PATH"
-
-export PATH=$PATH:/snap/bin
+# Load local-specific configuration if it exists
+[[ -f "$HOME/dotfiles/zsh/.zshenv.local" ]] && source "$HOME/dotfiles/zsh/.zshenv.local"
