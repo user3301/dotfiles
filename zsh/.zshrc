@@ -1,7 +1,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR="nvim"
 
-ZSH_THEME="sonicradish"
+ZSH_THEME="mikeh"
 
 plugins=(git z colored-man-pages asdf vi-mode)
 
