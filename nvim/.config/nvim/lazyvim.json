@@ -2,6 +2,7 @@
   "extras": [
     "lazyvim.plugins.extras.ai.copilot-chat",
     "lazyvim.plugins.extras.lang.go",
+    "lazyvim.plugins.extras.lang.python",
     "lazyvim.plugins.extras.test.core"
   ],
   "install_version": 8,
