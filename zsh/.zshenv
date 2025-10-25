@@ -6,6 +6,7 @@ export CLOUDSDK_PYTHON=/usr/bin/python3
 
 # General aliases
 alias vim="nvim"
+alias v="nvim"
 
 # Load local-specific configuration if it exists
 [[ -f "$HOME/dotfiles/zsh/.zshenv.local" ]] && source "$HOME/dotfiles/zsh/.zshenv.local"
