@@ -1,5 +1,6 @@
 brew 'stow'
 brew 'neovim'
+brew 'helix'
 brew 'fzf'
 brew 'lazygit'
 brew 'zellij'
