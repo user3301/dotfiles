@@ -26,7 +26,7 @@ return {
               end
             end
           end,
-          on_attach = function(client, bufnr)
+          on_attach = function(_, bufnr)
             -- Auto-import missing imports and format on save
             vim.api.nvim_create_autocmd("BufWritePre", {
               buffer = bufnr,
@@ -60,26 +60,7 @@ return {
           settings = {
             pylsp = {
               plugins = {
-                -- Enable rope for refactoring and auto-imports
-                rope_autoimport = {
-                  enabled = true,
-                  memory = true,
-                },
-                rope_completion = {
-                  enabled = true,
-                  eager = true,
-                },
-                -- Jedi settings
-                jedi_completion = {
-                  enabled = true,
-                  include_params = true,
-                  fuzzy = true,
-                },
-                jedi_hover = { enabled = true },
-                jedi_references = { enabled = true },
-                jedi_signature_help = { enabled = true },
-                jedi_symbols = { enabled = true },
-                -- Enable ruff for auto-imports and linting
+                -- Enable ruff for formatting and organizing imports
                 ruff = {
                   enabled = true,
                   formatEnabled = true,
