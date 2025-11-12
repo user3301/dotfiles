@@ -13,7 +13,10 @@ config.window_decorations = "INTEGRATED_BUTTONS"
 
 config.scrollback_lines = 5000
 
-config.font = wezterm.font("JetBrains Mono", { bold = false, italic = false })
+config.font = wezterm.font_with_fallback({
+	{ family = "More Perfect DOS VGA" },
+	{ family = "JetBrains Mono", bold = false, italic = false },
+})
 config.font_size = 14.5
 
 config.initial_rows = 40
