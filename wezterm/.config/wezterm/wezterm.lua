@@ -15,7 +15,7 @@ config.scrollback_lines = 5000
 
 config.font = wezterm.font_with_fallback({
 	{ family = "More Perfect DOS VGA" },
-	{ family = "JetBrains Mono", bold = false, italic = false },
+	{ family = "JetBrains Mono" },
 })
 config.font_size = 14.5
 
