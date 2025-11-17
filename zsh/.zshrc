@@ -10,7 +10,7 @@ source $ZSH/oh-my-zsh.sh
 ENVFILE="$HOME/.zshenv"
 [[ -s $ENVFILE ]] && source "$ENVFILE"
 
-eval "$(mcfly init zsh)"
+command -v mcfly &> /dev/null && eval "$(mcfly init zsh)"
 
 #eval "$(zellij setup --generate-auto-start zsh)"
 
