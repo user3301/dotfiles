@@ -14,6 +14,9 @@ ENVFILE="$HOME/.zshenv"
 
 command -v mcfly &> /dev/null && eval "$(mcfly init zsh)"
 
+. "$HOME/.atuin/bin/env"
+command -v mcfly &> /dev/null && eval "$(atuin init zsh)"
+
 # "y" shell wrapper for Yazi that changes the current working directory when exiting Yazi
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
