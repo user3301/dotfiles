@@ -14,8 +14,8 @@ config.window_decorations = "INTEGRATED_BUTTONS"
 config.scrollback_lines = 5000
 
 config.font = wezterm.font_with_fallback({
-	{ family = "More Perfect DOS VGA" },
-	{ family = "JetBrains Mono" },
+  { family = "More Perfect DOS VGA" },
+  { family = "JetBrains Mono" },
 })
 config.font_size = 14.5
 
@@ -23,55 +23,67 @@ config.initial_rows = 40
 config.initial_cols = 120
 
 config.leader = {
-	key = "a",
-	mods = "CTRL",
-	timeout_milliseconds = 1000,
+  key = "a",
+  mods = "CTRL",
+  timeout_milliseconds = 1000,
+}
+
+config.colors = {
+  foreground = "#CBE0F0",
+  background = "#011423",
+  cursor_bg = "#47FF9C",
+  cursor_border = "#47FF9C",
+  cursor_fg = "#011423",
+  selection_bg = "#033259",
+  selection_fg = "#CBE0F0",
+  ansi = { "#214969", "#E52E2E", "#44FFB1", "#FFE073", "#0FC5ED", "#a277ff", "#24EAF7", "#24EAF7" },
+  brights = { "#214969", "#E52E2E", "#44FFB1", "#FFE073", "#A277FF", "#a277ff", "#24EAF7", "#24EAF7" },
 }
 
 -- ⌨️ Key bindings that use the leader key
 config.keys = {
-	-- Split pane horizontally: leader + "
-	{
-		key = '"',
-		mods = "LEADER",
-		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
-	},
+  -- Split pane horizontally: leader + "
+  {
+    key = '"',
+    mods = "LEADER",
+    action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+  },
 
-	-- Split pane vertically: leader + %
-	{
-		key = "%",
-		mods = "LEADER",
-		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
-	},
+  -- Split pane vertically: leader + %
+  {
+    key = "%",
+    mods = "LEADER",
+    action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+  },
 
-	-- Close current pane with confirmation: leader + x
-	{
-		key = "x",
-		mods = "LEADER",
-		action = wezterm.action.CloseCurrentPane({ confirm = true }),
-	},
+  -- Close current pane with confirmation: leader + x
+  {
+    key = "x",
+    mods = "LEADER",
+    action = wezterm.action.CloseCurrentPane({ confirm = true }),
+  },
 
-	-- Move between panes using vim-style keys
-	{
-		key = "h",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Left"),
-	},
-	{
-		key = "l",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Right"),
-	},
-	{
-		key = "k",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Up"),
-	},
-	{
-		key = "j",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Down"),
-	},
+  -- Move between panes using vim-style keys
+  {
+    key = "h",
+    mods = "LEADER",
+    action = wezterm.action.ActivatePaneDirection("Left"),
+  },
+  {
+    key = "l",
+    mods = "LEADER",
+    action = wezterm.action.ActivatePaneDirection("Right"),
+  },
+  {
+    key = "k",
+    mods = "LEADER",
+    action = wezterm.action.ActivatePaneDirection("Up"),
+  },
+  {
+    key = "j",
+    mods = "LEADER",
+    action = wezterm.action.ActivatePaneDirection("Down"),
+  },
 }
 
 -- and finally, return the configuration to wezterm
