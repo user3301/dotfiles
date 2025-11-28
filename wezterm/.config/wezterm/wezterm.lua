@@ -20,6 +20,8 @@ config.window_background_gradient = {
 	blend = "Rgb",
 }
 
+config.window_background_opacity = 0.96
+
 config.window_decorations = "INTEGRATED_BUTTONS"
 
 config.scrollback_lines = 5000
