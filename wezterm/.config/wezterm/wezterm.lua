@@ -9,6 +9,17 @@ local config = wezterm.config_builder()
 -- For example, changing the color scheme:
 config.color_scheme = "Catppuccin Frappe"
 
+config.window_background_gradient = {
+	orientation = "Vertical",
+	colors = {
+		"#0f0c29",
+		"#302b63",
+		"#24243e",
+	},
+	interpolation = "Linear",
+	blend = "Rgb",
+}
+
 config.window_decorations = "INTEGRATED_BUTTONS"
 
 config.scrollback_lines = 5000
