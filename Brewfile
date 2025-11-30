@@ -1,19 +1,11 @@
-brew 'stow'
-brew 'neovim'
-brew 'helix'
-brew 'fzf'
-brew 'lazygit'
-brew 'zellij'
-brew 'bat'
-brew 'jq'
-brew 'ripgrep'
-brew 'asdf'
-brew 'mcfly'
-brew 'yazi'
-brew 'fd'
+# Brewfile - GUI apps and fonts that work better via Homebrew
+# Note: CLI tools are now managed by Nix (see nix/home.nix)
 
-cask 'font-zed-mono'
+# GUI Applications (casks)
 cask 'wezterm'
 cask 'visual-studio-code@insiders'
 cask 'zed'
 cask 'nikitabobko/tap/aerospace'
+
+# Fonts
+cask 'font-zed-mono'
