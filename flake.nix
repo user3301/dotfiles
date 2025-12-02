@@ -17,11 +17,8 @@
 
   outputs = { self, nixpkgs, nix-darwin, home-manager, ... }:
     let
-      # Dynamically get username from environment
-      username = builtins.getEnv "USER";
-
-      # Helper function to create configurations for different systems
-      mkSystem = system: nix-darwin.lib.darwinSystem {
+      # Helper function to create Darwin configurations for different systems
+      mkSystem = system: username: nix-darwin.lib.darwinSystem {
         inherit system;
         modules = [
           home-manager.darwinModules.home-manager
@@ -40,29 +37,38 @@
         ];
       };
 
+      # Helper function to create home-manager configurations
       mkHome = system: home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${system};
         modules = [
           ./home
         ];
       };
+
+      # Helper to create configs for a specific user
+      mkUserConfigs = username: {
+        # macOS configurations
+        "${username}-aarch64-darwin" = mkHome "aarch64-darwin";
+        "${username}-x86_64-darwin" = mkHome "x86_64-darwin";
+
+        # Linux configurations
+        "${username}-x86_64-linux" = mkHome "x86_64-linux";
+        "${username}-aarch64-linux" = mkHome "aarch64-linux";
+      };
     in
     {
       # nix-darwin configurations for different architectures
       darwinConfigurations = {
-        "aarch64" = mkSystem "aarch64-darwin";  # Apple Silicon
-        "x86_64" = mkSystem "x86_64-darwin";     # Intel Mac
+        # These use the actual username from environment at build time
+        "aarch64" = mkSystem "aarch64-darwin" (builtins.getEnv "USER");
+        "x86_64" = mkSystem "x86_64-darwin" (builtins.getEnv "USER");
       };
 
       # Standalone home-manager configurations
-      homeConfigurations = {
-        # macOS configurations
-        "${username}-aarch64-darwin" = mkHome "aarch64-darwin";  # Apple Silicon Mac
-        "${username}-x86_64-darwin" = mkHome "x86_64-darwin";    # Intel Mac
-
-        # Linux configurations
-        "${username}-x86_64-linux" = mkHome "x86_64-linux";      # x86_64 Linux (Ubuntu, etc.)
-        "${username}-aarch64-linux" = mkHome "aarch64-linux";    # ARM64 Linux (Raspberry Pi, etc.)
-      };
+      # Create configs for common usernames to avoid getEnv issues
+      homeConfigurations =
+        (mkUserConfigs (builtins.getEnv "USER")) //
+        (mkUserConfigs "gaiz") //
+        (mkUserConfigs "user3301");
     };
 }
