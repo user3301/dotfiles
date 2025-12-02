@@ -56,8 +56,13 @@
 
       # Standalone home-manager configurations
       homeConfigurations = {
-        "${username}-aarch64" = mkHome "aarch64-darwin";
-        "${username}-x86_64" = mkHome "x86_64-darwin";
+        # macOS configurations
+        "${username}-aarch64-darwin" = mkHome "aarch64-darwin";  # Apple Silicon Mac
+        "${username}-x86_64-darwin" = mkHome "x86_64-darwin";    # Intel Mac
+
+        # Linux configurations
+        "${username}-x86_64-linux" = mkHome "x86_64-linux";      # x86_64 Linux (Ubuntu, etc.)
+        "${username}-aarch64-linux" = mkHome "aarch64-linux";    # ARM64 Linux (Raspberry Pi, etc.)
       };
     };
 }

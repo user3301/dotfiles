@@ -50,13 +50,12 @@ sh <(curl -L https://nixos.org/nix/install)
    darwin-rebuild switch --flake .#x86_64
    ```
 
-### Option 2: Using standalone home-manager
+### Option 2: Using standalone home-manager (macOS or Linux)
 
-1. **Check your architecture:**
+1. **Check your system and architecture:**
    ```bash
-   uname -m
-   # arm64 = Apple Silicon (use aarch64)
-   # x86_64 = Intel Mac (use x86_64)
+   uname -m  # Shows: x86_64, arm64, aarch64
+   uname -s  # Shows: Darwin (macOS) or Linux
    ```
 
 2. **Generate flake.lock:**
@@ -71,19 +70,26 @@ sh <(curl -L https://nixos.org/nix/install)
 
 4. **Activate the configuration:**
    ```bash
-   # For Apple Silicon:
-   home-manager switch --flake .#$USER-aarch64
+   # For Apple Silicon Mac (M1/M2/M3):
+   home-manager switch --flake .#$USER-aarch64-darwin
 
    # For Intel Mac:
-   home-manager switch --flake .#$USER-x86_64
+   home-manager switch --flake .#$USER-x86_64-darwin
+
+   # For x86_64 Linux (Ubuntu, Debian, Fedora, etc.):
+   home-manager switch --flake .#$USER-x86_64-linux
+
+   # For ARM64 Linux (Raspberry Pi, ARM servers, etc.):
+   home-manager switch --flake .#$USER-aarch64-linux
    ```
 
 ## Dynamic Configuration
 
 The configuration automatically detects:
 - **Username**: Uses `$USER` environment variable
-- **Home Directory**: Automatically set to `/Users/$USER`
-- **Architecture**: Supports both Apple Silicon and Intel Macs
+- **Home Directory**: Automatically set to `/Users/$USER` (macOS) or `/home/$USER` (Linux)
+- **Architecture**: Supports both Apple Silicon and Intel Macs, plus x86_64 and ARM64 Linux
+- **Platform**: Works on both macOS and Linux
 
 ## Current Setup
 
@@ -127,11 +133,14 @@ home.packages = with pkgs; [
 
 Then run:
 ```bash
-# For nix-darwin:
+# For nix-darwin (macOS only):
 darwin-rebuild switch --flake .#aarch64  # or .#x86_64
 
 # For home-manager:
-home-manager switch --flake .#$USER-aarch64  # or $USER-x86_64
+home-manager switch --flake .#$USER-aarch64-darwin  # macOS Apple Silicon
+home-manager switch --flake .#$USER-x86_64-darwin   # macOS Intel
+home-manager switch --flake .#$USER-x86_64-linux    # Linux x86_64
+home-manager switch --flake .#$USER-aarch64-linux   # Linux ARM64
 ```
 
 ## Updating Packages
@@ -140,11 +149,14 @@ home-manager switch --flake .#$USER-aarch64  # or $USER-x86_64
 # Update flake inputs (nixpkgs, home-manager, etc.)
 nix flake update
 
-# Apply updates with nix-darwin:
+# Apply updates with nix-darwin (macOS only):
 darwin-rebuild switch --flake .#aarch64  # or .#x86_64
 
-# OR with home-manager:
-home-manager switch --flake .#$USER-aarch64  # or $USER-x86_64
+# OR with home-manager (macOS or Linux):
+home-manager switch --flake .#$USER-<arch>-<platform>
+# Examples:
+# home-manager switch --flake .#$USER-aarch64-darwin
+# home-manager switch --flake .#$USER-x86_64-linux
 ```
 
 ## Rollback
