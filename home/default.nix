@@ -1,9 +1,5 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, username, ... }:
 
-let
-  # Dynamically get username from environment
-  username = builtins.getEnv "USER";
-in
 {
   # Import modular configurations
   imports = [

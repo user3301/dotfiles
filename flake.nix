@@ -38,22 +38,23 @@
       };
 
       # Helper function to create home-manager configurations
-      mkHome = system: home-manager.lib.homeManagerConfiguration {
+      mkHome = system: username: home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${system};
         modules = [
           ./home
         ];
+        extraSpecialArgs = { inherit username; };
       };
 
       # Helper to create configs for a specific user
       mkUserConfigs = username: {
         # macOS configurations
-        "${username}-aarch64-darwin" = mkHome "aarch64-darwin";
-        "${username}-x86_64-darwin" = mkHome "x86_64-darwin";
+        "${username}-aarch64-darwin" = mkHome "aarch64-darwin" username;
+        "${username}-x86_64-darwin" = mkHome "x86_64-darwin" username;
 
         # Linux configurations
-        "${username}-x86_64-linux" = mkHome "x86_64-linux";
-        "${username}-aarch64-linux" = mkHome "aarch64-linux";
+        "${username}-x86_64-linux" = mkHome "x86_64-linux" username;
+        "${username}-aarch64-linux" = mkHome "aarch64-linux" username;
       };
     in
     {
