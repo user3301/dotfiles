@@ -5,6 +5,13 @@ let
   username = builtins.getEnv "USER";
 in
 {
+  # Import modular configurations
+  imports = [
+    ./packages.nix
+    ./git.nix
+    ./shell.nix
+  ];
+
   # Home Manager needs a bit of information about you and the paths it should manage
   home.username = username;
   home.homeDirectory = lib.mkDefault "/Users/${username}";
@@ -16,21 +23,4 @@ in
 
   # Let Home Manager install and manage itself
   programs.home-manager.enable = true;
-
-  # Packages to install
-  home.packages = with pkgs; [
-    git
-  ];
-
-  # Git configuration (optional - can be managed by home-manager)
-  # Uncomment and customize if you want home-manager to manage your git config
-  # programs.git = {
-  #   enable = true;
-  #   userName = "Your Name";
-  #   userEmail = "your.email@example.com";
-  #   extraConfig = {
-  #     init.defaultBranch = "main";
-  #     core.editor = "nvim";
-  #   };
-  # };
 }

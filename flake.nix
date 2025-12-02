@@ -35,7 +35,7 @@
             # Home-manager configuration
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.${username} = import ./home.nix;
+            home-manager.users.${username} = import ./home;
           }
         ];
       };
@@ -43,7 +43,7 @@
       mkHome = system: home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${system};
         modules = [
-          ./home.nix
+          ./home
         ];
       };
     in

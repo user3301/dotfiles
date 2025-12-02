@@ -97,9 +97,25 @@ The configuration automatically detects:
 - Existing dotfiles still managed via GNU Stow
 - Gradually migrating to home-manager modules
 
+## Directory Structure
+
+```
+dotfiles/
+├── flake.nix              # Main Nix flake configuration
+├── flake.lock             # Lock file (auto-generated, commit this)
+├── home/                  # Home-manager modular configuration
+│   ├── default.nix        # Main entry point (imports other modules)
+│   ├── packages.nix       # Package declarations
+│   ├── git.nix            # Git configuration
+│   └── shell.nix          # Shell configuration (zsh, bash, etc.)
+├── Brewfile               # Legacy Homebrew packages (will phase out)
+├── Makefile               # Legacy installation script (will phase out)
+└── */                     # App-specific dotfiles (managed by stow for now)
+```
+
 ## Adding More Packages
 
-Edit `home.nix` and add packages to the `home.packages` list:
+Edit `home/packages.nix` and add packages to the `home.packages` list:
 
 ```nix
 home.packages = with pkgs; [
@@ -172,17 +188,22 @@ nix-collect-garbage -d
 5. 🔄 Migrate app configurations to home-manager modules when ready
 6. 🔄 Eventually remove Brewfile and Makefile dependencies
 
-## File Structure
+## Modular Configuration Files
 
-```
-dotfiles/
-├── flake.nix           # Main Nix flake configuration
-├── home.nix            # Home-manager user configuration
-├── flake.lock          # Lock file (auto-generated, should commit)
-├── Brewfile            # Legacy Homebrew packages (will phase out)
-├── Makefile            # Legacy installation script (will phase out)
-└── */                  # App-specific dotfiles (managed by stow for now)
-```
+### home/default.nix
+Main entry point that imports all other modules. Contains:
+- Username and home directory settings
+- Home-manager version (stateVersion)
+- Imports for packages.nix, git.nix, shell.nix
+
+### home/packages.nix
+All package declarations. Add new packages here.
+
+### home/git.nix
+Git-specific configuration. Can be enabled to manage git config via home-manager.
+
+### home/shell.nix
+Shell configuration (zsh, bash, fish). Currently using existing zsh config via stow, but can be migrated here.
 
 ## Troubleshooting
 
