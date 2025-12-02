@@ -43,7 +43,10 @@
         modules = [
           ./home
         ];
-        extraSpecialArgs = { inherit username; };
+        extraSpecialArgs = {
+          inherit username;
+          dotfilesPath = toString ./.;
+        };
       };
 
       # Helper to create configs for a specific user
