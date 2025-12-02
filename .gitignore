@@ -1,2 +1,7 @@
 # Local/work-specific configuration files
 .zshenv.local
+
+# Nix
+result
+result-*
+.direnv/
