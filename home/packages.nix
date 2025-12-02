@@ -10,9 +10,11 @@
     zsh
     oh-my-zsh
 
+    # Editors
+    neovim
+
     # Add more packages here as you migrate from Brewfile
     # Example:
-    # neovim
     # ripgrep
     # fzf
     # bat
