@@ -5,6 +5,7 @@
   home.packages = with pkgs; [
     # Version control
     git
+    lazygit
 
     # Shell
     zsh
@@ -13,12 +14,17 @@
     # Editors
     neovim
 
+    # Terminal multiplexer
+    zellij
+
+    # CLI tools (LazyVim dependencies and utilities)
+    fd          # Fast find alternative
+    ripgrep     # Fast grep alternative (rg)
+
     # Add more packages here as you migrate from Brewfile
     # Example:
-    # ripgrep
     # fzf
     # bat
-    # lazygit
     # yazi
   ];
 }
