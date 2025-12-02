@@ -6,6 +6,9 @@
     # Version control
     git
 
+    # Shell
+    zsh
+
     # Add more packages here as you migrate from Brewfile
     # Example:
     # neovim
