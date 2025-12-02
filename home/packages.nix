@@ -8,6 +8,7 @@
 
     # Shell
     zsh
+    oh-my-zsh
 
     # Add more packages here as you migrate from Brewfile
     # Example:
