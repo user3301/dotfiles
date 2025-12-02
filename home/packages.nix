@@ -14,6 +14,9 @@
     # Editors
     neovim
 
+    # Terminal
+    wezterm
+
     # Terminal multiplexer
     zellij
 
