@@ -60,10 +60,6 @@
       source = "${dotfilesPath}/nvim/.config/nvim";
       recursive = true;
     };
-    "helix" = {
-      source = "${dotfilesPath}/helix/.config/helix";
-      recursive = true;
-    };
     "zellij" = {
       source = "${dotfilesPath}/zellij/.config/zellij";
       recursive = true;

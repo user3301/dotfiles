@@ -14,9 +14,6 @@
     # This is my IDE.
     neovim
 
-    # This is my favourite terminal emulator
-    wezterm
-
     # Terminal multiplexer
     zellij
 

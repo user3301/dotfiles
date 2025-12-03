@@ -1,12 +1,3 @@
-brew 'helix'
-brew 'fzf'
-brew 'bat'
-brew 'jq'
-brew 'asdf'
-brew 'mcfly'
-brew 'yazi'
-
-cask 'font-zed-mono'
 cask 'wezterm'
 cask 'visual-studio-code@insiders'
 cask 'zed'

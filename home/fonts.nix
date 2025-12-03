@@ -6,6 +6,13 @@
 
   fonts.fontconfig.enable = true;
 
+ # The Problem
+ #
+ #  - ✅ WSL2 Ubuntu: Fonts installed to ~/.local/share/fonts (inside WSL filesystem)
+ #  - ❌ Windows Terminal: Looks for fonts in Windows font directory (C:\Windows\Fonts)
+ #
+ #  WSL2 runs in a virtualized Linux environment, so fonts installed in WSL are not automatically
+ #   available to Windows applications like Windows Terminal.
   home.packages = with pkgs; [
     # Fonts used in wezterm.lua
     ubuntu-classic        # Ubuntu Mono
