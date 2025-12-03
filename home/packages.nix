@@ -11,10 +11,10 @@
     zsh
     oh-my-zsh
 
-    # Editors
+    # This is my IDE.
     neovim
 
-    # Terminal
+    # This is my favourite terminal emulator
     wezterm
 
     # Terminal multiplexer
@@ -29,10 +29,8 @@
     # install asdf via home-manager once available
     # asdf-vm     # Version manager for multiple languages
 
-    # Add more packages here as you migrate from Brewfile
-    # Example:
-    # fzf
-    # bat
-    # yazi
+    fzf
+    bat
+    yazi
   ];
 }
