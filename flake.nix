@@ -1,5 +1,5 @@
 {
-  description = "Gaiz's dotfiles - Nix flake configuration";
+  description = "user3301's dotfiles - Nix flake configuration";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
