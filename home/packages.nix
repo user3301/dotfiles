@@ -25,7 +25,9 @@
     ripgrep     # Fast grep alternative (rg)
 
     # Development tools
-    asdf-vm     # Version manager for multiple languages
+    # TODO:currently 0.18.0 and above is not available in nixpkgs
+    # install asdf via home-manager once available
+    # asdf-vm     # Version manager for multiple languages
 
     # Add more packages here as you migrate from Brewfile
     # Example:
