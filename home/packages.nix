@@ -24,6 +24,9 @@
     fd          # Fast find alternative
     ripgrep     # Fast grep alternative (rg)
 
+    # Development tools
+    asdf-vm     # Version manager for multiple languages
+
     # Add more packages here as you migrate from Brewfile
     # Example:
     # fzf
