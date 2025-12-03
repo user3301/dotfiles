@@ -28,10 +28,10 @@ config.scrollback_lines = 5000
 
 config.font = wezterm.font_with_fallback({
 	{ family = "Ubuntu Mono" },
-	{ family = "More Perfect DOS VGA" },
 	{ family = "JetBrains Mono" },
+	{ family = "More Perfect DOS VGA" },
 })
-config.font_size = 14.5
+config.font_size = 16
 
 config.initial_rows = 40
 config.initial_cols = 120
