@@ -8,7 +8,7 @@
 
   home.packages = with pkgs; [
     # Fonts used in wezterm.lua
-    ubuntu_font_family    # Ubuntu Mono
+    ubuntu-classic        # Ubuntu Mono
     jetbrains-mono        # JetBrains Mono
 
     # Note: "More Perfect DOS VGA" is not available in nixpkgs
