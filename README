@@ -1,3 +1,8 @@
 Fully Reproducible dotfiles config
 
 "Dotfiles managed by Nix: because spending 40 hours to save 4 minutes is a lifestyle. Fully reproducible - I've tested it on my Windows gaming rig (WSL2), my wife's MacBook Air, and my own laptop (I use Arch BTW). If it works there, it'll work anywhere."
+
+FAQ
+
+Q: Why Nix?
+A: Because I like pain and reproducibility.
