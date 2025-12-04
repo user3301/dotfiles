@@ -4,13 +4,15 @@
   # Git configuration managed by home-manager
   # Currently using minimal config - git is installed via packages.nix
 
-  # Uncomment and customize to manage git config via home-manager:
+  # Git configuration via home-manager
   programs.git = {
     enable = true;
-    userName = "user3301";
-    userEmail = "stan_gai@hotmail.com";
 
-    extraConfig = {
+    settings = {
+      user = {
+        name = "user3301";
+        email = "stan_gai@hotmail.com";
+      };
       init.defaultBranch = "main";
       core.editor = "nvim";
       pull.rebase = false;
