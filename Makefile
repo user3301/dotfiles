@@ -7,6 +7,7 @@ help:
 	@echo "  make install-nix          - Install Nix package manager"
 	@echo "  make setup-home-manager   - Bootstrap home-manager (first time setup)"
 	@echo "  make update-home-manager  - Update home-manager configuration"
+	@echo "  make set-default-shell    - Set zsh as default shell (requires sudo)"
 	@echo "  make install-brew         - Install Homebrew (macOS only)"
 	@echo "  make install-brew-packages- Install GUI apps via Homebrew (macOS only)"
 	@echo "  make setup-mac            - Full setup for macOS (Nix + home-manager + Homebrew)"
@@ -56,6 +57,28 @@ update-home-manager:
 			home-manager switch --flake .#$$USER-aarch64-linux; \
 		fi \
 	fi
+
+.PHONY: set-default-shell
+set-default-shell:
+	@echo "Setting zsh as default shell..."
+	@echo "This requires sudo access to modify /etc/shells"
+	@ZSH_PATH=$$(which zsh); \
+	if [ -z "$$ZSH_PATH" ]; then \
+		echo "Error: zsh not found. Run 'make setup-home-manager' first."; \
+		exit 1; \
+	fi; \
+	echo "Found zsh at: $$ZSH_PATH"; \
+	if ! grep -q "$$ZSH_PATH" /etc/shells 2>/dev/null; then \
+		echo "Adding $$ZSH_PATH to /etc/shells..."; \
+		echo $$ZSH_PATH | sudo tee -a /etc/shells; \
+	else \
+		echo "$$ZSH_PATH already in /etc/shells"; \
+	fi; \
+	echo "Changing default shell to zsh..."; \
+	chsh -s $$ZSH_PATH; \
+	echo ""; \
+	echo "✅ Default shell changed to zsh!"; \
+	echo "⚠️  Please log out and log back in for the change to take effect."
 
 .PHONY: install-brew
 install-brew:
