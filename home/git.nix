@@ -35,6 +35,7 @@
       "*.swo"
       "*~"
       ".direnv/"
+      ".tool-versions"
     ];
   };
 }
