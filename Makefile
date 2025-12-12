@@ -12,6 +12,7 @@ help:
 	@echo "  make install-brew-packages- Install GUI apps via Homebrew (macOS only)"
 	@echo "  make setup-mac            - Full setup for macOS (Nix + home-manager + Homebrew)"
 	@echo "  make setup-linux          - Full setup for Linux (Nix + home-manager)"
+	@echo "  make setup-wsl-nixos      - Link NixOS configuration for WSL2 (requires sudo)"
 	@echo ""
 
 .PHONY: install-nix
@@ -101,3 +102,15 @@ setup-linux: install-nix setup-home-manager
 	@echo ""
 	@echo "✅ Linux setup complete!"
 	@echo "All packages and configs installed via Nix"
+
+.PHONY: setup-wsl-nixos
+setup-wsl-nixos:
+	@echo "Setting up NixOS configuration for WSL2..."
+	@DOTFILES_DIR=$$(pwd); \
+	echo "Creating /etc/nixos directory..."; \
+	sudo mkdir -p /etc/nixos; \
+	echo "Creating symbolic link to $$DOTFILES_DIR/systems/wsl/configuration.nix"; \
+	sudo ln -sf $$DOTFILES_DIR/systems/wsl/configuration.nix /etc/nixos/configuration.nix; \
+	echo ""; \
+	echo "✅ NixOS configuration linked!"; \
+	echo "Run 'sudo nixos-rebuild switch' to apply the configuration."
