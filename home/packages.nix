@@ -20,6 +20,7 @@
     # CLI tools (LazyVim dependencies and utilities)
     fd          # Fast find alternative
     ripgrep     # Fast grep alternative (rg)
+    gcc         # nvim-treesitter depencency
 
     # Development tools
     # TODO:currently 0.18.0 and above is not available in nixpkgs
@@ -31,7 +32,5 @@
     yazi
 
     fastfetchMinimal
-    
-    gcc # nvim-treesitter depencency
   ];
 }
