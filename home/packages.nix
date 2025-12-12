@@ -29,5 +29,9 @@
     fzf
     bat
     yazi
+
+    fastfetchMinimal
+    
+    libgccjit
   ];
 }
