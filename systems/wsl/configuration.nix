@@ -29,6 +29,7 @@
   users.users.user3301 = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
+    shell = pkgs.zsh;
   };
 
   # Enable home-manager globally
