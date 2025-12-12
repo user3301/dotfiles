@@ -32,6 +32,6 @@
 
     fastfetchMinimal
     
-    libgccjit
+    gcc # nvim-treesitter depencency
   ];
 }
