@@ -13,7 +13,7 @@
         name = "user3301";
         email = "stan_gai@hotmail.com";
       };
-      init.defaultBranch = "main";
+      init.defaultBranch = "master";
       core.editor = "nvim";
       pull.rebase = false;
 
