@@ -19,6 +19,8 @@
     defaultUser = "user3301";
   };
 
+  time.timeZone = "Australia/Melbourne";
+
   programs.zsh.enable = true;
 
   environment.systemPackages = with pkgs; [

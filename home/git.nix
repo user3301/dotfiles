@@ -17,17 +17,6 @@
       core.editor = "nvim";
       pull.rebase = false;
 
-      # Useful aliases
-      # inherit aliases from omz
-      # alias = {
-      #   st = "status";
-      #   co = "checkout";
-      #   br = "branch";
-      #   ci = "commit";
-      #   lg = "log --graph --oneline --all";
-      # };
-    };
-
     # Git ignore patterns
     ignores = [
       ".DS_Store"
