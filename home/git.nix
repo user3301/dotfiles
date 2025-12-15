@@ -17,7 +17,7 @@
       core.editor = "nvim";
       pull.rebase = false;
     };
-    
+
     # Git ignore patterns
     ignores = [
       ".DS_Store"

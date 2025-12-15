@@ -23,14 +23,11 @@
     gcc         # nvim-treesitter depencency
 
     # Development tools
-    # TODO:currently 0.18.0 and above is not available in nixpkgs
-    # install asdf via home-manager once available
-    # asdf-vm     # Version manager for multiple languages
-
     fzf
     bat
     yazi
 
+    asdf-vm
     fastfetchMinimal
   ];
 }
