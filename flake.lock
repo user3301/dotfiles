@@ -1,5 +1,23 @@
 {
   "nodes": {
+    "copilot-cli": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1766099841,
+        "narHash": "sha256-nRF2AYClXCJAA8tKf1iflS61XeULLQqglFUGlfmn9Z0=",
+        "owner": "scarisey",
+        "repo": "copilot-cli-flake",
+        "rev": "0c1f3e953638ff1b7290bb50d418eb643ba36b9a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "scarisey",
+        "repo": "copilot-cli-flake",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -42,6 +60,22 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1765779637,
+        "narHash": "sha256-KJ2wa/BLSrTqDjbfyNx70ov/HdgNBCBBSQP3BIzKnv4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1306659b587dc277866c7b69eb97e5f07864d8c4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
         "lastModified": 1764856222,
         "narHash": "sha256-yEJmtoFu4cJre1NuU4fb8q57Oux+NTbocnALtJ64aEI=",
         "owner": "NixOS",
@@ -58,9 +92,10 @@
     },
     "root": {
       "inputs": {
+        "copilot-cli": "copilot-cli",
         "home-manager": "home-manager",
         "nix-darwin": "nix-darwin",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2"
       }
     }
   },

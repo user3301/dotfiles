@@ -37,9 +37,6 @@
           }
         ];
       };
-      {
-      packages.x86_64-linux.default = copilot-cli.packages.x86_64-linux.default;
-      };
       # Helper function to create home-manager configurations
       mkHome = system: username: home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${system};
@@ -77,5 +74,7 @@
         (mkUserConfigs (builtins.getEnv "USER")) //
         (mkUserConfigs "gaiz") //
         (mkUserConfigs "user3301");
+
+      packages.x86_64-linux.default = copilot-cli.packages.x86_64-linux.default;
     };
 }
