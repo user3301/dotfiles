@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    copilot-cli.url = "github:scarisey/copilot-cli-flake";
 
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
@@ -15,7 +16,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, ... }:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, copilot-cli, ... }:
     let
       # Helper function to create Darwin configurations for different systems
       mkSystem = system: username: nix-darwin.lib.darwinSystem {
@@ -36,7 +37,9 @@
           }
         ];
       };
-
+      {
+      packages.x86_64-linux.default = copilot-cli.packages.x86_64-linux.default;
+      };
       # Helper function to create home-manager configurations
       mkHome = system: username: home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${system};
