@@ -72,8 +72,40 @@
       # Create configs for common usernames to avoid getEnv issues
       homeConfigurations =
         (mkUserConfigs (builtins.getEnv "USER")) //
-        (mkUserConfigs "gaiz") //
         (mkUserConfigs "user3301");
+
+      # NixOS configurations for NixOS and WSL2 (x86_64 and aarch64)
+      nixosConfigurations = {
+        # a minimal NixOS system that uses home-manager for the user
+        "nixos-x86_64" = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            home-manager.nixosModules.home-manager
+            ({
+              users.users.${builtins.getEnv "USER"} = {
+                isNormalUser = true;
+                home = "/home/${builtins.getEnv "USER"}";
+              };
+              # Point home-manager to the existing ./home module
+              home-manager.users.${builtins.getEnv "USER"} = import ./home;
+            })
+          ];
+        };
+
+        "nixos-aarch64" = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          modules = [
+            home-manager.nixosModules.home-manager
+            ({
+              users.users.${builtins.getEnv "USER"} = {
+                isNormalUser = true;
+                home = "/home/${builtins.getEnv "USER"}";
+              };
+              home-manager.users.${builtins.getEnv "USER"} = import ./home;
+            })
+          ];
+        };
+      };
 
       packages.x86_64-linux.default = copilot-cli.packages.x86_64-linux.default;
     };

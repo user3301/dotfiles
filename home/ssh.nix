@@ -4,9 +4,12 @@
   # SSH configuration via home-manager
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
 
     # SSH client configuration
     matchBlocks = {
+      "*" = {};
+
       # Example: GitHub
       "github.com" = {
         hostname = "github.com";
