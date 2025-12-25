@@ -6,7 +6,7 @@ return {
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "minischeme",
+      colorscheme = "catppuccin-frappe",
     },
   },
   -- Make background transparent to inherit terminal settings

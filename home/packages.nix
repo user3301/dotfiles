@@ -29,5 +29,12 @@
 
     asdf-vm
     fastfetchMinimal
+
+    # Golang Development
+    grpcurl
+    pkgs.golangci-lint
+    protobuf_33
+    protoc-gen-go-grpc
+    protoc-gen-go
   ];
 }
