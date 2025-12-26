@@ -6,6 +6,7 @@
     # Version control
     git
     lazygit
+    gh # GitHub CLI tool
 
     # Shell
     zsh
