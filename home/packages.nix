@@ -37,5 +37,8 @@
     protobuf_33
     protoc-gen-go-grpc
     protoc-gen-go
+
+    # python
+    python315
   ];
 }
