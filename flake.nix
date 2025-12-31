@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     copilot-cli.url = "github:scarisey/copilot-cli-flake";
+    claude-code.url = "git+https://codeberg.org/MachsteNix/claude-code-nix";
 
     nix-darwin = {
       url = "github:LnL7/nix-darwin";

@@ -39,6 +39,9 @@
     protoc-gen-go
 
     # python
-    python315
+    python314
+
+    pkgs.claude-code
   ];
+
 }
