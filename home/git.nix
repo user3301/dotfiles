@@ -11,7 +11,7 @@
     settings = {
       user = {
         name = "user3301";
-        email = "stan_gai@hotmail.com";
+        email = "26126682+user3301@users.noreply.github.com";
       };
       init.defaultBranch = "master";
       core.editor = "nvim";
