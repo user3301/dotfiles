@@ -6,6 +6,10 @@
     inputs.sops-nix.homeManagerModules.sops
   ];
 
+  # Configure systemd to not auto-start services during activation
+  # This prevents the "sops-nix.service not found" error during first activation
+  systemd.user.startServices = "sd-switch";
+
   # Configure sops-nix
   sops = {
     # Default sops file for secrets
@@ -49,6 +53,15 @@
     text = "";
     onChange = ''
       chmod 700 ${config.home.homeDirectory}/.ssh
+    '';
+  };
+
+  # Ensure .config/sops/age directory exists and persists through home-manager activations
+  home.file.".config/sops/age/.keep" = {
+    text = "";
+    onChange = ''
+      chmod 700 ${config.home.homeDirectory}/.config/sops
+      chmod 700 ${config.home.homeDirectory}/.config/sops/age
     '';
   };
 
