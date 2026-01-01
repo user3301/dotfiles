@@ -17,10 +17,4 @@
   # Symlink .zshenv
   home.file.".zshenv".source = config.lib.file.mkOutOfStoreSymlink
     "${config.home.homeDirectory}/dotfiles/zsh/.zshenv";
-
-  # Bash configuration (fallback)
-  programs.bash = {
-    enable = true;
-    enableCompletion = true;
-  };
 }

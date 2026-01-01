@@ -116,7 +116,7 @@
         # Generic Linux configuration (Archlinux, Ubuntu, Fedora, etc.)
         "user@linux" = mkHome {
           system = "x86_64-linux";
-          username = "user";
+          username = "user3301";
           modules = [
             ./home/archlinux.nix
           ];

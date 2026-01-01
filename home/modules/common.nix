@@ -31,8 +31,5 @@
     # Misc utilities
     wget
     curl
-
-    # Home Manager CLI (for home-manager generations, packages, etc.)
-    home-manager
   ];
 }
