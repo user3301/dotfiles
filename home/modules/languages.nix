@@ -18,6 +18,6 @@
 
     # Nodejs
     nodejs_24
-  ]
+  ];
 
 }
