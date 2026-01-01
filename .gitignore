@@ -8,3 +8,8 @@ result-*
 
 # Hardware configuration (generated on target machine)
 systems/native/hardware-configuration.nix
+
+# Secrets - unencrypted files only
+# Encrypted files (with sops metadata) are safe to commit
+secrets/secrets.yaml
+!secrets/*.example

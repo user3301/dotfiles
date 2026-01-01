@@ -4,10 +4,17 @@
   inputs = {
     # Nixpkgs - use unstable for latest packages
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    claude-code.url = "git+https://codeberg.org/MachsteNix/claude-code-nix";
 
     # Home Manager - for user-level configuration
     home-manager = {
       url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # sops-nix - for secrets management
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -24,7 +31,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-wsl, nix-darwin, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, sops-nix, nixos-wsl, nix-darwin, ... }@inputs:
     let
       # Helper function to generate system configurations
       mkSystem = { system, modules, specialArgs ? {} }:

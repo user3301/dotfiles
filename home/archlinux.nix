@@ -9,6 +9,7 @@
     ./modules/neovim.nix
     ./modules/terminal.nix
     ./modules/editors.nix
+    ./modules/secrets.nix
   ];
 
   # User information - IMPORTANT: Change these before deployment

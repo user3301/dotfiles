@@ -24,6 +24,9 @@
     nil # Nix LSP
     nixpkgs-fmt
     nix-tree
+
+    # AI
+    pkgs.claude-code
   ];
 
   # Git configuration

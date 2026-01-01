@@ -22,6 +22,13 @@ help:
 	@echo "  make gc                   - Run garbage collection"
 	@echo "  make clean                - Deep clean (delete old generations + gc)"
 	@echo ""
+	@echo "Secrets Management:"
+	@echo "  make secrets-check        - Check secrets setup status"
+	@echo "  make secrets-init         - Generate age key for encryption"
+	@echo "  make secrets-edit         - Edit encrypted secrets file"
+	@echo "  make secrets-encrypt      - Encrypt secrets.yaml file"
+	@echo "  make secrets-decrypt      - Decrypt and view secrets"
+	@echo ""
 	@echo "Other Commands:"
 	@echo "  make set-default-shell    - Set zsh as default shell (requires sudo)"
 	@echo "  make install-brew         - Install Homebrew (macOS only)"
@@ -177,3 +184,75 @@ clean:
 	@echo "Deleting home-manager generations older than 7 days..."
 	home-manager expire-generations "-7 days"
 	@echo "✅ Deep clean complete!"
+
+# Secrets Management
+.PHONY: secrets-check
+secrets-check:
+	@echo "Checking secrets setup..."
+	@if [ -f ~/.config/sops/age/keys.txt ]; then \
+		echo "✅ Age key exists at ~/.config/sops/age/keys.txt"; \
+		echo "Public key:"; \
+		nix-shell -p age --run "age-keygen -y ~/.config/sops/age/keys.txt"; \
+	else \
+		echo "❌ Age key not found at ~/.config/sops/age/keys.txt"; \
+		echo "Run: make secrets-init"; \
+	fi
+	@echo ""
+	@if [ -f secrets/secrets.yaml ]; then \
+		echo "✅ Secrets file exists"; \
+		if grep -q "sops:" secrets/secrets.yaml && grep -q "age:" secrets/secrets.yaml; then \
+			echo "✅ File is encrypted (safe to commit)"; \
+		else \
+			echo "❌ File is NOT encrypted (DO NOT commit!)"; \
+			echo "Run: make secrets-encrypt"; \
+		fi \
+	else \
+		echo "⚠️  Secrets file not found"; \
+		echo "Copy secrets.yaml.example to secrets.yaml and edit it"; \
+	fi
+
+.PHONY: secrets-init
+secrets-init:
+	@echo "Initializing secrets management..."
+	@mkdir -p ~/.config/sops/age
+	@if [ -f ~/.config/sops/age/keys.txt ]; then \
+		echo "Age key already exists"; \
+	else \
+		echo "Generating age key..."; \
+		nix-shell -p age --run "age-keygen -o ~/.config/sops/age/keys.txt"; \
+		echo ""; \
+		echo "✅ Age key generated!"; \
+		echo ""; \
+		echo "Your public key:"; \
+		nix-shell -p age --run "age-keygen -y ~/.config/sops/age/keys.txt"; \
+		echo ""; \
+		echo "⚠️  IMPORTANT: Update .sops.yaml with this public key!"; \
+	fi
+
+.PHONY: secrets-edit
+secrets-edit:
+	@if [ ! -f secrets/secrets.yaml ]; then \
+		echo "Secrets file not found. Creating from template..."; \
+		cp secrets/secrets.yaml.example secrets/secrets.yaml; \
+		echo "Edit secrets/secrets.yaml and add your secrets, then run 'make secrets-encrypt'"; \
+	else \
+		nix-shell -p sops --run "sops secrets/secrets.yaml"; \
+	fi
+
+.PHONY: secrets-encrypt
+secrets-encrypt:
+	@if [ ! -f secrets/secrets.yaml ]; then \
+		echo "Error: secrets/secrets.yaml not found"; \
+		exit 1; \
+	fi
+	@echo "Encrypting secrets..."
+	@nix-shell -p sops --run "sops -e -i secrets/secrets.yaml"
+	@echo "✅ Secrets encrypted! Safe to commit to git."
+
+.PHONY: secrets-decrypt
+secrets-decrypt:
+	@if [ ! -f secrets/secrets.yaml ]; then \
+		echo "Error: secrets/secrets.yaml not found"; \
+		exit 1; \
+	fi
+	@nix-shell -p sops --run "sops -d secrets/secrets.yaml"
