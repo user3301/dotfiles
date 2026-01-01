@@ -10,7 +10,7 @@
   xdg.enable = true;
 
   # Basic user information (override in platform-specific configs)
-  home.stateVersion = "24.05"; # Update to match your NixOS version
+  home.stateVersion = "25.05"; # Update to match your NixOS version
 
   # Allow unfree packages(eg: Claude-code, Copilot)
   nixpkgs.config.allowUnfree = true;
@@ -31,5 +31,8 @@
     # Misc utilities
     wget
     curl
+
+    # Home Manager CLI (for home-manager generations, packages, etc.)
+    home-manager
   ];
 }

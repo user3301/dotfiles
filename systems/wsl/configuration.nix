@@ -15,7 +15,7 @@
   };
 
   # System configuration
-  system.stateVersion = "24.05"; # Update to match your NixOS version
+  system.stateVersion = "25.05"; # Update to match your NixOS version
 
   # Nix settings
   nix = {
