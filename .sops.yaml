@@ -1,0 +1,31 @@
+# SOPS configuration for dotfiles secrets management
+# This file defines which keys can decrypt which secrets
+
+keys:
+  # Age key for encryption/decryption
+  # This is the public key derived from ~/.config/sops/age/keys.txt
+  # To get your public key, run: age-keygen -y ~/.config/sops/age/keys.txt
+  - &user_age age1rlnzd7yu6lkvtuzp6xtklmg2clympgxvdvpt2g59c97zq3dvf4qssxtu2p
+
+creation_rules:
+  # Default rule for all secrets
+  - path_regex: secrets/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *user_age
+
+  # Platform-specific secrets (if needed in the future)
+  - path_regex: secrets/nixos/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *user_age
+
+  - path_regex: secrets/wsl/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *user_age
+
+  - path_regex: secrets/arch/[^/]+\.yaml$
+    key_groups:
+      - age:
+          - *user_age

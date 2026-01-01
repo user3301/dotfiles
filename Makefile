@@ -4,15 +4,35 @@
 help:
 	@echo "Dotfiles Setup Commands:"
 	@echo ""
+	@echo "Initial Setup:"
 	@echo "  make install-nix          - Install Nix package manager"
 	@echo "  make setup-home-manager   - Bootstrap home-manager (first time setup)"
-	@echo "  make update-home-manager  - Update home-manager configuration"
-	@echo "  make set-default-shell    - Set zsh as default shell (requires sudo)"
-	@echo "  make install-brew         - Install Homebrew (macOS only)"
-	@echo "  make install-brew-packages- Install GUI apps via Homebrew (macOS only)"
 	@echo "  make setup-mac            - Full setup for macOS (Nix + home-manager + Homebrew)"
 	@echo "  make setup-linux          - Full setup for Linux (Nix + home-manager)"
 	@echo "  make setup-wsl-nixos      - Link NixOS configuration for WSL2 (requires sudo)"
+	@echo ""
+	@echo "NixOS WSL2 Commands:"
+	@echo "  make switch               - Rebuild NixOS system (slow, needs sudo)"
+	@echo "  make home-switch          - Rebuild home-manager only (fast, no sudo)"
+	@echo "  make build                - Build system without switching (test config)"
+	@echo "  make update               - Update flake inputs"
+	@echo "  make upgrade              - Update flake inputs and rebuild"
+	@echo "  make generations          - List system generations"
+	@echo "  make home-generations     - List home-manager generations"
+	@echo "  make gc                   - Run garbage collection"
+	@echo "  make clean                - Deep clean (delete old generations + gc)"
+	@echo ""
+	@echo "Secrets Management:"
+	@echo "  make secrets-check        - Check secrets setup status"
+	@echo "  make secrets-init         - Generate age key for encryption"
+	@echo "  make secrets-edit         - Edit encrypted secrets file"
+	@echo "  make secrets-encrypt      - Encrypt secrets.yaml file"
+	@echo "  make secrets-decrypt      - Decrypt and view secrets"
+	@echo ""
+	@echo "Other Commands:"
+	@echo "  make set-default-shell    - Set zsh as default shell (requires sudo)"
+	@echo "  make install-brew         - Install Homebrew (macOS only)"
+	@echo "  make install-brew-packages- Install GUI apps via Homebrew (macOS only)"
 	@echo ""
 
 .PHONY: install-nix
@@ -114,3 +134,125 @@ setup-wsl-nixos:
 	echo ""; \
 	echo "✅ NixOS configuration linked!"; \
 	echo "Run 'sudo nixos-rebuild switch' to apply the configuration."
+
+# NixOS WSL2 specific targets
+.PHONY: switch
+switch:
+	@echo "Rebuilding NixOS system..."
+	sudo nixos-rebuild switch --flake .#nixos-wsl
+
+.PHONY: home-switch
+home-switch:
+	@echo "Rebuilding home-manager configuration..."
+	home-manager switch --flake .#nixos-wsl
+
+.PHONY: build
+build:
+	@echo "Building NixOS system (without switching)..."
+	sudo nixos-rebuild build --flake .#nixos-wsl
+
+.PHONY: update
+update:
+	@echo "Updating flake inputs..."
+	nix flake update
+
+.PHONY: upgrade
+upgrade: update switch
+	@echo "✅ System upgraded!"
+
+.PHONY: generations
+generations:
+	@echo "System generations:"
+	sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
+
+.PHONY: home-generations
+home-generations:
+	@echo "Home-manager generations:"
+	home-manager generations
+
+.PHONY: gc
+gc:
+	@echo "Running garbage collection..."
+	nix-collect-garbage
+	@echo "✅ Garbage collection complete!"
+
+.PHONY: clean
+clean:
+	@echo "Deep cleaning old generations and running garbage collection..."
+	@echo "Deleting system generations older than 7 days..."
+	sudo nix-collect-garbage --delete-older-than 7d
+	@echo "Deleting home-manager generations older than 7 days..."
+	home-manager expire-generations "-7 days"
+	@echo "✅ Deep clean complete!"
+
+# Secrets Management
+.PHONY: secrets-check
+secrets-check:
+	@echo "Checking secrets setup..."
+	@if [ -f ~/.config/sops/age/keys.txt ]; then \
+		echo "✅ Age key exists at ~/.config/sops/age/keys.txt"; \
+		echo "Public key:"; \
+		nix-shell -p age --run "age-keygen -y ~/.config/sops/age/keys.txt"; \
+	else \
+		echo "❌ Age key not found at ~/.config/sops/age/keys.txt"; \
+		echo "Run: make secrets-init"; \
+	fi
+	@echo ""
+	@if [ -f secrets/secrets.yaml ]; then \
+		echo "✅ Secrets file exists"; \
+		if grep -q "sops:" secrets/secrets.yaml && grep -q "age:" secrets/secrets.yaml; then \
+			echo "✅ File is encrypted (safe to commit)"; \
+		else \
+			echo "❌ File is NOT encrypted (DO NOT commit!)"; \
+			echo "Run: make secrets-encrypt"; \
+		fi \
+	else \
+		echo "⚠️  Secrets file not found"; \
+		echo "Copy secrets.yaml.example to secrets.yaml and edit it"; \
+	fi
+
+.PHONY: secrets-init
+secrets-init:
+	@echo "Initializing secrets management..."
+	@mkdir -p ~/.config/sops/age
+	@if [ -f ~/.config/sops/age/keys.txt ]; then \
+		echo "Age key already exists"; \
+	else \
+		echo "Generating age key..."; \
+		nix-shell -p age --run "age-keygen -o ~/.config/sops/age/keys.txt"; \
+		echo ""; \
+		echo "✅ Age key generated!"; \
+		echo ""; \
+		echo "Your public key:"; \
+		nix-shell -p age --run "age-keygen -y ~/.config/sops/age/keys.txt"; \
+		echo ""; \
+		echo "⚠️  IMPORTANT: Update .sops.yaml with this public key!"; \
+	fi
+
+.PHONY: secrets-edit
+secrets-edit:
+	@if [ ! -f secrets/secrets.yaml ]; then \
+		echo "Secrets file not found. Creating from template..."; \
+		cp secrets/secrets.yaml.example secrets/secrets.yaml; \
+		echo "Edit secrets/secrets.yaml and add your secrets, then run 'make secrets-encrypt'"; \
+	else \
+		nix-shell -p sops --run "sops secrets/secrets.yaml"; \
+	fi
+
+.PHONY: secrets-encrypt
+secrets-encrypt:
+	@if [ ! -f secrets/secrets.yaml ]; then \
+		echo "Error: secrets/secrets.yaml not found"; \
+		exit 1; \
+	fi
+	@echo "Encrypting secrets..."
+	@nix-shell -p sops --run "sops -e -i secrets/secrets.yaml"
+	@echo "✅ Secrets encrypted! Safe to commit to git."
+
+.PHONY: secrets-decrypt
+secrets-decrypt:
+	@if [ ! -f secrets/secrets.yaml ]; then \
+		echo "Error: secrets/secrets.yaml not found"; \
+		exit 1; \
+	fi
+	@nix-shell -p sops --run "sops -d secrets/secrets.yaml"

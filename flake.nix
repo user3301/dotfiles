@@ -1,113 +1,191 @@
 {
-  description = "user3301's dotfiles - Nix flake configuration";
+  description = "user3301's' dotfiles for NixOS, NixOS WSL2, and Archlinux";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    copilot-cli.url = "github:scarisey/copilot-cli-flake";
+    # Nixpkgs - use unstable for latest packages
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     claude-code.url = "git+https://codeberg.org/MachsteNix/claude-code-nix";
 
-    nix-darwin = {
-      url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    # Home Manager - for user-level configuration
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # sops-nix - for secrets management
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # NixOS WSL - for WSL2 support
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Nix Darwin - for macOS support (optional, keeping for your current setup)
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, copilot-cli, ... }:
+  outputs = { self, nixpkgs, home-manager, sops-nix, nixos-wsl, nix-darwin, ... }@inputs:
     let
-      # Helper function to create Darwin configurations for different systems
-      mkSystem = system: username: nix-darwin.lib.darwinSystem {
-        inherit system;
-        modules = [
-          home-manager.darwinModules.home-manager
-          {
-            # Nix settings
-            nix.settings.experimental-features = "nix-command flakes";
-
-            # macOS system settings
-            system.stateVersion = 5;
-
-            # Home-manager configuration
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.${username} = import ./home;
-          }
-        ];
-      };
-      # Helper function to create home-manager configurations
-      mkHome = system: username: home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.${system};
-        modules = [
-          ./home
-        ];
-        extraSpecialArgs = {
-          inherit username;
-          dotfilesPath = toString ./.;
+      # Helper function to generate system configurations
+      mkSystem = { system, modules, specialArgs ? {} }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = modules;
+          specialArgs = specialArgs // { inherit inputs; };
         };
-      };
 
-      # Helper to create configs for a specific user
-      mkUserConfigs = username: {
-        # macOS configurations
-        "${username}-aarch64-darwin" = mkHome "aarch64-darwin" username;
-        "${username}-x86_64-darwin" = mkHome "x86_64-darwin" username;
+      # Helper function for standalone Home Manager (Archlinux, etc.)
+      mkHome = { system, username, modules }:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+          modules = modules;
+          extraSpecialArgs = { inherit inputs; };
+        };
 
-        # Linux configurations
-        "${username}-x86_64-linux" = mkHome "x86_64-linux" username;
-        "${username}-aarch64-linux" = mkHome "aarch64-linux" username;
-      };
+      # Helper function for nix-darwin (macOS)
+      mkDarwin = { system, modules }:
+        nix-darwin.lib.darwinSystem {
+          inherit system;
+          modules = modules;
+          specialArgs = { inherit inputs; };
+        };
+
+      # Common module paths
+      homeModulesPath = ./home/modules;
+      systemModulesPath = ./systems/modules;
     in
     {
-      # nix-darwin configurations for different architectures
-      darwinConfigurations = {
-        # These use the actual username from environment at build time
-        "aarch64" = mkSystem "aarch64-darwin" (builtins.getEnv "USER");
-        "x86_64" = mkSystem "x86_64-darwin" (builtins.getEnv "USER");
-      };
-
-      # Standalone home-manager configurations
-      # Create configs for common usernames to avoid getEnv issues
-      homeConfigurations =
-        (mkUserConfigs (builtins.getEnv "USER")) //
-        (mkUserConfigs "user3301");
-
-      # NixOS configurations for NixOS and WSL2 (x86_64 and aarch64)
+      # NixOS Configurations
       nixosConfigurations = {
-        # a minimal NixOS system that uses home-manager for the user
-        "nixos-x86_64" = nixpkgs.lib.nixosSystem {
+        # NixOS WSL2 Configuration
+        nixos-wsl = mkSystem {
           system = "x86_64-linux";
           modules = [
+            # WSL-specific module
+            nixos-wsl.nixosModules.wsl
+
+            # System configuration
+            ./systems/wsl/configuration.nix
+
+            # Home Manager integration
             home-manager.nixosModules.home-manager
-            ({
-              users.users.${builtins.getEnv "USER"} = {
-                isNormalUser = true;
-                home = "/home/${builtins.getEnv "USER"}";
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.user3301 = import ./home/nixos-wsl.nix;
+                extraSpecialArgs = { inherit inputs; };
               };
-              # Point home-manager to the existing ./home module
-              home-manager.users.${builtins.getEnv "USER"} = import ./home;
-            })
+            }
           ];
         };
 
-        "nixos-aarch64" = nixpkgs.lib.nixosSystem {
-          system = "aarch64-linux";
+        # Native NixOS Configuration
+        nixos-native = mkSystem {
+          system = "x86_64-linux";
           modules = [
+            # System configuration
+            ./systems/native/configuration.nix
+
+            # Home Manager integration
             home-manager.nixosModules.home-manager
-            ({
-              users.users.${builtins.getEnv "USER"} = {
-                isNormalUser = true;
-                home = "/home/${builtins.getEnv "USER"}";
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.user3301 = import ./home/nixos-native.nix;
+                extraSpecialArgs = { inherit inputs; };
               };
-              home-manager.users.${builtins.getEnv "USER"} = import ./home;
-            })
+            }
           ];
         };
       };
 
-      packages.x86_64-linux.default = copilot-cli.packages.x86_64-linux.default;
+      # Standalone Home Manager Configurations (for Archlinux, etc.)
+      homeConfigurations = {
+        # Generic Linux configuration (Archlinux, Ubuntu, Fedora, etc.)
+        "user@linux" = mkHome {
+          system = "x86_64-linux";
+          username = "user";
+          modules = [
+            ./home/archlinux.nix
+          ];
+        };
+
+        # ARM64 Linux configuration
+        "user@linux-arm64" = mkHome {
+          system = "aarch64-linux";
+          username = "user";
+          modules = [
+            ./home/archlinux.nix
+          ];
+        };
+      };
+
+      # macOS configurations (keeping your existing setup)
+      darwinConfigurations = {
+        # macOS Apple Silicon
+        "aarch64" = mkDarwin {
+          system = "aarch64-darwin";
+          modules = [
+            ./systems/darwin/configuration.nix
+            home-manager.darwinModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.gaiz = import ./home/darwin.nix;
+                extraSpecialArgs = { inherit inputs; };
+              };
+            }
+          ];
+        };
+
+        # macOS Intel
+        "x86_64" = mkDarwin {
+          system = "x86_64-darwin";
+          modules = [
+            ./systems/darwin/configuration.nix
+            home-manager.darwinModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.gaiz = import ./home/darwin.nix;
+                extraSpecialArgs = { inherit inputs; };
+              };
+            }
+          ];
+        };
+      };
+
+      # Development shell (optional but useful)
+      devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ] (system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        pkgs.mkShell {
+          buildInputs = with pkgs; [
+            git
+            vim
+            nil # Nix LSP
+            nixpkgs-fmt
+          ];
+          shellHook = ''
+            echo "Dotfiles development environment"
+            echo "Use 'nixos-rebuild' or 'home-manager' commands to apply configurations"
+          '';
+        }
+      );
     };
 }

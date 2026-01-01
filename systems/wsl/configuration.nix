@@ -1,55 +1,69 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
-# NixOS-WSL specific options are documented on the NixOS-WSL repository:
-# https://github.com/nix-community/NixOS-WSL
-
-{ config, lib, pkgs, ... }:
+{ config, pkgs, inputs, lib, ... }:
 
 {
-  imports = [
-    # include NixOS-WSL modules
-    <nixos-wsl/modules>
-    <home-manager/nixos>
-  ];
-
+  # Import WSL-specific configuration from nixos-wsl
   wsl = {
     enable = true;
     defaultUser = "user3301";
+    startMenuLaunchers = true;
+
+    # WSL-specific interoperability
+    interop.register = true;
+
+    # Use Windows SSH agent
+    # wslConf.network.generateResolvConf = false;
   };
 
+  # System configuration
+  system.stateVersion = "25.05"; # Update to match your NixOS version
+
+  # Nix settings
+  nix = {
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+      auto-optimise-store = true;
+    };
+
+    # Garbage collection
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
+  };
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  # Timezone (adjust to your preference)
   time.timeZone = "Australia/Melbourne";
 
-  programs.zsh.enable = true;
+  # Locale settings
+  i18n.defaultLocale = "en_US.UTF-8";
 
-  environment.systemPackages = with pkgs; [
-    git # need git in the first place to get my dotfiles from Github
-    gnumake42 # need make to run the initial setup make target in my dotfiles
-  ];
-
+  # User configuration
   users.users.user3301 = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" ]; # Enable sudo
     shell = pkgs.zsh;
   };
 
-  # Enable home-manager globally
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
+  # Enable ZSH system-wide
+  programs.zsh.enable = true;
 
-  # home-manager.users.user3301 = import /home/user3301/dotfiles/home/default.nix;
+  # System packages (minimal, most packages go in Home Manager)
+  environment.systemPackages = with pkgs; [
+    neovim
+    git
+    wget
+    curl
+  ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # SSH configuration
+  services.openssh = {
+    enable = false; # Enable if you want SSH server
+  };
 
-  # to keep asdf dynamically linked executables runnable
-  programs.nix-ld.enable = true;
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It's perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.11"; # Did you read the comment?
+  # Systemd services specific to WSL
+  # (Add any WSL-specific services here)
 }
