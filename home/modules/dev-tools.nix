@@ -15,6 +15,8 @@
     fzf
     jq
     tree
+    grpcurl
+    fastfetch
 
     # Build tools
     gcc
