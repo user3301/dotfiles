@@ -21,6 +21,7 @@
     # Build tools
     gcc
     gnumake
+    xdg-utils
 
     # Nix development
     nil # Nix LSP
