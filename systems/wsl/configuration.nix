@@ -44,7 +44,7 @@
   # User configuration
   users.users.user3301 = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable sudo
+    extraGroups = [ "wheel" "docker" ]; # Enable sudo and docker
     shell = pkgs.zsh;
   };
 
@@ -57,11 +57,41 @@
     git
     wget
     curl
+    docker-compose
   ];
 
   # SSH configuration
   services.openssh = {
     enable = false; # Enable if you want SSH server
+  };
+
+  # Docker configuration for WSL2
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
+
+    # WSL2-specific Docker daemon configuration
+    daemon.settings = {
+      # Use iptables for better WSL2 compatibility
+      iptables = true;
+
+      # Storage driver - overlay2 works well in WSL2
+      storage-driver = "overlay2";
+
+      # Default logging configuration
+      log-driver = "json-file";
+      log-opts = {
+        max-size = "10m";
+        max-file = "3";
+      };
+    };
+
+    # Auto-prune configuration to save disk space
+    autoPrune = {
+      enable = true;
+      dates = "weekly";
+      flags = [ "--all" ];
+    };
   };
 
   # Systemd services specific to WSL
