@@ -37,3 +37,7 @@ function y() {
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
+# Run fastfetch when on every interactive terminal and NOT ssh into a machine
+if [[ $- == *i* ]] && [[ -z "$SSH_CONNECTION" ]]; then
+    fastfetch
+fi
