@@ -2,11 +2,12 @@ return {
   -- add gruvbox
   { "ellisonleao/gruvbox.nvim" },
   { "neanias/everforest-nvim" },
+  { "sainnhe/gruvbox-material" },
   -- Configure LazyVim to load selected colorscheme
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "catppuccin-frappe",
+      colorscheme = "gruvbox-material",
     },
   },
   -- Make background transparent to inherit terminal settings
