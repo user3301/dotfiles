@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, lib, ... }:
+{ pkgs, ... }:
 
 {
   # Import WSL-specific configuration from nixos-wsl
@@ -20,7 +20,10 @@
   # Nix settings
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
     };
 
@@ -44,7 +47,10 @@
   # User configuration
   users.users.user3301 = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "docker" ]; # Enable sudo and docker
+    extraGroups = [
+      "wheel"
+      "docker"
+    ]; # Enable sudo and docker
     shell = pkgs.zsh;
   };
 

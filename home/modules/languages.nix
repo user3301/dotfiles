@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
 
@@ -7,7 +7,7 @@
     # Golang
     go
     pkgs.golangci-lint
-    
+
     # Protobuf
     protobuf_33
     protoc-gen-go-grpc

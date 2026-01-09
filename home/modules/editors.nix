@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   # Helix editor
@@ -25,6 +25,6 @@
   };
 
   # Symlink existing helix config
-  xdg.configFile."helix".source = config.lib.file.mkOutOfStoreSymlink
-    "${config.home.homeDirectory}/dotfiles/helix/.config/helix";
+  xdg.configFile."helix".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/helix/.config/helix";
 }

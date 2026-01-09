@@ -31,18 +31,39 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, sops-nix, nixos-wsl, nix-darwin, ... }@inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      home-manager,
+      sops-nix,
+      nixos-wsl,
+      nix-darwin,
+      ...
+    }@inputs:
     let
       # Helper function to generate system configurations
-      mkSystem = { system, modules, specialArgs ? {} }:
+      mkSystem =
+        {
+          system,
+          modules,
+          specialArgs ? { },
+        }:
         nixpkgs.lib.nixosSystem {
           inherit system;
           modules = modules;
-          specialArgs = specialArgs // { inherit inputs; };
+          specialArgs = specialArgs // {
+            inherit inputs;
+          };
         };
 
       # Helper function for standalone Home Manager (Archlinux, etc.)
-      mkHome = { system, username, modules }:
+      mkHome =
+        {
+          system,
+          username,
+          modules,
+        }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
             inherit system;
@@ -53,16 +74,14 @@
         };
 
       # Helper function for nix-darwin (macOS)
-      mkDarwin = { system, modules }:
+      mkDarwin =
+        { system, modules }:
         nix-darwin.lib.darwinSystem {
           inherit system;
           modules = modules;
           specialArgs = { inherit inputs; };
         };
 
-      # Common module paths
-      homeModulesPath = ./home/modules;
-      systemModulesPath = ./systems/modules;
     in
     {
       # NixOS Configurations
@@ -170,22 +189,25 @@
       };
 
       # Development shell (optional but useful)
-      devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ] (system:
-        let
-          pkgs = import nixpkgs { inherit system; };
-        in
-        pkgs.mkShell {
-          buildInputs = with pkgs; [
-            git
-            vim
-            nil # Nix LSP
-            nixpkgs-fmt
-          ];
-          shellHook = ''
-            echo "Dotfiles development environment"
-            echo "Use 'nixos-rebuild' or 'home-manager' commands to apply configurations"
-          '';
-        }
-      );
+      devShells =
+        nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ]
+          (
+            system:
+            let
+              pkgs = import nixpkgs { inherit system; };
+            in
+            pkgs.mkShell {
+              buildInputs = with pkgs; [
+                git
+                vim
+                nil # Nix LSP
+                nixpkgs-fmt
+              ];
+              shellHook = ''
+                echo "Dotfiles development environment"
+                echo "Use 'nixos-rebuild' or 'home-manager' commands to apply configurations"
+              '';
+            }
+          );
     };
 }

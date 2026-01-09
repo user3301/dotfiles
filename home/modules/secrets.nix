@@ -1,4 +1,9 @@
-{ config, pkgs, lib, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   # Import sops-nix home-manager module

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   # Install oh-my-zsh package (not managed by Home Manager's programs.zsh.oh-my-zsh)
@@ -11,12 +11,12 @@
   home.file.".oh-my-zsh".source = "${pkgs.oh-my-zsh}/share/oh-my-zsh";
 
   # Symlink .zshrc from dotfiles (this has full control over zsh configuration)
-  home.file.".zshrc".source = config.lib.file.mkOutOfStoreSymlink
-    "${config.home.homeDirectory}/dotfiles/zsh/.zshrc";
+  home.file.".zshrc".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/zsh/.zshrc";
 
   # Symlink .zshenv
-  home.file.".zshenv".source = config.lib.file.mkOutOfStoreSymlink
-    "${config.home.homeDirectory}/dotfiles/zsh/.zshenv";
+  home.file.".zshenv".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/zsh/.zshenv";
 
   # Bash configuration (fallback)
   programs.bash = {
