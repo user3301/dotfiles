@@ -1,9 +1,41 @@
+-- Detect if running on NixOS
+local is_nixos = vim.fn.filereadable("/etc/NIXOS") == 1 or vim.fn.isdirectory("/etc/nixos") == 1
+
 return {
   {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
+        -- Use Nix-installed LSP servers on NixOS, Mason on other systems
+        lua_ls = {
+          mason = not is_nixos,
+        },
+        nil_ls = {
+          mason = not is_nixos,
+        },
+        ts_ls = {
+          mason = not is_nixos,
+        },
+        html = {
+          mason = not is_nixos,
+        },
+        cssls = {
+          mason = not is_nixos,
+        },
+        jsonls = {
+          mason = not is_nixos,
+        },
+        eslint = {
+          mason = not is_nixos,
+        },
+        pyright = {
+          mason = not is_nixos,
+        },
+        rust_analyzer = {
+          mason = not is_nixos,
+        },
         gopls = {
+          mason = not is_nixos,
           settings = {
             gopls = {
               -- 👇 This makes gopls group imports as stdlib / third-party / local
