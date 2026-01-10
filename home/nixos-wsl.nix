@@ -30,9 +30,11 @@
   # Git configuration for WSL
   programs.git = {
     enable = true;
-    userName = "user3301";
-    userEmail = "26126682+user3301@users.noreply.github.com";
-    extraConfig = {
+    settings = {
+      user = {
+        name = "user3301";
+        email = "26126682+user3301@users.noreply.github.com";
+      };
       core = {
         # Handle Windows line endings
         autocrlf = "input";
