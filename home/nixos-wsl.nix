@@ -20,6 +20,7 @@
   # Platform-specific packages for WSL2
   home.packages = with pkgs; [
     # WSL-specific tools
+    gnupg
   ];
 
   # WSL-specific session variables
@@ -30,6 +31,10 @@
   # Git configuration for WSL
   programs.git = {
     enable = true;
+    signing = {
+      key = "23B0107B5D3811FB";
+      signByDefault = true;
+    };
     settings = {
       user = {
         name = "user3301";
@@ -40,6 +45,17 @@
         autocrlf = "input";
       };
     };
+  };
+
+  # GPG configuration
+  programs.gpg = {
+    enable = true;
+  };
+
+  services.gpg-agent = {
+    enable = true;
+    enableSshSupport = true;
+    pinentryPackage = pkgs.pinentry-curses;
   };
 
   # Home Manager state version
