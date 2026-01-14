@@ -36,6 +36,10 @@ config.font_size = 16
 config.initial_rows = 40
 config.initial_cols = 120
 
+-- Enable image protocols
+config.enable_kitty_graphics = true
+config.enable_kitty_keyboard = true
+
 config.leader = {
 	key = "a",
 	mods = "CTRL",
