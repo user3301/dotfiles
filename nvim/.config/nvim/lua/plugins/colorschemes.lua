@@ -3,11 +3,12 @@ return {
   { "ellisonleao/gruvbox.nvim" },
   { "neanias/everforest-nvim" },
   { "sainnhe/gruvbox-material" },
+  { "rose-pine/neovim", name = "rose-pine" },
   -- Configure LazyVim to load selected colorscheme
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "gruvbox-material",
+      colorscheme = "catppuccin-frappe",
     },
   },
   -- TODO: currently this config will preventing light themes from
