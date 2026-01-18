@@ -36,6 +36,13 @@ return {
         },
         gopls = {
           mason = not is_nixos,
+          -- when Neovim starts gopls as an LSP server, it may not be inheriting 
+          -- the correct environment variables that NixOS sets up.
+          cmd_env = {
+            GOPATH = vim.env.GOPATH or vim.fn.expand("$HOME/go"),
+            GOROOT = vim.env.GOROOT,
+            GOMODCACHE = vim.env.GOMODCACHE or vim.fn.expand("$HOME/go/pkg/mod"),
+          },
           settings = {
             gopls = {
               -- 👇 This makes gopls group imports as stdlib / third-party / local
