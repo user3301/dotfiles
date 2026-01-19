@@ -36,7 +36,10 @@ return {
         },
         gopls = {
           mason = not is_nixos,
-          -- when Neovim starts gopls as an LSP server, it may not be inheriting 
+          -- Explicitly use Nix-installed gopls on NixOS to ensure we don't pick up
+          -- any other version (e.g., from Mason cache, system package, or Go install)
+          cmd = is_nixos and { vim.fn.exepath("gopls") } or nil,
+          -- when Neovim starts gopls as an LSP server, it may not be inheriting
           -- the correct environment variables that NixOS sets up.
           cmd_env = {
             GOPATH = vim.env.GOPATH or vim.fn.expand("$HOME/go"),
