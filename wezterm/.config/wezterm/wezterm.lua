@@ -12,9 +12,9 @@ config.color_scheme = "Catppuccin Frappe"
 config.window_background_gradient = {
 	orientation = "Vertical",
 	colors = {
-		"#0f0c29",
-		"#302b63",
-		"#24243e",
+		"#232634", -- Catppuccin Frappe Crust
+		"#292c3c", -- Catppuccin Frappe Mantle
+		"#303446", -- Catppuccin Frappe Base
 	},
 	interpolation = "Linear",
 	blend = "Rgb",
