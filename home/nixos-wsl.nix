@@ -6,6 +6,7 @@
     ./modules/common.nix
     ./modules/shell.nix
     ./modules/dev-tools.nix
+    ./modules/git.nix
     ./modules/neovim.nix
     ./modules/terminal.nix
     ./modules/editors.nix
@@ -26,25 +27,6 @@
   # WSL-specific session variables
   home.sessionVariables = {
     # Add any WSL-specific environment variables
-  };
-
-  # Git configuration for WSL
-  programs.git = {
-    enable = true;
-    signing = {
-      key = "23B0107B5D3811FB";
-      signByDefault = true;
-    };
-    settings = {
-      user = {
-        name = "user3301";
-        email = "26126682+user3301@users.noreply.github.com";
-      };
-      core = {
-        # Handle Windows line endings
-        autocrlf = "input";
-      };
-    };
   };
 
   # GPG configuration

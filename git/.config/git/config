@@ -1,0 +1,15 @@
+# Git configuration
+# This file is managed by dotfiles and symlinked to ~/.config/git/config
+
+[user]
+	name = "user3301"
+	email = "26126682+user3301@users.noreply.github.com"
+	signingkey = "23B0107B5D3811FB"
+
+[core]
+	autocrlf = "input"
+	editor = nvim
+
+[commit]
+	gpgsign = true
+
