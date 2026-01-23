@@ -3,6 +3,8 @@
 {
   # Development packages
   home.packages = with pkgs; [
+    vim
+
     # Version control
     git
     gh # GitHub CLI

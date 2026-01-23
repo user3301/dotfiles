@@ -10,7 +10,6 @@ export CLOUDSDK_PYTHON=/usr/bin/python3
 export GPG_TTY=$(tty)
 
 # General aliases
-alias vim="nvim"
 alias v="nvim"
 
 # Load local-specific configuration if it exists
