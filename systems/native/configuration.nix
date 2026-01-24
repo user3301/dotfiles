@@ -2,7 +2,7 @@
 
 {
   # Import hardware configuration (will be generated on the target machine)
-  # imports = [ ./hardware-configuration.nix ];
+  imports = [ ./hardware-configuration.nix ];
 
   # Boot loader configuration
   boot.loader = {
@@ -24,7 +24,7 @@
   };
 
   # System configuration
-  system.stateVersion = "24.05"; # Update to match your NixOS version
+  system.stateVersion = "25.11"; # Update to match your NixOS version
 
   # Nix settings
   nix = {
@@ -59,17 +59,6 @@
 
   # Enable ZSH system-wide
   programs.zsh.enable = true;
-
-  # Sound configuration
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
 
   # X11 and desktop environment
   services.xserver = {

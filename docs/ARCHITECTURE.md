@@ -23,7 +23,7 @@ This dotfiles repository is designed with the following principles:
         ▼                   ▼                   ▼
 ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
 │   NixOS      │   │  Standalone  │   │  nix-darwin  │
-│ Configurations│   │    Home      │   │   (macOS)    │
+│ Configuration│   │    Home      │   │   (macOS)    │
 │              │   │   Manager    │   │              │
 └──────────────┘   └──────────────┘   └──────────────┘
         │                   │                   │
