@@ -8,6 +8,7 @@
 [core]
 	autocrlf = "input"
 	editor = nvim
+  excludesfile = ~/.config/git/.gitignore_global
 
 [commit]
 	gpgsign = true
