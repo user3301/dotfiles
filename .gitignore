@@ -1,5 +1,6 @@
 # Local/work-specific configuration files
 .zshenv.local
+git/.config/git/config.local
 
 # Nix
 result

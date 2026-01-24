@@ -4,7 +4,6 @@
 [user]
 	name = "user3301"
 	email = "26126682+user3301@users.noreply.github.com"
-	signingkey = "23B0107B5D3811FB"
 
 [core]
 	autocrlf = "input"
@@ -12,4 +11,9 @@
 
 [commit]
 	gpgsign = true
+
+# machine-specific configuration will be configurated there
+# (eg: signkingkey)
+[include]
+	path = ~/.config/git/config.local
 
