@@ -63,11 +63,13 @@
   # X11 and desktop environment
   services.xserver = {
     enable = true;
+    windowManager.qtile.enable = true;
 
     # Display manager
     displayManager = {
       # Choose your display manager
       lightdm.enable = true;
+      defaultSession = "qtile";
       # Or use GDM:
       # gdm.enable = true;
     };

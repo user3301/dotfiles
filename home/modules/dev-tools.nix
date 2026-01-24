@@ -33,18 +33,4 @@
     # AI
     pkgs.claude-code
   ];
-
-  # Git configuration
-  programs.git = {
-    enable = true;
-    # User will configure name/email in their local .gitconfig or via system config
-  };
-
-  # GitHub CLI
-  programs.gh = {
-    enable = true;
-    settings = {
-      git_protocol = "ssh";
-    };
-  };
 }
