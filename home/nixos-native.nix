@@ -10,7 +10,6 @@
     ./modules/neovim.nix
     ./modules/terminal.nix
     ./modules/editors.nix
-    ./modules/secrets.nix
     ./modules/languages.nix
   ];
 

@@ -364,10 +364,12 @@ services.myservice = {
 
 ### Secrets Management
 
-**Current**: Git configuration includes email (public info)
+**Current approach**: Manual management for simplicity
+- Git SSH keys are manually generated on each machine
+- No automated secret management to reduce complexity
+- Sensitive credentials kept outside of version control
 
-**For secrets**: Consider using:
-- **sops-nix**: Encrypted secrets in git
+**Alternatives** (if needed in the future):
 - **agenix**: Age-encrypted secrets
 - **git-crypt**: Transparent git encryption
 - **Local overrides**: `.zshenv.local` pattern (already in .gitignore)

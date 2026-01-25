@@ -383,7 +383,6 @@ sudo nixos-rebuild switch --rollback
 - Platform-specific optimizations
 
 ### Phase 3: Advanced Features (Optional)
-- Secrets management (sops-nix, agenix)
 - Custom NixOS modules
 - Per-project development shells
 - CI/CD integration
@@ -406,7 +405,7 @@ sudo nixos-rebuild switch --rollback
 3. **Add more dotfiles**: Follow pattern in terminal.nix for new apps
 
 ### Long Term
-1. **Secrets management**: Add sops-nix or agenix
+1. **Secrets management**: Manually manage SSH keys and sensitive credentials
 2. **CI/CD**: Add GitHub Actions to test flake
 3. **Development shells**: Create per-project flake.nix files
 4. **Documentation**: Add your own notes and customizations
