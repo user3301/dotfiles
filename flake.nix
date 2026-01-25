@@ -12,12 +12,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # sops-nix - for secrets management
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # NixOS WSL - for WSL2 support
     nixos-wsl = {
       url = "github:nix-community/NixOS-WSL";
@@ -36,7 +30,6 @@
       self,
       nixpkgs,
       home-manager,
-      sops-nix,
       nixos-wsl,
       nix-darwin,
       ...

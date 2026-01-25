@@ -188,10 +188,10 @@ home-manager switch --rollback
 ## Advanced Features
 
 ### Secrets Management
-Consider adding:
-- sops-nix for encrypted secrets
-- agenix for age-encrypted secrets
-- Local overrides (`.zshenv.local` pattern)
+**Current approach**: Manual management for simplicity
+- Generate SSH keys manually on each machine: `ssh-keygen -t ed25519`
+- Keep sensitive credentials outside version control
+- Use local overrides (`.zshenv.local` pattern) for machine-specific secrets
 
 ### Development Shells
 Create project-specific environments:
