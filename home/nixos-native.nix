@@ -1,4 +1,7 @@
-{ config, pkgs, inputs, lib, ... }:
+{
+  pkgs,
+  ...
+}:
 
 {
   # Import common modules
@@ -19,6 +22,7 @@
 
   # Platform-specific packages for native NixOS
   home.packages = with pkgs; [
+    gnupg
     # GUI applications
     wezterm
     firefox

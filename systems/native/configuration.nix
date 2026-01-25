@@ -2,7 +2,7 @@
 
 {
   # Import hardware configuration (will be generated on the target machine)
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ ../hardware/hardware-vb.nix ];
 
   # Boot loader configuration
   boot.loader = {
