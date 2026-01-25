@@ -1,8 +1,11 @@
-{ config, pkgs, inputs, lib, ... }:
+{
+  pkgs,
+  ...
+}:
 
 {
   # Import hardware configuration (will be generated on the target machine)
-  # imports = [ ./hardware-configuration.nix ];
+  imports = [ ../hardware/hardware-vb.nix ];
 
   # Boot loader configuration
   boot.loader = {
@@ -24,12 +27,15 @@
   };
 
   # System configuration
-  system.stateVersion = "24.05"; # Update to match your NixOS version
+  system.stateVersion = "25.11"; # Update to match your NixOS version
 
   # Nix settings
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
     };
 
@@ -53,32 +59,28 @@
   # User configuration
   users.users.user3301 = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "video" "audio" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "video"
+      "audio"
+    ];
     shell = pkgs.zsh;
   };
 
   # Enable ZSH system-wide
   programs.zsh.enable = true;
 
-  # Sound configuration
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
-
   # X11 and desktop environment
   services.xserver = {
     enable = true;
+    windowManager.qtile.enable = true;
 
     # Display manager
     displayManager = {
       # Choose your display manager
       lightdm.enable = true;
+      defaultSession = "qtile";
       # Or use GDM:
       # gdm.enable = true;
     };
@@ -92,6 +94,11 @@
     # Keyboard layout
     xkb.layout = "us";
   };
+
+  # Fonts
+  fonts.packages = with pkgs; [
+    ubuntu-classic
+  ];
 
   # System packages (minimal, most packages go in Home Manager)
   environment.systemPackages = with pkgs; [

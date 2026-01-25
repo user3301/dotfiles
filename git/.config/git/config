@@ -10,9 +10,6 @@
 	editor = nvim
   excludesfile = ~/.config/git/.gitignore_global
 
-[commit]
-	gpgsign = true
-
 # machine-specific configuration will be configurated there
 # (eg: signkingkey)
 [include]
