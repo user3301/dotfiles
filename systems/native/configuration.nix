@@ -1,4 +1,7 @@
-{ config, pkgs, inputs, lib, ... }:
+{
+  pkgs,
+  ...
+}:
 
 {
   # Import hardware configuration (will be generated on the target machine)
@@ -29,7 +32,10 @@
   # Nix settings
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
     };
 
@@ -53,7 +59,12 @@
   # User configuration
   users.users.user3301 = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "video" "audio" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "video"
+      "audio"
+    ];
     shell = pkgs.zsh;
   };
 
@@ -83,6 +94,11 @@
     # Keyboard layout
     xkb.layout = "us";
   };
+
+  # Fonts
+  fonts.packages = with pkgs; [
+    ubuntu-classic
+  ];
 
   # System packages (minimal, most packages go in Home Manager)
   environment.systemPackages = with pkgs; [
