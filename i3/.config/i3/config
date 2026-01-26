@@ -5,9 +5,10 @@ set $mod Mod4
 # Font
 font pango:Ubuntu 10
 
-# Gaps for modern look
-gaps inner 8
+# Gaps for modern look (floating polybar style)
+gaps inner 10
 gaps outer 4
+gaps top 46
 smart_gaps on
 smart_borders on
 

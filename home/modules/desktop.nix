@@ -34,6 +34,7 @@
     xclip            # Clipboard
     dunst            # Notifications
     pavucontrol      # Audio control GUI
+    networkmanagerapplet  # Wifi tray applet
     xdotool          # X11 automation
     xorg.xrandr      # Display management
 

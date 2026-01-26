@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Rofi Config - Catppuccin Mocha Theme
+ * Rofi Config - Catppuccin Mocha Theme (FIRST_RICE Style)
  *******************************************************************************/
 
 configuration {
@@ -8,9 +8,9 @@ configuration {
     icon-theme: "Papirus-Dark";
     terminal: "wezterm";
     drun-display-format: "{name}";
-    display-drun: "Apps";
-    display-window: "Windows";
-    display-run: "Run";
+    display-drun: "󰀻 Apps";
+    display-window: "󰖯 Windows";
+    display-run: "󰆍 Run";
     font: "Ubuntu 11";
 }
 
@@ -53,22 +53,22 @@ configuration {
 
 window {
     location: center;
-    width: 500;
-    border-radius: 8px;
+    width: 550;
+    border-radius: 20px;
     background-color: @base;
     border: 2px solid;
     border-color: @blue;
 }
 
 mainbox {
-    padding: 12px;
+    padding: 20px;
 }
 
 inputbar {
     background-color: @surface0;
-    border-radius: 6px;
-    padding: 8px 12px;
-    spacing: 8px;
+    border-radius: 12px;
+    padding: 12px 16px;
+    spacing: 12px;
     children: [ prompt, entry ];
 }
 
@@ -82,27 +82,27 @@ entry {
 }
 
 message {
-    margin: 12px 0 0;
-    border-radius: 6px;
+    margin: 16px 0 0;
+    border-radius: 12px;
     background-color: @surface0;
 }
 
 textbox {
-    padding: 8px 12px;
+    padding: 12px 16px;
 }
 
 listview {
     lines: 8;
     columns: 1;
     fixed-height: false;
-    margin: 12px 0 0;
-    spacing: 4px;
+    margin: 16px 0 0;
+    spacing: 6px;
 }
 
 element {
-    padding: 8px 12px;
-    border-radius: 6px;
-    spacing: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    spacing: 10px;
 }
 
 element normal normal {
@@ -136,12 +136,29 @@ element selected active {
 }
 
 element-icon {
-    size: 24px;
+    size: 28px;
     vertical-align: 0.5;
 }
 
 element-text {
     vertical-align: 0.5;
+}
+
+mode-switcher {
+    margin: 16px 0 0;
+    spacing: 8px;
+}
+
+button {
+    padding: 8px 16px;
+    border-radius: 10px;
+    background-color: @surface0;
+    text-color: @text;
+}
+
+button selected {
+    background-color: @blue;
+    text-color: @base;
 }
 
 /* vim:ft=css */
