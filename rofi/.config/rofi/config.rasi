@@ -1,0 +1,147 @@
+/*******************************************************************************
+ * Rofi Config - Catppuccin Mocha Theme
+ *******************************************************************************/
+
+configuration {
+    modi: "drun,window,run";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    terminal: "wezterm";
+    drun-display-format: "{name}";
+    display-drun: "Apps";
+    display-window: "Windows";
+    display-run: "Run";
+    font: "Ubuntu 11";
+}
+
+* {
+    /* Catppuccin Mocha */
+    rosewater: #f5e0dc;
+    flamingo:  #f2cdcd;
+    pink:      #f5c2e7;
+    mauve:     #cba6f7;
+    red:       #f38ba8;
+    maroon:    #eba0ac;
+    peach:     #fab387;
+    yellow:    #f9e2af;
+    green:     #a6e3a1;
+    teal:      #94e2d5;
+    sky:       #89dceb;
+    sapphire:  #74c7ec;
+    blue:      #89b4fa;
+    lavender:  #b4befe;
+    text:      #cdd6f4;
+    subtext1:  #bac2de;
+    subtext0:  #a6adc8;
+    overlay2:  #9399b2;
+    overlay1:  #7f849c;
+    overlay0:  #6c7086;
+    surface2:  #585b70;
+    surface1:  #45475a;
+    surface0:  #313244;
+    base:      #1e1e2e;
+    mantle:    #181825;
+    crust:     #11111b;
+
+    /* Theme colors */
+    background-color: transparent;
+    text-color: @text;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    location: center;
+    width: 500;
+    border-radius: 8px;
+    background-color: @base;
+    border: 2px solid;
+    border-color: @blue;
+}
+
+mainbox {
+    padding: 12px;
+}
+
+inputbar {
+    background-color: @surface0;
+    border-radius: 6px;
+    padding: 8px 12px;
+    spacing: 8px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    text-color: @blue;
+}
+
+entry {
+    placeholder: "Search...";
+    placeholder-color: @overlay0;
+}
+
+message {
+    margin: 12px 0 0;
+    border-radius: 6px;
+    background-color: @surface0;
+}
+
+textbox {
+    padding: 8px 12px;
+}
+
+listview {
+    lines: 8;
+    columns: 1;
+    fixed-height: false;
+    margin: 12px 0 0;
+    spacing: 4px;
+}
+
+element {
+    padding: 8px 12px;
+    border-radius: 6px;
+    spacing: 8px;
+}
+
+element normal normal {
+    background-color: transparent;
+    text-color: @text;
+}
+
+element normal urgent {
+    background-color: @red;
+    text-color: @base;
+}
+
+element normal active {
+    background-color: @green;
+    text-color: @base;
+}
+
+element selected normal {
+    background-color: @surface1;
+    text-color: @text;
+}
+
+element selected urgent {
+    background-color: @red;
+    text-color: @base;
+}
+
+element selected active {
+    background-color: @green;
+    text-color: @base;
+}
+
+element-icon {
+    size: 24px;
+    vertical-align: 0.5;
+}
+
+element-text {
+    vertical-align: 0.5;
+}
+
+/* vim:ft=css */
