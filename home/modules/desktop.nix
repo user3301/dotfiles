@@ -24,9 +24,10 @@
   # Desktop packages
   home.packages = with pkgs; [
     # Window manager utilities
-    polybar
+    polybarFull
     picom
     rofi
+    rofi-power-menu
 
     # Utilities
     feh              # Wallpaper setter
