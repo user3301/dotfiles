@@ -57,6 +57,11 @@
   # Enable ZSH system-wide
   programs.zsh.enable = true;
 
+  # Enable nix-ld for VS Code Remote and other dynamically linked executables
+  programs.nix-ld = {
+    enable = true;
+  };
+
   # System packages (minimal, most packages go in Home Manager)
   environment.systemPackages = with pkgs; [
     neovim
