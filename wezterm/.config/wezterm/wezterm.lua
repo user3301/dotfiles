@@ -27,11 +27,11 @@ config.window_decorations = "INTEGRATED_BUTTONS"
 config.scrollback_lines = 5000
 
 config.font = wezterm.font_with_fallback({
-	{ family = "Ubuntu Mono" },
 	{ family = "JetBrains Mono" },
+	{ family = "Ubuntu Mono" },
 	{ family = "More Perfect DOS VGA" },
 })
-config.font_size = 16
+config.font_size = 15
 
 config.initial_rows = 40
 config.initial_cols = 120
