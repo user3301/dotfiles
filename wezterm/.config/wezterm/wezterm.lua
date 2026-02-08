@@ -6,21 +6,47 @@ local config = wezterm.config_builder()
 
 -- This is where you actually apply your config choices
 
--- For example, changing the color scheme:
-config.color_scheme = "Catppuccin Frappe"
+-- Function to get system appearance and set theme accordingly
+local function scheme_for_appearance(appearance)
+	if appearance:find("Dark") then
+		return "Catppuccin Frappe"
+	else
+		return "Catppuccin Latte"
+	end
+end
 
-config.window_background_gradient = {
-	orientation = "Vertical",
-	colors = {
-		"#232634", -- Catppuccin Frappe Crust
-		"#292c3c", -- Catppuccin Frappe Mantle
-		"#303446", -- Catppuccin Frappe Base
-	},
-	interpolation = "Linear",
-	blend = "Rgb",
-}
+-- Function to get background gradient based on appearance
+local function gradient_for_appearance(appearance)
+	if appearance:find("Dark") then
+		return {
+			orientation = "Vertical",
+			colors = {
+				"#232634", -- Catppuccin Frappe Crust
+				"#292c3c", -- Catppuccin Frappe Mantle
+				"#303446", -- Catppuccin Frappe Base
+			},
+			interpolation = "Linear",
+			blend = "Rgb",
+		}
+	else
+		return {
+			orientation = "Vertical",
+			colors = {
+				"#dce0e8", -- Catppuccin Latte Crust
+				"#e6e9ef", -- Catppuccin Latte Mantle
+				"#eff1f5", -- Catppuccin Latte Base
+			},
+			interpolation = "Linear",
+			blend = "Rgb",
+		}
+	end
+end
 
-config.window_background_opacity = 0.96
+-- Automatically switch theme based on system appearance
+config.color_scheme = scheme_for_appearance(wezterm.gui.get_appearance())
+config.window_background_gradient = gradient_for_appearance(wezterm.gui.get_appearance())
+
+config.window_background_opacity = 1
 
 config.window_decorations = "INTEGRATED_BUTTONS"
 
