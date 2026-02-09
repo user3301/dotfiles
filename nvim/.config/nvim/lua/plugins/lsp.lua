@@ -68,37 +68,7 @@ return {
               end
             end
           end,
-          on_attach = function(_, bufnr)
-            -- Auto-import missing imports and format on save
-            vim.api.nvim_create_autocmd("BufWritePre", {
-              buffer = bufnr,
-              callback = function()
-                local root_dir = vim.fn.getcwd()
-                local venv_paths = { "venv", ".venv", ".virtualenv" }
-                local autoimport_cmd = nil
-
-                -- Find autoimport in virtualenv
-                for _, venv in ipairs(venv_paths) do
-                  local venv_autoimport = root_dir .. "/" .. venv .. "/bin/autoimport"
-                  if vim.fn.executable(venv_autoimport) == 1 then
-                    autoimport_cmd = venv_autoimport
-                    break
-                  end
-                end
-
-                -- Run autoimport if available
-                if autoimport_cmd then
-                  local filename = vim.api.nvim_buf_get_name(bufnr)
-                  vim.fn.system(autoimport_cmd .. " " .. vim.fn.shellescape(filename))
-                  -- Reload the buffer to see changes
-                  vim.cmd("edit!")
-                end
-
-                -- Then format with ruff
-                vim.lsp.buf.format({ async = false })
-              end,
-            })
-          end,
+          -- Auto-format on save disabled - use <leader>cf to format manually
           settings = {
             pylsp = {
               plugins = {
