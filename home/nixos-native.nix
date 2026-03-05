@@ -14,6 +14,7 @@
     ./modules/terminal.nix
     ./modules/editors.nix
     ./modules/languages.nix
+    ./modules/desktop.nix
   ];
 
   # User information
