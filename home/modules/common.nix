@@ -9,9 +9,6 @@
   # XDG Base Directory specification
   xdg.enable = true;
 
-  # Allow unfree packages(eg: Claude-code, Copilot)
-  nixpkgs.config.allowUnfree = true;
-
   # Session variables
   home.sessionVariables = {
     EDITOR = "nvim";
