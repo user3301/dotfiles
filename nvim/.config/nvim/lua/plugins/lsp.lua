@@ -30,6 +30,27 @@ return {
         },
         pyright = {
           mason = not is_nixos,
+          before_init = function(_, config)
+            local venv_paths = { "venv", ".venv", ".virtualenv" }
+            for _, venv in ipairs(venv_paths) do
+              local python = (config.root_dir or "") .. "/" .. venv .. "/bin/python"
+              if vim.fn.executable(python) == 1 then
+                config.settings = config.settings or {}
+                config.settings.python = config.settings.python or {}
+                config.settings.python.pythonPath = python
+                break
+              end
+            end
+          end,
+          settings = {
+            python = {
+              analysis = {
+                autoImportCompletions = true,
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+              },
+            },
+          },
         },
         rust_analyzer = {
           mason = not is_nixos,
