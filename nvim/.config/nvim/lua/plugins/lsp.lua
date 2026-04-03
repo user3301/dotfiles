@@ -11,7 +11,9 @@ return {
           mason = not is_nixos,
         },
         nil_ls = {
-          mason = not is_nixos,
+          -- Mason installs `nil` via cargo; since cargo is not available on macOS,
+          -- disable mason management and install nil manually (e.g. `brew install nil`).
+          mason = false,
         },
         ts_ls = {
           mason = not is_nixos,
