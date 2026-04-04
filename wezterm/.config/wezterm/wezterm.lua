@@ -31,8 +31,10 @@ config.font = wezterm.font_with_fallback({
 })
 config.font_size = 15
 
-config.initial_rows = 40
-config.initial_cols = 120
+wezterm.on("gui-startup", function(cmd)
+	local _, _, window = wezterm.mux.spawn_window(cmd or {})
+	window:gui_window():maximize()
+end)
 
 -- Enable image protocols
 config.enable_kitty_graphics = true
