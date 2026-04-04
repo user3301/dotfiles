@@ -26,6 +26,6 @@
     nix-tree
 
     # AI
-    pkgs.claude-code
+    claude-code
   ];
 }

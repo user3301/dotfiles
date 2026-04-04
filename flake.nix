@@ -4,7 +4,10 @@
   inputs = {
     # Nixpkgs - use unstable for latest packages
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    claude-code.url = "git+https://codeberg.org/MachsteNix/claude-code-nix";
+    claude-code-nix = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Home Manager - for user-level configuration
     home-manager = {
@@ -35,6 +38,8 @@
       ...
     }@inputs:
     let
+      claudeOverlay = inputs.claude-code-nix.overlays.default;
+
       # Helper function to generate system configurations
       mkSystem =
         {
@@ -44,7 +49,9 @@
         }:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          modules = modules;
+          modules = modules ++ [
+            { nixpkgs.overlays = [ claudeOverlay ]; }
+          ];
           specialArgs = specialArgs // {
             inherit inputs;
           };
@@ -61,6 +68,7 @@
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfree = true;
+            overlays = [ claudeOverlay ];
           };
           modules = modules;
           extraSpecialArgs = { inherit inputs; };
