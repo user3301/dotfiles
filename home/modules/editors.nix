@@ -10,7 +10,7 @@
       # LSP servers
       lua-language-server
       nil
-      nodePackages.typescript-language-server
+      typescript-language-server
       pyright
       rust-analyzer
       gopls
@@ -18,7 +18,7 @@
       # Formatters
       stylua
       nixpkgs-fmt
-      nodePackages.prettier
+      prettier
       black
       rustfmt
     ];

@@ -8,8 +8,8 @@
     # LSP servers
     lua-language-server
     nil # Nix LSP
-    nodePackages.typescript-language-server
-    nodePackages.vscode-langservers-extracted # HTML, CSS, JSON, ESLint
+    typescript-language-server
+    vscode-langservers-extracted # HTML, CSS, JSON, ESLint
     pyright
     rust-analyzer
     gopls
@@ -17,7 +17,7 @@
     # Formatters
     stylua
     nixpkgs-fmt
-    nodePackages.prettier
+    prettier
     black
     rustfmt
 
