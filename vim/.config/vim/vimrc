@@ -1,0 +1,50 @@
+" ============================================================
+" General
+" ============================================================
+set nocompatible              " disable Vi compatibility mode
+filetype plugin indent on     " enable filetype detection, plugins, and indentation
+syntax on                     " enable syntax highlighting
+
+" ============================================================
+" UI
+" ============================================================
+set number relativenumber     " show absolute line number on cursor line, relative elsewhere
+set signcolumn=yes            " always show sign column (prevents layout shift)
+set cursorline                " highlight the line the cursor is on
+set scrolloff=8               " keep 8 lines visible above/below cursor when scrolling
+set wildmenu                  " show completion menu in command mode
+set wildmode=longest:full,full " complete longest common match first, then cycle
+set showmatch                 " briefly jump to matching bracket when inserting one
+set laststatus=2              " always show the status line
+
+" ============================================================
+" Editing
+" ============================================================
+set tabstop=4                 " a tab character displays as 4 spaces wide
+set shiftwidth=4              " indent/dedent by 4 spaces with >> and <<
+set expandtab                 " insert spaces instead of tab characters
+set smartindent               " automatically indent new lines based on context
+set backspace=indent,eol,start " allow backspace over indentation, line breaks, and insert start
+
+" ============================================================
+" Search
+" ============================================================
+set hlsearch                  " highlight all matches for the last search
+set incsearch                 " show matches incrementally as you type
+set ignorecase                " case-insensitive search by default
+set smartcase                 " override ignorecase when pattern contains uppercase
+
+" ============================================================
+" Clipboard & mouse
+" ============================================================
+set clipboard=unnamed         " use the system clipboard for yank/paste
+set mouse=a                   " enable mouse support in all modes
+
+" ============================================================
+" Files
+" ============================================================
+set autoread                  " reload file if it changes on disk outside Vim
+set hidden                    " allow switching buffers without saving
+set noswapfile                " disable swap files
+set nobackup                  " disable backup files
+
