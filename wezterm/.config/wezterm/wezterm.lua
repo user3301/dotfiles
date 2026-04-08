@@ -22,6 +22,9 @@ config.window_background_opacity = 1
 
 config.window_decorations = "INTEGRATED_BUTTONS"
 
+-- Disable Wayland on WSL2 to avoid cursor theme errors from WSLg
+config.enable_wayland = false
+
 config.scrollback_lines = 5000
 
 config.font = wezterm.font_with_fallback({

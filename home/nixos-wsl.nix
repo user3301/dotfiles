@@ -21,6 +21,7 @@
   home.packages = with pkgs; [
     # WSL-specific tools
     gnupg
+    wezterm
   ];
 
   # WSL-specific session variables
