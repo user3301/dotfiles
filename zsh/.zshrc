@@ -14,9 +14,6 @@ ENVFILE="$HOME/.zshenv"
 
 command -v mcfly &> /dev/null && eval "$(mcfly init zsh)"
 
-command -v atuin &> /dev/null && . "$HOME/.atuin/bin/env"
-command -v atuin &> /dev/null && eval "$(atuin init zsh)"
-
 # Open buffer line in editor
 autoload -Uz edit-command-line
 zle -N edit-command-line
