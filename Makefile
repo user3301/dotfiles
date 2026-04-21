@@ -73,9 +73,9 @@ update-home-manager:
 		fi \
 	else \
 		if [ "$$(uname -m)" = "x86_64" ]; then \
-			home-manager switch --flake .#$$USER-x86_64-linux; \
+			nix run home-manager/master -- switch --flake .#$$USER-x86_64-linux; \
 		else \
-			home-manager switch --flake .#$$USER-aarch64-linux; \
+			nix run home-manager/master -- switch --flake .#$$USER-aarch64-linux; \
 		fi \
 	fi
 
@@ -144,7 +144,7 @@ switch:
 .PHONY: home-switch
 home-switch:
 	@echo "Rebuilding home-manager configuration..."
-	home-manager switch --flake .#nixos-wsl
+	nix run home-manager/master -- switch --flake .#nixos-wsl
 
 .PHONY: build
 build:
@@ -168,7 +168,7 @@ generations:
 .PHONY: home-generations
 home-generations:
 	@echo "Home-manager generations:"
-	home-manager generations
+	nix run home-manager/master -- generations
 
 .PHONY: gc
 gc:
@@ -182,7 +182,7 @@ clean:
 	@echo "Deleting system generations older than 7 days..."
 	sudo nix-collect-garbage --delete-older-than 7d
 	@echo "Deleting home-manager generations older than 7 days..."
-	home-manager expire-generations "-7 days"
+	nix run home-manager/master -- expire-generations "-7 days"
 	@echo "✅ Deep clean complete!"
 
 # Secrets Management
