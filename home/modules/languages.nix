@@ -8,6 +8,9 @@
     go
     pkgs.golangci-lint
 
+    # C#
+    dotnet-sdk_10
+
     # Protobuf
     protobuf_33
     protoc-gen-go-grpc
