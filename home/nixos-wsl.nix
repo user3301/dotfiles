@@ -20,24 +20,12 @@
   # Platform-specific packages for WSL2
   home.packages = with pkgs; [
     # WSL-specific tools
-    gnupg
     wezterm
   ];
 
   # WSL-specific session variables
   home.sessionVariables = {
     # Add any WSL-specific environment variables
-  };
-
-  # GPG configuration
-  programs.gpg = {
-    enable = true;
-  };
-
-  services.gpg-agent = {
-    enable = true;
-    enableSshSupport = true;
-    pinentry.package = pkgs.pinentry-curses;
   };
 
   # Home Manager state version
