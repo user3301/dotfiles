@@ -8,6 +8,14 @@
     lazygit
   ];
 
+  # GPG
+  programs.gpg.enable = true;
+
+  services.gpg-agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-curses;
+  };
+
   # Git configuration via XDG config symlink
   # This allows sharing the same config with macOS via GNU Stow
   # Symlinks entire git config directory to include config.local and other files
