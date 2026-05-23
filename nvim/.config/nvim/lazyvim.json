@@ -3,6 +3,7 @@
     "lazyvim.plugins.extras.ai.copilot-chat",
     "lazyvim.plugins.extras.coding.mini-surround",
     "lazyvim.plugins.extras.dap.core",
+    "lazyvim.plugins.extras.lang.dotnet",
     "lazyvim.plugins.extras.lang.go",
     "lazyvim.plugins.extras.lang.python",
     "lazyvim.plugins.extras.test.core"
