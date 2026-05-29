@@ -322,6 +322,22 @@ Home Manager won't overwrite existing files. Either:
 
 ### WSL2 specific issues
 
+**Crate download failures on corporate/restricted networks:**
+
+On a fresh NixOS-WSL install, `nixos-wsl-utils` must be compiled from source,
+which requires downloading Rust crates from `static.crates.io`. Corporate
+firewalls often block this. Use the nix-community binary cache for the first
+rebuild to pull a pre-built binary instead:
+
+```bash
+sudo nixos-rebuild switch --flake .#nixos-wsl \
+  --option extra-substituters "https://nix-community.cachix.org" \
+  --option extra-trusted-public-keys "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCUSDs8="
+```
+
+This flag is only needed once — after the first successful switch the binary is
+cached in the local Nix store and subsequent rebuilds do not need it.
+
 **Permission denied on /etc/nixos:**
 ```bash
 sudo mkdir -p /etc/nixos
