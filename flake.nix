@@ -97,6 +97,9 @@
             # System configuration
             ./systems/wsl/configuration.nix
 
+            # Fix: override nixos-wsl-utils to avoid flaky 2.2.2 crate download
+            ./systems/wsl/fix-nixos-wsl-utils.nix
+
             # Home Manager integration
             home-manager.nixosModules.home-manager
             {
