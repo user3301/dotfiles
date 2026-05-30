@@ -9,6 +9,21 @@ plugins=(git z colored-man-pages asdf vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
+# Vi-mode cursor: block for normal mode, beam for insert mode
+function zle-keymap-select {
+  if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
+    echo -ne '\e[2 q'
+  elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] || [[ $1 = 'beam' ]]; then
+    echo -ne '\e[6 q'
+  fi
+}
+zle -N zle-keymap-select
+
+function zle-line-init {
+  echo -ne '\e[6 q'
+}
+zle -N zle-line-init
+
 ENVFILE="$HOME/.zshenv"
 [[ -s $ENVFILE ]] && source "$ENVFILE"
 
