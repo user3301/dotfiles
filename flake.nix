@@ -2,8 +2,8 @@
   description = "user3301's' dotfiles for NixOS, NixOS WSL2, and Archlinux";
 
   inputs = {
-    # Nixpkgs - use unstable for latest packages
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Nixpkgs - stable release
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -11,7 +11,7 @@
 
     # Home Manager - for user-level configuration
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
