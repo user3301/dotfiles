@@ -21,6 +21,7 @@
   home.packages = with pkgs; [
     # WSL-specific tools
     wezterm
+    powershell
   ];
 
   # WSL-specific session variables
