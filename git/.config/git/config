@@ -10,8 +10,11 @@
 	editor = nvim
   excludesfile = ~/.config/git/.gitignore_global
 
-# machine-specific configuration will be configurated there
-# (eg: signkingkey)
+[commit]
+	gpgsign = true
+
+[gpg]
+	format = ssh
+
 [include]
 	path = ~/.config/git/config.local
-
