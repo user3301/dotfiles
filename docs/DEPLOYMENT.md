@@ -72,11 +72,14 @@ nix-shell -p git
 git clone https://github.com/user3301/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# Deploy the configuration (git will be permanently installed after this)
-sudo nixos-rebuild switch --flake .#nixos-wsl  # or .#nixos-native
+# Link the NixOS configuration and build
+make setup-wsl-nixos  # for WSL2 (stages config for next boot)
 
 # Exit the temporary shell
 exit
+
+# Then restart WSL (in PowerShell): wsl --shutdown
+# Reopen NixOS and run: cd ~/dotfiles && make switch
 
 # Now git is permanently installed as part of your system!
 ```
@@ -88,8 +91,11 @@ exit
 nix run nixpkgs#git -- clone https://github.com/user3301/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# Deploy the configuration
-sudo nixos-rebuild switch --flake .#nixos-wsl  # or .#nixos-native
+# Link the NixOS configuration and build
+make setup-wsl-nixos  # for WSL2 (stages config for next boot)
+
+# Then restart WSL (in PowerShell): wsl --shutdown
+# Reopen NixOS and run: cd ~/dotfiles && make switch
 ```
 
 **After the first deployment**, git is permanently installed as part of `environment.systemPackages`, so you can use it normally for updates:
@@ -97,7 +103,7 @@ sudo nixos-rebuild switch --flake .#nixos-wsl  # or .#nixos-native
 ```bash
 cd ~/dotfiles
 git pull
-sudo nixos-rebuild switch --flake .#nixos-wsl
+make switch
 ```
 
 ---
@@ -116,24 +122,41 @@ nix-shell -p git
 git clone https://github.com/user3301/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# Step 3: Deploy the system configuration
-sudo nixos-rebuild switch --flake .#nixos-wsl
+# Step 3: Link config, build, and stage the system for next boot
+make setup-wsl-nixos
 
-# Step 4: Exit temporary shell
+# Step 4: Exit temporary shell and restart WSL
 exit
-
-# The system will have:
-# - Configured WSL2 settings
-# - Created user 'user3301'
-# - Installed Home Manager packages
-# - Symlinked all dotfiles
-# - Permanently installed git and other system packages
 ```
+
+Then in **PowerShell / Windows Terminal**:
+```powershell
+wsl --shutdown
+```
+
+Reopen your NixOS WSL2 distro:
+```bash
+# Step 5: Verify the configuration is active
+cd ~/dotfiles
+make switch
+```
+
+> **Why `boot` then restart?** NixOS 25.05+ changed the default D-Bus
+> implementation from `dbus` to `dbus-broker`. A live `switch` on a fresh
+> install triggers a switch inhibitor for this critical component change.
+> Using `boot` stages the config cleanly, and the WSL restart activates it.
+
+The system will have:
+- Configured WSL2 settings
+- Created user `user3301`
+- Installed Home Manager packages
+- Symlinked all dotfiles
+- Permanently installed git and other system packages
 
 **Subsequent updates:**
 ```bash
 cd ~/dotfiles
-sudo nixos-rebuild switch --flake .#nixos-wsl
+make switch
 ```
 
 **Important Notes for WSL2:**

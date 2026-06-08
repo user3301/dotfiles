@@ -125,8 +125,16 @@ setup-wsl-nixos:
 	echo "Creating symbolic link to $$DOTFILES_DIR/systems/wsl/configuration.nix"; \
 	sudo ln -sf $$DOTFILES_DIR/systems/wsl/configuration.nix /etc/nixos/configuration.nix; \
 	echo ""; \
-	echo "✅ NixOS configuration linked!"; \
-	echo "Run 'sudo nixos-rebuild switch' to apply the configuration."
+	echo "Building NixOS configuration (staging for next boot)..."; \
+	sudo nixos-rebuild boot --flake .#nixos-wsl; \
+	echo ""; \
+	echo "✅ NixOS configuration built and staged!"; \
+	echo ""; \
+	echo "Next steps:"; \
+	echo "  1. Close this terminal"; \
+	echo "  2. Run 'wsl --shutdown' in PowerShell"; \
+	echo "  3. Reopen your NixOS WSL2 distro"; \
+	echo "  4. Run 'cd ~/dotfiles && make switch' to verify"
 
 # NixOS WSL2 specific targets
 .PHONY: switch
