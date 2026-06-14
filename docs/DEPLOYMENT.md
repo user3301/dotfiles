@@ -17,8 +17,7 @@ dotfiles/
 │   │   ├── shell.nix         # Shell configuration
 │   │   ├── dev-tools.nix     # Development tools
 │   │   ├── neovim.nix        # Neovim configuration
-│   │   ├── terminal.nix      # Terminal multiplexers & emulators
-│   │   └── editors.nix       # Other editors (helix)
+│   │   └── terminal.nix      # Terminal multiplexers & emulators
 │   ├── nixos-wsl.nix         # WSL2-specific home config
 │   ├── nixos-native.nix      # Native NixOS home config
 │   ├── archlinux.nix         # Archlinux home config

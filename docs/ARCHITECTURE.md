@@ -45,7 +45,6 @@ This dotfiles repository is designed with the following principles:
                 │ • dev-tools.nix       │
                 │ • neovim.nix          │
                 │ • terminal.nix        │
-                │ • editors.nix         │
                 └───────────────────────┘
                             │
                             ▼
@@ -146,11 +145,6 @@ This dotfiles repository is designed with the following principles:
    - Wezterm configuration
    - Yazi file manager
    - Symlinks to existing configs
-
-6. **editors.nix**: Other editors
-   - Helix configuration
-   - LSP servers for Helix
-   - Symlinks to existing config
 
 **Design Pattern**: Each module is self-contained and can be independently enabled/disabled by commenting out the import.
 
@@ -288,13 +282,9 @@ common.nix (base, required)
     │       │
     │       └── Symlinks existing nvim config
     │
-    ├── terminal.nix (standalone)
-    │       │
-    │       └── Symlinks existing terminal configs
-    │
-    └── editors.nix (depends on dev-tools for LSPs)
+    └── terminal.nix (standalone)
             │
-            └── Symlinks existing helix config
+            └── Symlinks existing terminal configs
 ```
 
 ### Avoiding Circular Dependencies
@@ -302,7 +292,7 @@ common.nix (base, required)
 - **common.nix** has no dependencies
 - **shell.nix** only reads from common
 - Other modules can depend on common and dev-tools
-- No module depends on terminal or editors (they're leaf nodes)
+- No module depends on terminal (it's a leaf node)
 
 ### Override Mechanism
 
@@ -313,7 +303,7 @@ Platform-specific configs can override any module setting:
 imports = [ ./modules/common.nix ];
 
 # Override a setting from common.nix
-home.sessionVariables.EDITOR = "helix";  # Override from "nvim"
+home.sessionVariables.EDITOR = "vim";  # Override from "nvim"
 ```
 
 ## Extension Points

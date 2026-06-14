@@ -61,8 +61,7 @@ home/modules/
 ├── shell.nix                      # Zsh with plugins
 ├── dev-tools.nix                  # Development packages and tools
 ├── neovim.nix                     # Neovim with LSPs and formatters
-├── terminal.nix                   # Zellij, Wezterm, Yazi
-└── editors.nix                    # Helix editor
+└── terminal.nix                   # Zellij, Wezterm, Yazi
 ```
 
 **Module Responsibilities**:
@@ -74,7 +73,6 @@ home/modules/
 | dev-tools.nix | Dev tools | git, gh, lazygit, ripgrep, fd, bat, fzf, nil |
 | neovim.nix | Neovim setup | LSPs (lua, nix, ts, python, rust, go), formatters |
 | terminal.nix | Terminal apps | Zellij, Wezterm, Yazi |
-| editors.nix | Other editors | Helix with LSPs |
 
 ### Documentation
 
@@ -124,7 +122,6 @@ Your existing dotfiles are **symlinked**, not copied:
 ~/dotfiles/zellij/.config/zellij → ~/.config/zellij
 ~/dotfiles/wezterm/.config/wezterm → ~/.config/wezterm
 ~/dotfiles/yazi/.config/yazi → ~/.config/yazi
-~/dotfiles/helix/.config/helix → ~/.config/helix
 ```
 
 **Why symlinks?**
@@ -172,13 +169,9 @@ common.nix (no dependencies)
     │       │
     │       └── Symlinks existing nvim config
     │
-    ├── terminal.nix (standalone)
-    │       │
-    │       └── Symlinks existing terminal configs
-    │
-    └── editors.nix (uses dev-tools packages)
+    └── terminal.nix (standalone)
             │
-            └── Symlinks existing helix config
+            └── Symlinks existing terminal configs
 ```
 
 ## Key Design Decisions
@@ -325,7 +318,7 @@ imports = [
 imports = [ ./modules/common.nix ];
 
 # Override from common
-home.sessionVariables.EDITOR = "helix";  # Instead of nvim
+home.sessionVariables.EDITOR = "vim";  # Instead of nvim
 ```
 
 ### Conditional Packages

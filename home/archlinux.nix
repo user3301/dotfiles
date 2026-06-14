@@ -9,7 +9,6 @@
     ./modules/git.nix
     ./modules/neovim.nix
     ./modules/terminal.nix
-    ./modules/editors.nix
     ./modules/languages.nix
   ];
 
