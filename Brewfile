@@ -1,3 +1,4 @@
+brew 'git-delta'
 cask 'wezterm'
 cask 'visual-studio-code@insiders'
 cask 'zed'
