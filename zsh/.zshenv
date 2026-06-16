@@ -12,5 +12,11 @@ export GPG_TTY=$(tty)
 # General aliases
 alias v="nvim"
 
+# eza as default lister (overrides oh-my-zsh's ls/ll/la aliases)
+alias ls='eza --group-directories-first --icons=auto'
+alias ll='eza -l  --group-directories-first --icons=auto --git'
+alias la='eza -la --group-directories-first --icons=auto --git'
+alias lt='eza --tree --level=2 --icons=auto'
+
 # Load local-specific configuration if it exists
 [[ -f "$HOME/dotfiles/zsh/.zshenv.local" ]] && source "$HOME/dotfiles/zsh/.zshenv.local"
