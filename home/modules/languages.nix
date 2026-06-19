@@ -8,8 +8,8 @@
     go
     pkgs.golangci-lint
 
-    # C#
-    dotnet-sdk_10
+    # C# (.NET SDK 8.0.421)
+    dotnet-sdk_8
 
     # Protobuf
     protobuf_33
