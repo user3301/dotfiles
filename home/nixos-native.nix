@@ -12,6 +12,7 @@
     ./modules/git.nix
     ./modules/neovim.nix
     ./modules/terminal.nix
+    ./modules/wezterm.nix
     ./modules/languages.nix
   ];
 

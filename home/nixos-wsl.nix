@@ -19,7 +19,6 @@
   # Platform-specific packages for WSL2
   home.packages = with pkgs; [
     # WSL-specific tools
-    wezterm
     powershell
   ];
 
