@@ -20,4 +20,8 @@
 
   xdg.configFile."yazi".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/yazi/.config/yazi";
+
+  # Fastfetch system info (package managed in dev-tools.nix)
+  xdg.configFile."fastfetch".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/fastfetch/.config/fastfetch";
 }
