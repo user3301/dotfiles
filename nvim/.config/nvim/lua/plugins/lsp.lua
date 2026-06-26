@@ -79,6 +79,9 @@ return {
             },
           },
         },
+        -- Disable omnisharp from the lang.dotnet extra; we use roslyn.nvim instead
+        -- (omnisharp doesn't surface IDExxxx code-style diagnostics reliably).
+        omnisharp = { enabled = false },
         pylsp = {
           -- Dynamically find pylsp in virtualenv
           on_new_config = function(config, root_dir)

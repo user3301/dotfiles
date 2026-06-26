@@ -13,7 +13,7 @@
     pyright
     rust-analyzer
     gopls
-    omnisharp-roslyn # C# LSP (used by LazyVim dotnet extra)
+    roslyn-ls # C# LSP (Microsoft.CodeAnalysis.LanguageServer, driven by roslyn.nvim)
 
     # Formatters
     stylua
@@ -27,6 +27,7 @@
     fd
     tree-sitter
     gcc # for treesitter compilation
+    fswatch # backend for Neovim LSP file watching (used by roslyn.nvim)
   ];
 
   # Symlink your existing nvim config
