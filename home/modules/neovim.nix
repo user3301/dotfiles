@@ -13,6 +13,7 @@
     pyright
     rust-analyzer
     gopls
+    omnisharp-roslyn # C# LSP (used by LazyVim dotnet extra)
 
     # Formatters
     stylua
