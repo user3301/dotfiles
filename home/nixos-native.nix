@@ -14,6 +14,7 @@
     ./modules/terminal.nix
     ./modules/wezterm.nix
     ./modules/languages.nix
+    ./modules/desktop.nix
   ];
 
   # User information
