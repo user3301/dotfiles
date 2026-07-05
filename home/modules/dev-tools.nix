@@ -29,5 +29,8 @@
     # AI
     claude-code
     github-copilot-cli
+
+    # Dev containers
+    devcontainer
   ];
 }
