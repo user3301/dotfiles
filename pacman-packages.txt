@@ -1,0 +1,9 @@
+sudo
+which
+git
+openssh
+xclip
+stow
+zsh
+eza
+lazygit
