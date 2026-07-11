@@ -1,0 +1,3 @@
+# Herdr configuration (https://herdr.dev/docs/configuration)
+# First launch runs an onboarding flow that writes settings into this file.
+# Reload without restarting: herdr server reload-config
