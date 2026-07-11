@@ -3,3 +3,5 @@
 .DS_Store
 
 .tool-versions
+
+**/.claude/settings.local.json

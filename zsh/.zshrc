@@ -43,8 +43,6 @@ function y() {
 	rm -f -- "$tmp"
 }
 
-eval "$(zellij setup --generate-auto-start zsh)"
-
 # Run fastfetch when on every interactive terminal and NOT ssh into a machine
 # if [[ $- == *i* ]] && [[ -z "$SSH_CONNECTION" ]]; then
 #     fastfetch
