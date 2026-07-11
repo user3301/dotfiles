@@ -9,6 +9,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Herdr - terminal agent multiplexer (https://herdr.dev)
+    herdr = {
+      url = "github:ogulcancelik/herdr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Home Manager - for user-level configuration
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";

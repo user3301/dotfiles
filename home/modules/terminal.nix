@@ -1,4 +1,9 @@
-{ config, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
   # Zellij terminal multiplexer
@@ -6,6 +11,15 @@
     enable = true;
     # Settings managed via existing config file
   };
+
+  # Herdr terminal agent multiplexer (https://herdr.dev)
+  home.packages = [
+    inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
+  ];
+
+  # Symlink herdr config so herdr's own writes (onboarding, settings) land in the repo
+  xdg.configFile."herdr".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/herdr/.config/herdr";
 
   # Symlink existing zellij config
   xdg.configFile."zellij".source =

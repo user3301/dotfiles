@@ -2,6 +2,11 @@
 .zshenv.local
 git/.config/git/config.local
 
+# Herdr runtime state (written into the symlinked config dir; only config.toml is tracked)
+herdr/.config/herdr/*.log
+herdr/.config/herdr/session.json
+herdr/.config/herdr/*.sock
+
 # Nix
 result
 result-*
