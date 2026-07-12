@@ -1,6 +1,11 @@
+onboarding = false
 # Herdr configuration (https://herdr.dev/docs/configuration)
 # First launch runs an onboarding flow that writes settings into this file.
 # Reload without restarting: herdr server reload-config
 
 [ui]
 agent_panel_sort = "spaces"
+
+[theme]
+name = "dracula"
+auto_switch = false
