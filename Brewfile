@@ -1,5 +1,4 @@
 brew 'git-delta'
+brew 'herdr'
 cask 'wezterm'
-cask 'visual-studio-code@insiders'
-cask 'zed'
 cask 'nikitabobko/tap/aerospace'
