@@ -44,7 +44,7 @@ function y() {
 }
 
 # Auto-start herdr (launches or attaches to the persistent session)
-if [[ $- == *i* ]] && [[ -z "$HERDR_ENV" ]] && command -v herdr &> /dev/null; then
+if [[ $- == *i* ]] && [[ "$TERM_PROGRAM" != vscode ]] && [[ -z "$HERDR_ENV" ]] && command -v herdr &> /dev/null; then
 	herdr
 fi
 
