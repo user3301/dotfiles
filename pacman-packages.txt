@@ -7,4 +7,6 @@ stow
 zsh
 eza
 lazygit
-herdr
+fd
+base-devel
+ripgrep
