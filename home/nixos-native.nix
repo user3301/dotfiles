@@ -16,19 +16,21 @@
     ./modules/languages.nix
   ];
 
-  # User information
-  home.username = "user3301";
-  home.homeDirectory = "/home/user3301";
+  home = {
+    # User information
+    username = "user3301";
+    homeDirectory = "/home/user3301";
 
-  # Platform-specific packages for native NixOS
-  home.packages = with pkgs; [
-    gnupg
-    # GUI applications
-    wezterm
-    firefox
-    # Add more GUI apps as needed
-  ];
+    # Platform-specific packages for native NixOS
+    packages = with pkgs; [
+      gnupg
+      # GUI applications
+      wezterm
+      firefox
+      # Add more GUI apps as needed
+    ];
 
-  # Home Manager state version
-  home.stateVersion = "25.11";
+    # Home Manager state version
+    stateVersion = "25.11";
+  };
 }

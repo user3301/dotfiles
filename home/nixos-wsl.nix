@@ -12,21 +12,23 @@
     ./modules/languages.nix
   ];
 
-  # User information
-  home.username = "user3301";
-  home.homeDirectory = "/home/user3301";
+  home = {
+    # User information
+    username = "user3301";
+    homeDirectory = "/home/user3301";
 
-  # Platform-specific packages for WSL2
-  home.packages = with pkgs; [
-    # WSL-specific tools
-    powershell
-  ];
+    # Platform-specific packages for WSL2
+    packages = with pkgs; [
+      # WSL-specific tools
+      powershell
+    ];
 
-  # WSL-specific session variables
-  home.sessionVariables = {
-    # Add any WSL-specific environment variables
+    # WSL-specific session variables
+    sessionVariables = {
+      # Add any WSL-specific environment variables
+    };
+
+    # Home Manager state version
+    stateVersion = "25.05";
   };
-
-  # Home Manager state version
-  home.stateVersion = "25.05";
 }

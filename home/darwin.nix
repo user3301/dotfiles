@@ -1,4 +1,8 @@
-{ config, pkgs, inputs, lib, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 
 {
   # Import common modules
@@ -13,20 +17,23 @@
     ./modules/languages.nix
   ];
 
-  # User information
-  home.username = "gaiz";
-  home.homeDirectory = "/Users/gaiz";
+  home = {
+    # User information
+    username = "gaiz";
+    homeDirectory = "/Users/gaiz";
 
-  # macOS-specific packages
-  home.packages = with pkgs; [
-    # macOS-specific tools
-    # Note: GUI apps installed via Homebrew (see Brewfile)
-  ];
+    # macOS-specific packages
+    packages = with pkgs; [
+      # macOS-specific tools
+      # Note: GUI apps installed via Homebrew (see Brewfile)
+    ];
+
+    # Home Manager state version
+    stateVersion = "24.05";
+  };
 
   # Aerospace window manager config
-  xdg.configFile."aerospace".source = config.lib.file.mkOutOfStoreSymlink
-    "${config.home.homeDirectory}/dotfiles/aerospace/.config/aerospace";
+  xdg.configFile."aerospace".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/aerospace/.config/aerospace";
 
-  # Home Manager state version
-  home.stateVersion = "24.05";
 }

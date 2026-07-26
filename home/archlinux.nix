@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, lib, ... }:
+{ pkgs, ... }:
 
 {
   # Import common modules
@@ -13,26 +13,28 @@
     ./modules/languages.nix
   ];
 
-  # User information - IMPORTANT: Change these before deployment
-  home.username = "user3301";
-  home.homeDirectory = "/home/user3301";
-
   # Archlinux-specific configuration
   # Since this is standalone Home Manager (not NixOS), we need to be careful
   # about what services and features we enable
 
-  # Additional packages for Archlinux
-  home.packages = with pkgs; [
-    # Tools that complement Arch packages
-    # Most system packages will be installed via pacman
-    # Use Nix for development tools and user applications
+  home = {
+    # User information - IMPORTANT: Change these before deployment
+    username = "user3301";
+    homeDirectory = "/home/user3301";
 
-    # Example: Nix-specific or bleeding-edge tools
-  ];
+    # Additional packages for Archlinux
+    packages = with pkgs; [
+      # Tools that complement Arch packages
+      # Most system packages will be installed via pacman
+      # Use Nix for development tools and user applications
+
+      # Example: Nix-specific or bleeding-edge tools
+    ];
+
+    # Home Manager state version
+    stateVersion = "25.05";
+  };
 
   # Targets for non-NixOS systems
   targets.genericLinux.enable = true;
-
-  # Home Manager state version
-  home.stateVersion = "25.05";
 }

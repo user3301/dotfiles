@@ -8,14 +8,14 @@ local config = wezterm.config_builder()
 
 config.color_scheme = "Catppuccin Frappe"
 config.window_background_gradient = {
-	orientation = "Vertical",
-	colors = {
-		"#232634", -- Catppuccin Frappe Crust
-		"#292c3c", -- Catppuccin Frappe Mantle
-		"#303446", -- Catppuccin Frappe Base
-	},
-	interpolation = "Linear",
-	blend = "Rgb",
+  orientation = "Vertical",
+  colors = {
+    "#232634", -- Catppuccin Frappe Crust
+    "#292c3c", -- Catppuccin Frappe Mantle
+    "#303446", -- Catppuccin Frappe Base
+  },
+  interpolation = "Linear",
+  blend = "Rgb",
 }
 
 config.window_background_opacity = 1
@@ -28,15 +28,15 @@ config.enable_wayland = false
 config.scrollback_lines = 5000
 
 config.font = wezterm.font_with_fallback({
-	{ family = "JetBrains Mono" },
-	{ family = "Ubuntu Mono" },
-	{ family = "More Perfect DOS VGA" },
+  { family = "JetBrains Mono" },
+  { family = "Ubuntu Mono" },
+  { family = "More Perfect DOS VGA" },
 })
 config.font_size = 15
 
 wezterm.on("gui-startup", function(cmd)
-	local _, _, window = wezterm.mux.spawn_window(cmd or {})
-	window:gui_window():maximize()
+  local _, _, window = wezterm.mux.spawn_window(cmd or {})
+  window:gui_window():maximize()
 end)
 
 -- Enable image protocols
@@ -44,55 +44,55 @@ config.enable_kitty_graphics = true
 config.enable_kitty_keyboard = true
 
 config.leader = {
-	key = "a",
-	mods = "CTRL",
-	timeout_milliseconds = 1000,
+  key = "a",
+  mods = "CTRL",
+  timeout_milliseconds = 1000,
 }
 
 -- ⌨️ Key bindings that use the leader key
 config.keys = {
-	-- Split pane horizontally: leader + "
-	{
-		key = '"',
-		mods = "LEADER",
-		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
-	},
+  -- Split pane horizontally: leader + "
+  {
+    key = '"',
+    mods = "LEADER",
+    action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+  },
 
-	-- Split pane vertically: leader + %
-	{
-		key = "%",
-		mods = "LEADER",
-		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
-	},
+  -- Split pane vertically: leader + %
+  {
+    key = "%",
+    mods = "LEADER",
+    action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+  },
 
-	-- Close current pane with confirmation: leader + x
-	{
-		key = "x",
-		mods = "LEADER",
-		action = wezterm.action.CloseCurrentPane({ confirm = true }),
-	},
+  -- Close current pane with confirmation: leader + x
+  {
+    key = "x",
+    mods = "LEADER",
+    action = wezterm.action.CloseCurrentPane({ confirm = true }),
+  },
 
-	-- Move between panes using vim-style keys
-	{
-		key = "h",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Left"),
-	},
-	{
-		key = "l",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Right"),
-	},
-	{
-		key = "k",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Up"),
-	},
-	{
-		key = "j",
-		mods = "LEADER",
-		action = wezterm.action.ActivatePaneDirection("Down"),
-	},
+  -- Move between panes using vim-style keys
+  {
+    key = "h",
+    mods = "LEADER",
+    action = wezterm.action.ActivatePaneDirection("Left"),
+  },
+  {
+    key = "l",
+    mods = "LEADER",
+    action = wezterm.action.ActivatePaneDirection("Right"),
+  },
+  {
+    key = "k",
+    mods = "LEADER",
+    action = wezterm.action.ActivatePaneDirection("Up"),
+  },
+  {
+    key = "j",
+    mods = "LEADER",
+    action = wezterm.action.ActivatePaneDirection("Down"),
+  },
 }
 
 -- and finally, return the configuration to wezterm

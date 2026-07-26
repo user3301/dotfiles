@@ -44,6 +44,14 @@
       ...
     }@inputs:
     let
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+
       claudeOverlay = inputs.claude-code-nix.overlays.default;
 
       # nixpkgs lags upstream copilot-cli releases; bump to the latest GitHub
@@ -51,7 +59,7 @@
       # runs unpatched (see nixpkgs#534884 — drop once it lands)
       copilotOverlay = final: prev: {
         github-copilot-cli = prev.github-copilot-cli.overrideAttrs (
-          finalAttrs: prevAttrs:
+          finalAttrs: _:
           let
             platform =
               {
@@ -89,7 +97,12 @@
         nixpkgs.lib.nixosSystem {
           inherit system;
           modules = modules ++ [
-            { nixpkgs.overlays = [ claudeOverlay copilotOverlay ]; }
+            {
+              nixpkgs.overlays = [
+                claudeOverlay
+                copilotOverlay
+              ];
+            }
           ];
           specialArgs = specialArgs // {
             inherit inputs;
@@ -100,16 +113,18 @@
       mkHome =
         {
           system,
-          username,
           modules,
         }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfree = true;
-            overlays = [ claudeOverlay copilotOverlay ];
+            overlays = [
+              claudeOverlay
+              copilotOverlay
+            ];
           };
-          modules = modules;
+          inherit modules;
           extraSpecialArgs = { inherit inputs; };
         };
 
@@ -118,7 +133,7 @@
         { system, modules }:
         nix-darwin.lib.darwinSystem {
           inherit system;
-          modules = modules;
+          inherit modules;
           specialArgs = { inherit inputs; };
         };
 
@@ -175,7 +190,6 @@
         # Generic Linux configuration (Archlinux, Ubuntu, Fedora, etc.)
         "user@linux" = mkHome {
           system = "x86_64-linux";
-          username = "user";
           modules = [
             ./home/archlinux.nix
           ];
@@ -184,7 +198,6 @@
         # ARM64 Linux configuration
         "user@linux-arm64" = mkHome {
           system = "aarch64-linux";
-          username = "user";
           modules = [
             ./home/archlinux.nix
           ];
@@ -228,26 +241,82 @@
         };
       };
 
-      # Development shell (optional but useful)
-      devShells =
-        nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ]
-          (
-            system:
-            let
-              pkgs = import nixpkgs { inherit system; };
-            in
-            pkgs.mkShell {
-              buildInputs = with pkgs; [
-                git
-                vim
-                nil # Nix LSP
-                nixpkgs-fmt
-              ];
-              shellHook = ''
-                echo "Dotfiles development environment"
-                echo "Use 'nixos-rebuild' or 'home-manager' commands to apply configurations"
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
+
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          nix-quality =
+            pkgs.runCommand "nix-quality"
+              {
+                nativeBuildInputs = with pkgs; [
+                  deadnix
+                  findutils
+                  nixfmt
+                  statix
+                ];
+              }
+              ''
+                find ${self} -type f -name '*.nix' -print0 | xargs -0 nixfmt --check
+                statix check ${self}
+                deadnix --fail ${self}
+                touch "$out"
               '';
-            }
-          );
+
+          lua-format =
+            pkgs.runCommand "lua-format"
+              {
+                nativeBuildInputs = [ pkgs.stylua ];
+              }
+              ''
+                stylua \
+                  --check \
+                  --config-path ${self}/nvim/.config/nvim/stylua.toml \
+                  ${self}/nvim/.config/nvim \
+                  ${self}/wezterm/.config/wezterm
+                touch "$out"
+              '';
+
+          zsh-syntax =
+            pkgs.runCommand "zsh-syntax"
+              {
+                nativeBuildInputs = [ pkgs.zsh ];
+              }
+              ''
+                zsh -n ${self}/zsh/.zshenv
+                zsh -n ${self}/zsh/.zshrc
+                touch "$out"
+              '';
+        }
+      );
+
+      # Development shell (optional but useful)
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        {
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              deadnix
+              git
+              nil # Nix LSP
+              nixfmt
+              statix
+              stylua
+              vim
+              zsh
+            ];
+            shellHook = ''
+              echo "Dotfiles development environment"
+              echo "Use 'nixos-rebuild' or 'home-manager' commands to apply configurations"
+            '';
+          };
+        }
+      );
     };
 }
