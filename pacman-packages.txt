@@ -10,3 +10,4 @@ lazygit
 fd
 base-devel
 ripgrep
+github-cli
