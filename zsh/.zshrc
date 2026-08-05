@@ -3,7 +3,7 @@ export EDITOR="nvim"
 # This is required for asdf (0.16 or later)
 export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
-ZSH_THEME="random"
+ZSH_THEME="pygmalion"
 
 plugins=(git z colored-man-pages asdf vi-mode)
 
