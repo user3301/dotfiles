@@ -54,7 +54,7 @@ make setup-mac
 
 ### Development Tools
 - **Editors**: Neovim
-- **Terminal**: Zellij, Wezterm, Yazi
+- **Terminal**: Wezterm, Yazi
 - **Shell**: Zsh with completion and syntax highlighting
 - **Version Control**: Git, GitHub CLI, Lazygit
 - **CLI Tools**: ripgrep, fd, bat, fzf, jq, and more
@@ -78,7 +78,7 @@ dotfiles/
 │   │   ├── shell.nix           # Zsh configuration
 │   │   ├── dev-tools.nix       # Development packages
 │   │   ├── neovim.nix          # Neovim + LSPs
-│   │   └── terminal.nix        # Zellij, Wezterm, Yazi
+│   │   └── terminal.nix        # Wezterm, Yazi
 │   │
 │   ├── nixos-wsl.nix           # WSL2 home config
 │   ├── nixos-native.nix        # Native NixOS home config
@@ -95,7 +95,6 @@ dotfiles/
 │
 ├── [existing dotfiles]/         # Your actual configs
 │   ├── nvim/.config/nvim/
-│   ├── zellij/.config/zellij/
 │   ├── wezterm/.config/wezterm/
 │   ├── yazi/.config/yazi/
 │   └── zsh/
