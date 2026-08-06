@@ -29,7 +29,7 @@ dotfiles/
 │   │   └── configuration.nix # Native NixOS system config
 │   └── darwin/
 │       └── configuration.nix # macOS system config
-└── [app-configs]/            # Existing dotfiles (nvim, wezterm, etc.)
+└── [app-configs]/            # Existing dotfiles (nvim, herdr, wezterm, etc.)
 ```
 
 ## Prerequisites

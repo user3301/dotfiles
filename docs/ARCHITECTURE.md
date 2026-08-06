@@ -53,6 +53,7 @@ This dotfiles repository is designed with the following principles:
                 │   (Symlinked)         │
                 │                       │
                 │ • nvim/.config/nvim   │
+                │ • herdr/.config/...   │
                 │ • wezterm/.config/... │
                 │ • etc.                │
                 └───────────────────────┘
@@ -140,6 +141,7 @@ This dotfiles repository is designed with the following principles:
    - Symlinks existing nvim config
 
 5. **terminal.nix**: Terminal multiplexers and emulators
+   - Herdr configuration
    - Wezterm configuration
    - Yazi file manager
    - Symlinks to existing configs

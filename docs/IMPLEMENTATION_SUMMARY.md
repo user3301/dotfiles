@@ -61,7 +61,7 @@ home/modules/
 ├── shell.nix                      # Zsh with plugins
 ├── dev-tools.nix                  # Development packages and tools
 ├── neovim.nix                     # Neovim with LSPs and formatters
-└── terminal.nix                   # Wezterm, Yazi
+└── terminal.nix                   # Herdr, Wezterm, Yazi
 ```
 
 **Module Responsibilities**:
@@ -72,7 +72,7 @@ home/modules/
 | shell.nix | Shell config | Zsh with completion, syntax highlighting |
 | dev-tools.nix | Dev tools | git, gh, lazygit, ripgrep, fd, bat, fzf, nil |
 | neovim.nix | Neovim setup | LSPs (lua, nix, ts, python, rust, go), formatters |
-| terminal.nix | Terminal apps | Wezterm, Yazi |
+| terminal.nix | Terminal apps | Herdr, Wezterm, Yazi |
 
 ### Documentation
 
@@ -119,6 +119,7 @@ Your existing dotfiles are **symlinked**, not copied:
 
 ```
 ~/dotfiles/nvim/.config/nvim → ~/.config/nvim
+~/dotfiles/herdr/.config/herdr → ~/.config/herdr
 ~/dotfiles/wezterm/.config/wezterm → ~/.config/wezterm
 ~/dotfiles/yazi/.config/yazi → ~/.config/yazi
 ```

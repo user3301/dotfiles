@@ -211,6 +211,7 @@ git push
 
 Your existing dotfiles are symlinked from:
 - `~/dotfiles/nvim/.config/nvim` → `~/.config/nvim`
+- `~/dotfiles/herdr/.config/herdr` → `~/.config/herdr`
 - `~/dotfiles/wezterm/.config/wezterm` → `~/.config/wezterm`
 - etc.
 
