@@ -6,6 +6,7 @@ git/.config/git/config.local
 herdr/.config/herdr/*.log
 herdr/.config/herdr/session.json
 herdr/.config/herdr/plugins.json
+herdr/.config/herdr/.plugins.lock
 herdr/.config/herdr/release-notes.json
 herdr/.config/herdr/*.sock
 herdr/.config/herdr/plugins/*
