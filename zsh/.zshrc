@@ -44,9 +44,9 @@ function y() {
 }
 
 # Auto-start herdr (launches or attaches to the persistent session)
-if [[ $- == *i* ]] && [[ "$TERM_PROGRAM" != vscode ]] && [[ -z "$HERDR_ENV" ]] && command -v herdr &> /dev/null; then
-	herdr
-fi
+# if [[ $- == *i* ]] && [[ "$TERM_PROGRAM" != vscode ]] && [[ -z "$HERDR_ENV" ]] && command -v herdr &> /dev/null; then
+# 	herdr
+# fi
 
 # Run fastfetch when on every interactive terminal and NOT ssh into a machine
 # if [[ $- == *i* ]] && [[ -z "$SSH_CONNECTION" ]]; then
