@@ -60,6 +60,7 @@
   # Enable nix-ld for VS Code Remote and other dynamically linked executables
   programs.nix-ld = {
     enable = true;
+    libraries = with pkgs; [ icu ];
   };
 
   # System packages (minimal, most packages go in Home Manager)

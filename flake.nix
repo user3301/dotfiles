@@ -87,6 +87,25 @@
         );
       };
 
+      optionalAgencyModule =
+        { pkgs, ... }:
+        let
+          agencyNix = builtins.getEnv "AGENCY_NIX";
+          agencySource = builtins.getEnv "AGENCY_SRC";
+          hasAgencyNix = agencyNix != "" && builtins.pathExists agencyNix;
+          hasAgencySource = agencySource != "" && builtins.pathExists agencySource;
+        in
+        {
+          warnings = nixpkgs.lib.optional (hasAgencyNix && !hasAgencySource) ''
+            agency.nix exists, but the local Agency payload does not. Skipping
+            Agency; run `make install-agency`, then rebuild NixOS.
+          '';
+
+          environment.systemPackages = nixpkgs.lib.optionals (hasAgencyNix && hasAgencySource) [
+            (pkgs.callPackage agencyNix { })
+          ];
+        };
+
       # Helper function to generate system configurations
       mkSystem =
         {
@@ -103,6 +122,7 @@
                 copilotOverlay
               ];
             }
+            optionalAgencyModule
           ];
           specialArgs = specialArgs // {
             inherit inputs;

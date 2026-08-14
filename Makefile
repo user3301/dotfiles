@@ -1,5 +1,9 @@
 .DEFAULT_GOAL := help
 
+AGENCY_NIX := $(CURDIR)/agency.nix
+AGENCY_SRC := $(HOME)/.config/agency/CurrentVersion
+NIXOS_REBUILD := sudo env AGENCY_NIX="$(AGENCY_NIX)" AGENCY_SRC="$(AGENCY_SRC)" nixos-rebuild
+
 .PHONY: help
 help:
 	@echo "Dotfiles Setup Commands:"
@@ -10,6 +14,7 @@ help:
 	@echo "  make setup-mac            - Full setup for macOS (Nix + home-manager + Homebrew)"
 	@echo "  make setup-linux          - Full setup for Linux (Nix + home-manager)"
 	@echo "  make setup-wsl-nixos      - Link NixOS configuration for WSL2 (requires sudo)"
+	@echo "  make install-agency       - Install/update the local Agency payload"
 	@echo ""
 	@echo "NixOS WSL2 Commands:"
 	@echo "  make switch               - Rebuild NixOS system (slow, needs sudo)"
@@ -126,7 +131,7 @@ setup-wsl-nixos:
 	sudo ln -sf $$DOTFILES_DIR/systems/wsl/configuration.nix /etc/nixos/configuration.nix; \
 	echo ""; \
 	echo "Building NixOS configuration (staging for next boot)..."; \
-	sudo nixos-rebuild boot --flake .#nixos-wsl; \
+	$(NIXOS_REBUILD) boot --impure --flake .#nixos-wsl; \
 	echo ""; \
 	echo "✅ NixOS configuration built and staged!"; \
 	echo ""; \
@@ -136,11 +141,27 @@ setup-wsl-nixos:
 	echo "  3. Reopen your NixOS WSL2 distro"; \
 	echo "  4. Run 'cd ~/dotfiles && make switch' to verify"
 
+.PHONY: install-agency
+install-agency:
+	@if [ ! -f "$(AGENCY_NIX)" ]; then \
+		echo "agency.nix is not present; skipping Agency installation."; \
+		exit 0; \
+	fi; \
+	echo "Installing/updating the local Agency payload..."; \
+	sudo systemctl restart systemd-binfmt.service; \
+	curl -sSfL https://aka.ms/InstallTool.sh | sh -s agency; \
+	sed -i '/# BEGIN Agency MANAGED BLOCK/,/# END Agency MANAGED BLOCK/d' "$(CURDIR)/zsh/.zshrc"; \
+	if [ ! -x "$(AGENCY_SRC)/agency" ]; then \
+		echo "Error: the installer did not create $(AGENCY_SRC)/agency."; \
+		exit 1; \
+	fi; \
+	echo "Agency payload updated. Run 'make switch' to install it system-wide."
+
 # NixOS WSL2 specific targets
 .PHONY: switch
 switch:
 	@echo "Rebuilding NixOS system..."
-	sudo nixos-rebuild switch --flake .#nixos-wsl
+	$(NIXOS_REBUILD) switch --impure --flake .#nixos-wsl
 
 .PHONY: home-switch
 home-switch:
@@ -150,7 +171,7 @@ home-switch:
 .PHONY: build
 build:
 	@echo "Building NixOS system (without switching)..."
-	sudo nixos-rebuild build --flake .#nixos-wsl
+	$(NIXOS_REBUILD) build --impure --flake .#nixos-wsl
 
 .PHONY: update
 update:
@@ -185,4 +206,3 @@ clean:
 	@echo "Deleting home-manager generations older than 7 days..."
 	nix run home-manager/master -- expire-generations "-7 days"
 	@echo "✅ Deep clean complete!"
-
