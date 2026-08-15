@@ -32,7 +32,7 @@ fi
 export NIX_CONFIG="${NIX_CONFIG:-}"$'\nexperimental-features = nix-command flakes'
 
 echo "Creating the ${target_user} NixOS configuration..."
-sudo nixos-rebuild switch --flake "${flake_ref}#nixos-wsl"
+sudo nixos-rebuild switch --flake "${flake_ref}#nixos-wsl-bootstrap"
 
 if [[ -d "${target_repo}/.git" ]]; then
   echo "Updating the existing checkout at ${target_repo}..."

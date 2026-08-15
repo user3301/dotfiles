@@ -137,20 +137,25 @@
           specialArgs = { inherit inputs; };
         };
 
+      wslSystemModules = [
+        nixos-wsl.nixosModules.wsl
+        ./systems/wsl/configuration.nix
+      ];
+
     in
     {
       # NixOS Configurations
       nixosConfigurations = {
+        # Minimal first-stage configuration used by the WSL bootstrap app.
+        nixos-wsl-bootstrap = mkSystem {
+          system = "x86_64-linux";
+          modules = wslSystemModules;
+        };
+
         # NixOS WSL2 Configuration
         nixos-wsl = mkSystem {
           system = "x86_64-linux";
-          modules = [
-            # WSL-specific module
-            nixos-wsl.nixosModules.wsl
-
-            # System configuration
-            ./systems/wsl/configuration.nix
-
+          modules = wslSystemModules ++ [
             # Home Manager integration
             home-manager.nixosModules.home-manager
             {
