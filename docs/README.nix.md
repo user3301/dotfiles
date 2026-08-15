@@ -13,11 +13,20 @@ Fully reproducible dotfiles configuration supporting:
 Choose your platform:
 
 ### NixOS WSL2
+
+On a fresh NixOS-WSL installation, run:
+
 ```bash
-git clone <your-repo> ~/dotfiles
-cd ~/dotfiles
-sudo nixos-rebuild switch --flake .#nixos-wsl
+nix --extra-experimental-features 'nix-command flakes' run github:user3301/dotfiles#bootstrap-wsl
 ```
+
+`nixos-anywhere` is not used here because WSL has already created and mounted
+the distribution's virtual disk; `nixos-anywhere` is intended to provision an
+SSH target and normally repartition its disks.
+
+This creates the `user3301` configuration, clones the repository to
+`/home/user3301/dotfiles`, and activates the local checkout. Then run
+`wsl --shutdown` from PowerShell and reopen the distribution.
 
 ### NixOS Native
 ```bash

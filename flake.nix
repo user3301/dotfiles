@@ -204,6 +204,25 @@
         };
       };
 
+      packages.x86_64-linux.bootstrap-wsl =
+        let
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        in
+        pkgs.writeShellApplication {
+          name = "bootstrap-nixos-wsl";
+          runtimeInputs = with pkgs; [
+            coreutils
+            git
+            gnugrep
+          ];
+          text = builtins.readFile ./scripts/bootstrap-nixos-wsl.sh;
+        };
+
+      apps.x86_64-linux.bootstrap-wsl = {
+        type = "app";
+        program = "${self.packages.x86_64-linux.bootstrap-wsl}/bin/bootstrap-nixos-wsl";
+      };
+
       # macOS configurations (keeping your existing setup)
       darwinConfigurations = {
         # macOS Apple Silicon
