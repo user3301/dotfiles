@@ -162,29 +162,32 @@
         # Home Manager activates the same configuration as nixos-wsl.
         nixos-wsl-bootstrap = mkSystem {
           system = "x86_64-linux";
-          modules = wslSystemModules ++ wslHomeManagerModules ++ [
-            (
-              { pkgs, ... }:
-              {
-                system.activationScripts.bootstrapDotfiles = {
-                  deps = [ "users" ];
-                  text = ''
-                    target=/home/user3301/dotfiles
-                    if [[ ! -e "$target" ]]; then
-                      echo "cloning dotfiles into $target..."
-                      ${pkgs.coreutils}/bin/install -d -o user3301 -g users /home/user3301
-                      ${pkgs.util-linux}/bin/runuser -u user3301 -- \
-                        ${pkgs.git}/bin/git clone \
-                          https://github.com/user3301/dotfiles.git "$target"
-                    elif [[ ! -d "$target/.git" ]]; then
-                      echo "error: $target exists but is not a Git checkout" >&2
-                      exit 1
-                    fi
-                  '';
-                };
-              }
-            )
-          ];
+          modules =
+            wslSystemModules
+            ++ wslHomeManagerModules
+            ++ [
+              (
+                { pkgs, ... }:
+                {
+                  system.activationScripts.bootstrapDotfiles = {
+                    deps = [ "users" ];
+                    text = ''
+                      target=/home/user3301/dotfiles
+                      if [[ ! -e "$target" ]]; then
+                        echo "cloning dotfiles into $target..."
+                        ${pkgs.coreutils}/bin/install -d -o user3301 -g users /home/user3301
+                        ${pkgs.util-linux}/bin/runuser -u user3301 -- \
+                          ${pkgs.git}/bin/git clone \
+                            https://github.com/user3301/dotfiles.git "$target"
+                      elif [[ ! -d "$target/.git" ]]; then
+                        echo "error: $target exists but is not a Git checkout" >&2
+                        exit 1
+                      fi
+                    '';
+                  };
+                }
+              )
+            ];
         };
 
         # NixOS WSL2 Configuration
