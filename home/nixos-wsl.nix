@@ -12,6 +12,10 @@
     ./modules/languages.nix
   ];
 
+  # During bootstrap there may be no active user session yet. Let the normal
+  # WSL login start sockets and services instead of starting them during switch.
+  systemd.user.startServices = "suggest";
+
   home = {
     # User information
     username = "user3301";
