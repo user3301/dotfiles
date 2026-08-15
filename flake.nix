@@ -142,31 +142,58 @@
         ./systems/wsl/configuration.nix
       ];
 
+      wslHomeManagerModules = [
+        home-manager.nixosModules.home-manager
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.user3301 = import ./home/nixos-wsl.nix;
+            extraSpecialArgs = { inherit inputs; };
+          };
+        }
+      ];
+
     in
     {
       # NixOS Configurations
       nixosConfigurations = {
-        # Minimal first-stage configuration used by the WSL bootstrap app.
+        # One-time installer that clones the mutable dotfiles checkout before
+        # Home Manager activates the same configuration as nixos-wsl.
         nixos-wsl-bootstrap = mkSystem {
           system = "x86_64-linux";
-          modules = wslSystemModules;
+          modules =
+            wslSystemModules
+            ++ wslHomeManagerModules
+            ++ [
+              (
+                { pkgs, ... }:
+                {
+                  system.activationScripts.bootstrapDotfiles = {
+                    deps = [ "users" ];
+                    text = ''
+                      target=/home/user3301/dotfiles
+                      if [[ ! -e "$target" ]]; then
+                        echo "cloning dotfiles into $target..."
+                        ${pkgs.coreutils}/bin/install -d -o user3301 -g users /home/user3301
+                        ${pkgs.util-linux}/bin/runuser -u user3301 -- \
+                          ${pkgs.git}/bin/git clone \
+                            https://github.com/user3301/dotfiles.git "$target"
+                      elif [[ ! -d "$target/.git" ]]; then
+                        echo "error: $target exists but is not a Git checkout" >&2
+                        exit 1
+                      fi
+                    '';
+                  };
+                }
+              )
+            ];
         };
 
         # NixOS WSL2 Configuration
         nixos-wsl = mkSystem {
           system = "x86_64-linux";
-          modules = wslSystemModules ++ [
-            # Home Manager integration
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                users.user3301 = import ./home/nixos-wsl.nix;
-                extraSpecialArgs = { inherit inputs; };
-              };
-            }
-          ];
+          modules = wslSystemModules ++ wslHomeManagerModules;
         };
 
         # Native NixOS Configuration
@@ -216,8 +243,6 @@
         pkgs.writeShellApplication {
           name = "bootstrap-nixos-wsl";
           runtimeInputs = with pkgs; [
-            coreutils
-            git
             gnugrep
           ];
           text = builtins.readFile ./scripts/bootstrap-nixos-wsl.sh;

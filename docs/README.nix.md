@@ -24,11 +24,12 @@ nix --extra-experimental-features 'nix-command flakes' run github:user3301/dotfi
 the distribution's virtual disk; `nixos-anywhere` is intended to provision an
 SSH target and normally repartition its disks.
 
-This first creates `user3301` without activating Home Manager, clones the
-repository to `/home/user3301/dotfiles`, and then activates the full
-configuration from that checkout. It is safe to rerun after an interrupted
-bootstrap. When it completes, run `wsl --shutdown` from PowerShell and reopen
-the distribution.
+The bootstrap configuration clones the repository to
+`/home/user3301/dotfiles` as part of NixOS activation, before Home Manager
+starts. This remains reliable even when changing WSL's default user terminates
+the original shell session. It is safe to rerun after an interrupted bootstrap.
+When it completes, run `wsl --shutdown` from PowerShell and reopen the
+distribution.
 
 ### NixOS Native
 ```bash
