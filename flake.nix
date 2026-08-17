@@ -157,31 +157,63 @@
           specialArgs = { inherit inputs; };
         };
 
+      wslSystemModules = [
+        nixos-wsl.nixosModules.wsl
+        ./systems/wsl/configuration.nix
+      ];
+
+      wslHomeManagerModules = [
+        home-manager.nixosModules.home-manager
+        {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users.user3301 = import ./home/nixos-wsl.nix;
+            extraSpecialArgs = { inherit inputs; };
+          };
+        }
+      ];
+
     in
     {
       # NixOS Configurations
       nixosConfigurations = {
+        # One-time installer that clones the mutable dotfiles checkout before
+        # Home Manager activates the same configuration as nixos-wsl.
+        nixos-wsl-bootstrap = mkSystem {
+          system = "x86_64-linux";
+          modules =
+            wslSystemModules
+            ++ wslHomeManagerModules
+            ++ [
+              (
+                { pkgs, ... }:
+                {
+                  system.activationScripts.bootstrapDotfiles = {
+                    deps = [ "users" ];
+                    text = ''
+                      target=/home/user3301/dotfiles
+                      if [[ ! -e "$target" ]]; then
+                        echo "cloning dotfiles into $target..."
+                        ${pkgs.coreutils}/bin/install -d -o user3301 -g users /home/user3301
+                        ${pkgs.util-linux}/bin/runuser -u user3301 -- \
+                          ${pkgs.git}/bin/git clone \
+                            https://github.com/user3301/dotfiles.git "$target"
+                      elif [[ ! -d "$target/.git" ]]; then
+                        echo "error: $target exists but is not a Git checkout" >&2
+                        exit 1
+                      fi
+                    '';
+                  };
+                }
+              )
+            ];
+        };
+
         # NixOS WSL2 Configuration
         nixos-wsl = mkSystem {
           system = "x86_64-linux";
-          modules = [
-            # WSL-specific module
-            nixos-wsl.nixosModules.wsl
-
-            # System configuration
-            ./systems/wsl/configuration.nix
-
-            # Home Manager integration
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                users.user3301 = import ./home/nixos-wsl.nix;
-                extraSpecialArgs = { inherit inputs; };
-              };
-            }
-          ];
+          modules = wslSystemModules ++ wslHomeManagerModules;
         };
 
         # Native NixOS Configuration
@@ -222,6 +254,23 @@
             ./home/archlinux.nix
           ];
         };
+      };
+
+      packages.x86_64-linux.bootstrap-wsl =
+        let
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        in
+        pkgs.writeShellApplication {
+          name = "bootstrap-nixos-wsl";
+          runtimeInputs = with pkgs; [
+            gnugrep
+          ];
+          text = builtins.readFile ./scripts/bootstrap-nixos-wsl.sh;
+        };
+
+      apps.x86_64-linux.bootstrap-wsl = {
+        type = "app";
+        program = "${self.packages.x86_64-linux.bootstrap-wsl}/bin/bootstrap-nixos-wsl";
       };
 
       # macOS configurations (keeping your existing setup)
