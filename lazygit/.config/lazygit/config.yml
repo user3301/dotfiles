@@ -6,6 +6,6 @@ git:
   # Use delta as the diff pager inside lazygit.
   # Lazygit does its own scrolling, so delta must not start its own pager
   # (--paging=never) and must be told to always emit color (colorArg: always).
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --dark --paging=never
+      command: delta --dark --paging=never
