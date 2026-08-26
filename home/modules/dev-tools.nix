@@ -21,6 +21,10 @@
     gnumake
     xdg-utils
 
+    # Kubernetes
+    kubectl
+    kubectx
+
     # Nix development
     nil # Nix LSP
     nixpkgs-fmt
