@@ -8,6 +8,11 @@
     go
     pkgs.golangci-lint
 
+    # Rust
+    rustc
+    cargo
+    clippy
+
     # C# (.NET SDK 8.0.421)
     dotnet-sdk_8
 

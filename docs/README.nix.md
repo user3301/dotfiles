@@ -70,6 +70,7 @@ make setup-mac
 - **Shell**: Zsh with completion and syntax highlighting
 - **Version Control**: Git, GitHub CLI, Lazygit
 - **CLI Tools**: ripgrep, fd, bat, fzf, jq, and more
+- **Rust Toolchain**: rustc, Cargo, Clippy, and rustfmt (managed by Nix)
 - **Language Servers**: For Nix, Lua, TypeScript, Python, Rust, Go
 
 ### Configuration Management
