@@ -109,6 +109,8 @@ make switch
 
 ## Deployment Instructions
 
+After the first Nix build on a new machine, manually install the Herdr plugins [Auto Title](https://github.com/kryptamine/herdr-auto-title) and [reviewr](https://github.com/persiyanov/herdr-reviewr). These two plugins are not managed by Nix.
+
 ### 1. NixOS WSL2
 
 **First-time setup on clean WSL2:**

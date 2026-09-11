@@ -4,6 +4,8 @@ Fully Reproducible dotfiles config
 
 Follows the XDG Base Directory Specification - keeping your home directory clean and uncluttered by organizing all configuration files in ~/.config instead of scattering dotfiles everywhere.
 
+For Nix setup and usage, see docs/README.nix.md.
+
 FAQ
 
 Q: Why Nix?

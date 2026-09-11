@@ -10,6 +10,10 @@ Fully reproducible dotfiles configuration supporting:
 
 ## Quick Start
 
+For Nix installation prerequisites and alternative installers, see the [deployment guide](DEPLOYMENT.md#prerequisites). The repository includes `flake.lock`; use it for the initial deployment rather than updating package versions.
+
+After the first Nix build on a new machine, manually install the Herdr plugins [Auto Title](https://github.com/kryptamine/herdr-auto-title) and [reviewr](https://github.com/persiyanov/herdr-reviewr). These two plugins are not managed by Nix.
+
 Choose your platform:
 
 ### NixOS WSL2
@@ -45,22 +49,47 @@ sudo nixos-rebuild switch --flake .#nixos-native
 ```
 
 ### Archlinux + Nix/Home Manager
+
+Also suitable for other Linux distributions. Check your architecture with `uname -m` and choose the matching command below.
+
 ```bash
 # Install Nix first
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 
-git clone <your-repo> ~/dotfiles
+git clone https://github.com/user3301/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# Edit home/archlinux.nix to set your username
-# Then deploy
+# Edit home/archlinux.nix to set home.username and home.homeDirectory
+# Then deploy on x86_64 Linux:
 nix run home-manager/master -- switch --flake .#user@linux
+
+# Or on ARM64 Linux:
+nix run home-manager/master -- switch --flake .#user@linux-arm64
 ```
 
-### macOS (existing setup)
+The `user@linux` and `user@linux-arm64` names are fixed flake outputs, not placeholders for your username.
+
+### macOS + nix-darwin
+
+From the repository checkout, install Nix, activate nix-darwin with Home Manager, and install Homebrew apps:
+
 ```bash
 make setup-mac
 ```
+
+If Nix is already installed, activate the Nix configuration directly instead:
+
+```bash
+uname -m
+
+# Apple Silicon (uname -m reports arm64):
+nix run nix-darwin -- switch --flake .#aarch64
+
+# Intel (uname -m reports x86_64):
+nix run nix-darwin -- switch --flake .#x86_64
+```
+
+Before activation, customize `home.username` and `home.homeDirectory` in `home/darwin.nix` and the corresponding `home-manager.users` key in `flake.nix` if needed. Usernames and home directories are configured explicitly, not detected from `$USER`. Home Manager is integrated with nix-darwin; this flake does not provide standalone macOS Home Manager outputs.
 
 ## What's Included
 
@@ -133,9 +162,13 @@ dotfiles/
 cd ~/dotfiles
 sudo nixos-rebuild switch --flake .#nixos-wsl
 
-# Archlinux
+# Archlinux / other Linux (use .#user@linux-arm64 on ARM64)
 cd ~/dotfiles
 home-manager switch --flake .#user@linux
+
+# macOS Apple Silicon (use .#x86_64 on Intel)
+cd ~/dotfiles
+darwin-rebuild switch --flake .#aarch64
 ```
 
 ### Add New Package
@@ -151,7 +184,20 @@ Then rebuild.
 ### Update All Packages
 ```bash
 nix flake update
-sudo nixos-rebuild switch --flake .#nixos-wsl  # or your config
+```
+
+Then run your platform's command under [Update Configuration](#update-configuration) to activate the updated packages. Commit the updated `flake.lock` to keep package versions reproducible.
+
+### Inspect the Flake and Search Packages
+```bash
+# Check the configuration
+nix flake check
+
+# Show available outputs
+nix flake show
+
+# Search for a package
+nix search nixpkgs <package-name>
 ```
 
 ### Rollback
