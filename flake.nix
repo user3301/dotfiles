@@ -339,6 +339,17 @@
                 zsh -n ${self}/zsh/.zshrc
                 touch "$out"
               '';
+
+          bash-syntax =
+            pkgs.runCommand "bash-syntax"
+              {
+                nativeBuildInputs = [ pkgs.bash ];
+              }
+              ''
+                bash -n ${self}/bash/.bash_profile
+                bash -n ${self}/bash/.bashrc
+                touch "$out"
+              '';
         }
       );
 

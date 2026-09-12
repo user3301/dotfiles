@@ -96,7 +96,7 @@ Before activation, customize `home.username` and `home.homeDirectory` in `home/d
 ### Development Tools
 - **Editors**: Neovim
 - **Terminal**: Herdr, Wezterm, Yazi
-- **Shell**: Zsh with completion and syntax highlighting
+- **Shell**: Zsh (primary, oh-my-zsh + mcfly) with a minimal Bash fallback (zoxide + mcfly)
 - **Version Control**: Git, GitHub CLI, Lazygit
 - **CLI Tools**: ripgrep, fd, bat, fzf, jq, and more
 - **Rust Toolchain**: rustc, Cargo, Clippy, and rustfmt (managed by Nix)
@@ -105,6 +105,7 @@ Before activation, customize `home.username` and `home.homeDirectory` in `home/d
 ### Configuration Management
 - **Modular**: Shared modules + platform-specific overrides
 - **Symlinked**: Your existing dotfiles are symlinked (edit directly, no rebuild needed)
+- **Stow-compatible**: each top-level config directory is also a GNU Stow package, so the same repo works on non-Nix machines (`stow bash zsh nvim`)
 - **Reproducible**: Same environment across all machines
 - **Declarative**: Everything in version control
 
@@ -117,7 +118,7 @@ dotfiles/
 ├── home/                        # Home Manager configurations
 │   ├── modules/                 # Shared modules
 │   │   ├── common.nix          # Base settings
-│   │   ├── shell.nix           # Zsh configuration
+│   │   ├── shell.nix           # Zsh + Bash configuration
 │   │   ├── dev-tools.nix       # Development packages
 │   │   ├── neovim.nix          # Neovim + LSPs
 │   │   └── terminal.nix        # Herdr, Wezterm, Yazi
@@ -140,7 +141,8 @@ dotfiles/
 │   ├── herdr/.config/herdr/
 │   ├── wezterm/.config/wezterm/
 │   ├── yazi/.config/yazi/
-│   └── zsh/
+│   ├── zsh/
+│   └── bash/                    # Minimal fallback shell
 │
 └── docs/
     ├── DEPLOYMENT.md           # Detailed deployment guide
@@ -248,7 +250,7 @@ home-manager switch --rollback
 **Current approach**: Manual management for simplicity
 - Generate SSH keys manually on each machine: `ssh-keygen -t ed25519`
 - Keep sensitive credentials outside version control
-- Use local overrides (`.zshenv.local` pattern) for machine-specific secrets
+- Use local overrides (`.zshenv.local` / `.bashrc.local` pattern) for machine-specific secrets
 
 ### Development Shells
 Create project-specific environments:
