@@ -21,9 +21,12 @@ export PATH="$HOME/.nix-profile/bin:$PATH"
 
 export CLOUDSDK_PYTHON=/usr/bin/python3
 
-# GPG TTY for commit signing
-GPG_TTY=$(tty 2>/dev/null)
-export GPG_TTY
+# GPG TTY for commit signing. `tty` writes "not a tty" to stdout and fails when
+# stdin is not a terminal, so assign only on success and keep any inherited value.
+if __tty=$(tty 2>/dev/null); then
+  export GPG_TTY="$__tty"
+fi
+unset __tty
 
 # Home Manager session variables, when this machine is managed by Nix.
 # The first file sourced sets a guard, so the second is a no-op.
@@ -102,8 +105,10 @@ fi
 # zoxide: smarter cd, provides `z` and `zi`
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash)"
 
-# mcfly: fuzzy ^R history search (keep last, it wraps the prompt hooks)
+# mcfly: fuzzy ^R history search (after zoxide, so it wraps that prompt hook)
 command -v mcfly >/dev/null 2>&1 && eval "$(mcfly init bash)"
 
-# Load local-specific configuration if it exists
+# Load local-specific configuration if it exists. It is sourced last so it can
+# override everything above; append to PROMPT_COMMAND with += rather than
+# assigning, or zoxide's hook is dropped.
 [ -f "$DOTFILES/bash/.bashrc.local" ] && . "$DOTFILES/bash/.bashrc.local"
