@@ -102,13 +102,14 @@ if command -v eza >/dev/null 2>&1; then
   alias lt='eza --tree --level=2 --icons=auto'
 fi
 
+# Load local-specific configuration if it exists. Deliberately before the two
+# integrations below: on bash < 5.1 (macOS /bin/bash is 3.2) PROMPT_COMMAND is a
+# plain string, so a bare assignment here would wipe their hooks. Both append to
+# whatever it leaves behind, and it can still set MCFLY_*/_ZO_* to configure them.
+[ -f "$DOTFILES/bash/.bashrc.local" ] && . "$DOTFILES/bash/.bashrc.local"
+
 # zoxide: smarter cd, provides `z` and `zi`
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash)"
 
 # mcfly: fuzzy ^R history search (after zoxide, so it wraps that prompt hook)
 command -v mcfly >/dev/null 2>&1 && eval "$(mcfly init bash)"
-
-# Load local-specific configuration if it exists. It is sourced last so it can
-# override everything above; append to PROMPT_COMMAND with += rather than
-# assigning, or zoxide's hook is dropped.
-[ -f "$DOTFILES/bash/.bashrc.local" ] && . "$DOTFILES/bash/.bashrc.local"
