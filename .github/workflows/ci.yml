@@ -38,7 +38,8 @@ jobs:
           nix build --no-link \
             .#checks.x86_64-linux.nix-quality \
             .#checks.x86_64-linux.lua-format \
-            .#checks.x86_64-linux.zsh-syntax
+            .#checks.x86_64-linux.zsh-syntax \
+            .#checks.x86_64-linux.bash-syntax
 
       - name: Evaluate WSL configuration
         run: nix eval --raw '.#nixosConfigurations.nixos-wsl.config.system.build.toplevel.drvPath'

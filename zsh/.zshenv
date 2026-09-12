@@ -6,8 +6,12 @@ export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.nix-profile/bin:$PATH"
 export CLOUDSDK_PYTHON=/usr/bin/python3
 
-# GPG TTY for commit signing
-export GPG_TTY=$(tty)
+# GPG TTY for commit signing. `tty` writes "not a tty" to stdout when stdin is
+# not a terminal, so assign only on success and keep any inherited value.
+if __tty=$(tty 2>/dev/null); then
+  export GPG_TTY=$__tty
+fi
+unset __tty
 
 # General aliases
 alias v="nvim"

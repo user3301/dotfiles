@@ -25,6 +25,5 @@
     # Misc utilities
     wget
     curl
-    mcfly
   ];
 }
