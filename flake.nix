@@ -95,8 +95,9 @@
       # azure-cli 2.77.0 (see nixpkgs-azure-cli input above) instead of
       # whatever version the main nixpkgs channel currently carries.
       azureCliOverlay = final: _prev: {
-        azure-cli =
-          (import inputs.nixpkgs-azure-cli { inherit (final.stdenv.hostPlatform) system; }).azure-cli;
+        inherit (import inputs.nixpkgs-azure-cli { inherit (final.stdenv.hostPlatform) system; })
+          azure-cli
+          ;
       };
 
       # Helper function to generate system configurations
