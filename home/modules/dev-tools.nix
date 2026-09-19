@@ -25,6 +25,9 @@
     kubectl
     kubectx
 
+    # Cloud
+    azure-cli
+
     # Nix development
     nil # Nix LSP
     nixpkgs-fmt

@@ -32,6 +32,11 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Pinned nixpkgs providing azure-cli 2.77.0 (nixpkgs went 2.75.0 -> 2.77.0
+    # directly; 2.76.0 was never packaged). Deliberately not following the
+    # main nixpkgs input, since the whole point is to freeze this one package.
+    nixpkgs-azure-cli.url = "github:nixos/nixpkgs/286615174c6bd765907ef9975d0acdc799c7bf7e";
   };
 
   outputs =
@@ -87,6 +92,13 @@
         );
       };
 
+      # azure-cli 2.77.0 (see nixpkgs-azure-cli input above) instead of
+      # whatever version the main nixpkgs channel currently carries.
+      azureCliOverlay = final: _prev: {
+        azure-cli =
+          (import inputs.nixpkgs-azure-cli { inherit (final.stdenv.hostPlatform) system; }).azure-cli;
+      };
+
       # Helper function to generate system configurations
       mkSystem =
         {
@@ -101,6 +113,7 @@
               nixpkgs.overlays = [
                 claudeOverlay
                 copilotOverlay
+                azureCliOverlay
               ];
             }
           ];
@@ -122,6 +135,7 @@
             overlays = [
               claudeOverlay
               copilotOverlay
+              azureCliOverlay
             ];
           };
           inherit modules;

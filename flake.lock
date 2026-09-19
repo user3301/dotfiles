@@ -136,6 +136,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-azure-cli": {
+      "locked": {
+        "lastModified": 1756909158,
+        "narHash": "sha256-sV0XeUYxAVTL/5Ax5dK7g1Byifn+WilSe+o0kMiOSnk=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "286615174c6bd765907ef9975d0acdc799c7bf7e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "286615174c6bd765907ef9975d0acdc799c7bf7e",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "claude-code-nix": "claude-code-nix",
@@ -143,7 +159,8 @@
         "home-manager": "home-manager",
         "nix-darwin": "nix-darwin",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-azure-cli": "nixpkgs-azure-cli"
       }
     },
     "rust-overlay": {
