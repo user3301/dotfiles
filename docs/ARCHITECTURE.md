@@ -1,481 +1,130 @@
 # Dotfiles Architecture
 
-## Design Philosophy
+## Platform boundaries
 
-This dotfiles repository is designed with the following principles:
+Application configuration is shared; package management is not.
 
-1. **Reproducibility**: Identical environments across different machines and platforms
-2. **Modularity**: Shared code between platforms, platform-specific overrides where needed
-3. **Flexibility**: Support both NixOS (system-level) and non-NixOS (user-level) configurations
-4. **Compatibility**: Preserve existing GNU Stow-compatible structure
-5. **Separation of Concerns**: System configuration vs. user configuration
-
-## Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        flake.nix                            │
-│              (Entry point, defines all outputs)             │
-└─────────────────────────────────────────────────────────────┘
-                            │
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-        ▼                   ▼                   ▼
-┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-│   NixOS      │   │  Standalone  │   │  nix-darwin  │
-│ Configuration│   │    Home      │   │   (macOS)    │
-│              │   │   Manager    │   │              │
-└──────────────┘   └──────────────┘   └──────────────┘
-        │                   │                   │
-        ▼                   ▼                   ▼
-┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-│ system cfg + │   │  home cfg    │   │ system cfg + │
-│  home cfg    │   │    only      │   │  home cfg    │
-└──────────────┘   └──────────────┘   └──────────────┘
-        │                   │                   │
-        └───────────────────┼───────────────────┘
-                            │
-                            ▼
-                ┌───────────────────────┐
-                │   Home Manager        │
-                │   Modules (Shared)    │
-                │                       │
-                │ • common.nix          │
-                │ • shell.nix           │
-                │ • dev-tools.nix       │
-                │ • neovim.nix          │
-                │ • terminal.nix        │
-                └───────────────────────┘
-                            │
-                            ▼
-                ┌───────────────────────┐
-                │   Existing Dotfiles   │
-                │   (Symlinked)         │
-                │                       │
-                │ • nvim/.config/nvim   │
-                │ • herdr/.config/...   │
-                │ • wezterm/.config/... │
-                │ • etc.                │
-                └───────────────────────┘
+```text
+NixOS WSL2 / native                   macOS / Arch Linux
+  flake.nix                            Brewfile / pacman-packages.txt
+    systems/ + home/                     native package installation
+      Home Manager symlinks              GNU Stow symlinks
+                \                        /
+                 shared application files
 ```
 
-## Layer Breakdown
+Only NixOS uses the Nix modules. macOS uses Homebrew Bundle and Stow; Arch Linux
+uses pacman and Stow. Neither native package manifest promises the same package
+set or exact versions as NixOS.
 
-### Layer 1: Flake Entry Point
+## Repository layout
 
-**File**: `/Users/gaiz/dotfiles/flake.nix`
+| Path | Responsibility |
+| --- | --- |
+| `flake.nix`, `flake.lock` | NixOS outputs, pinned inputs, overlays, checks, development shells |
+| `systems/wsl/configuration.nix` | WSL user, interoperability, Docker, nix-ld, system settings |
+| `systems/native/configuration.nix` | Native boot, networking, X11/Qtile/LightDM, SSH |
+| `systems/hardware/hardware-vb.nix` | Currently imported VirtualBox hardware and filesystem config |
+| `home/nixos-wsl.nix`, `home/nixos-native.nix` | User identity, module imports, platform packages |
+| `home/modules/` | Shared NixOS user packages and links |
+| `scripts/bootstrap-nixos-wsl.sh` | One-time NixOS-WSL bootstrap app |
+| `Brewfile`, `pacman-packages.txt` | Native macOS and Arch package lists |
+| `Makefile` | Native package/Stow helpers and NixOS WSL maintenance commands |
+| `.github/workflows/ci.yml` | Quality checks and WSL evaluation |
+| Application directories | Stow-compatible, editable configuration |
 
-- Defines all inputs (nixpkgs, home-manager, nixos-wsl, nix-darwin)
-- Provides outputs for different configurations
-- Contains helper functions (`mkSystem`, `mkHome`, `mkDarwin`)
+Stow packages are `aerospace`, `bash`, `fastfetch`, `git`, `herdr`, `lazygit`,
+`nvim`, `vim`, `wezterm`, `yazi`, and `zsh`. Most use
+`<package>/.config/<application>/`; Bash and Zsh contain home-directory startup
+files. AeroSpace is macOS-only. Vim's XDG config requires explicit loading on
+Vim versions that do not discover it.
 
-**Outputs**:
-- `nixosConfigurations.nixos-wsl`: WSL2 system + home config
-- `nixosConfigurations.nixos-native`: Native NixOS system + home config
-- `homeConfigurations.user@linux`: Standalone home config for Archlinux
-- `darwinConfigurations.aarch64`: macOS system + home config
+## Nix flake
 
-### Layer 2: System Configurations
+The inputs are `nixpkgs` (NixOS 26.05), `home-manager` (release-26.05),
+`nixos-wsl`, `claude-code-nix`, `herdr`, and a commit-pinned
+`nixpkgs-azure-cli`. `flake.lock` records the resolved revisions.
 
-**Purpose**: System-level settings (only on NixOS and macOS)
+`mkSystem` adds the Claude Code, Copilot CLI, and Azure CLI overlays to each
+NixOS configuration. Home Manager uses `useGlobalPkgs = true`, so it receives
+those same overlaid packages; `useUserPackages = true` installs home packages
+through the NixOS user profile. The flake passes `inputs` to both module layers.
+See [version pinning](EXAMPLE-VERSION-PINNING.md) for the package exceptions.
 
-**Files**:
-- `systems/wsl/configuration.nix`: WSL2-specific system config
-- `systems/native/configuration.nix`: Native NixOS system config
-- `systems/darwin/configuration.nix`: macOS system config (via nix-darwin)
+| Output | Scope |
+| --- | --- |
+| `nixosConfigurations.nixos-wsl` | x86_64 WSL system and home |
+| `nixosConfigurations.nixos-wsl-bootstrap` | Same WSL configuration plus activation-time checkout creation |
+| `nixosConfigurations.nixos-native` | x86_64 native system and home |
+| `packages.x86_64-linux.bootstrap-wsl` | Packaged bootstrap shell script |
+| `apps.x86_64-linux.bootstrap-wsl` | Runnable bootstrap entry point |
+| `checks.<system>` | Nix quality, Lua format, Zsh syntax, Bash syntax |
+| `formatter.<system>` | nixfmt |
+| `devShells.<system>.default` | Repository editing and lint tools |
 
-**Responsibilities**:
-- Boot configuration (native NixOS only)
-- User account creation
-- System packages (minimal)
-- System services (SSH, networking, etc.)
-- Platform-specific settings (WSL interop, macOS defaults, etc.)
+The checks, formatter, and development shell support `x86_64-linux` and
+`aarch64-linux`. There is no ARM NixOS host output, no standalone Home Manager
+output, and no Darwin output.
 
-**Key Decision**: Keep system packages minimal. Most packages go in Home Manager.
+The bootstrap activation creates `/home/user3301/dotfiles` if absent, using a
+Git clone owned by `user3301`. Both normal NixOS homes require that mutable
+checkout; the native output does not create it.
 
-### Layer 3: Home Manager Configurations
+## Home Manager modules
 
-**Purpose**: User-level settings and packages
+| Module | What it manages |
+| --- | --- |
+| `common.nix` | XDG, Home Manager CLI, editor/DOTFILES session variables, archive/download tools |
+| `shell.nix` | Oh My Zsh, Bash completion, McFly, zoxide, Bash/Zsh startup symlinks |
+| `dev-tools.nix` | CLI/build tools, Kubernetes/Azure tools, Nix tools, Claude Code, Copilot CLI, devcontainer |
+| `git.nix` | Git, gh, Lazygit, delta, GPG agent, Git/Lazygit symlinks, gh SSH protocol |
+| `neovim.nix` | Neovim, language servers, formatters, Tree-sitter tools, fswatch, Neovim symlink |
+| `terminal.nix` | Herdr, Yazi and its integration settings, Herdr/Yazi/Fastfetch symlinks |
+| `wezterm.nix` | WezTerm symlink; imported only by the native home |
+| `languages.nix` | Go, Rust, .NET 8, Protobuf, Python, Node.js toolchains |
 
-**Files**:
-- `home/nixos-wsl.nix`: WSL2 user config
-- `home/nixos-native.nix`: Native NixOS user config
-- `home/archlinux.nix`: Archlinux user config
-- `home/darwin.nix`: macOS user config
+The WSL home adds PowerShell and sets `systemd.user.startServices = "suggest"`
+so activation does not try to start user services before a normal WSL login.
+The native home adds GnuPG, WezTerm, and Firefox. NixOS enables Zsh system-wide;
+the shell module links the hand-written startup files rather than generating
+them with Home Manager's shell programs.
 
-**Responsibilities**:
-- Import shared modules
-- Set username and home directory
-- Platform-specific packages
-- Platform-specific overrides
-- Git user configuration
+## Mutable configuration and reproducibility
 
-### Layer 4: Shared Modules
+Home Manager uses `mkOutOfStoreSymlink` to link application directories or
+startup files into `/home/user3301/dotfiles`. Stow links the same files on macOS
+and Arch Linux. Editing a linked file changes the checkout immediately; reload
+the application to pick it up. Adding a Nix module, package, or link requires a
+NixOS rebuild; adding Stow-managed paths may require rerunning Stow.
 
-**Purpose**: Reusable configuration modules
+Nix pins package sources, not the live contents of these symlinked files.
+System rollback does not roll back mutable dotfiles. Neovim plugins have their
+own `lazy-lock.json` and are downloaded by lazy.nvim, not provisioned by the
+Nix flake. Herdr plugins and credentials are also managed separately.
 
-**Files** in `home/modules/`:
+Git identity/signing overrides and local shell settings are ignored by Git.
+Herdr can write runtime state into its symlinked config directory; `.gitignore`
+excludes those files. See [deployment](DEPLOYMENT.md#local-settings-and-manual-steps).
 
-1. **common.nix**: Base configuration
-   - Home Manager self-management
-   - XDG directory structure
-   - State version
-   - Unfree packages allowance
-   - Common environment variables
-   - Minimal base packages
+## Existing CI
 
-2. **shell.nix**: Shell configuration
-   - Zsh with plugins
-   - Sources existing .zshrc and .zshenv
-   - Bash fallback
+`.github/workflows/ci.yml` runs on pushes to `master`, pull requests, and manual
+dispatch. On Ubuntu it lints GitHub Actions, installs Nix, enables a binary
+cache, builds the four `x86_64-linux` checks, and evaluates the WSL system
+derivation:
 
-3. **dev-tools.nix**: Development packages
-   - Git, gh, lazygit
-   - Modern CLI tools (ripgrep, fd, bat, etc.)
-   - Build tools
-   - Nix development tools
-
-4. **neovim.nix**: Neovim configuration
-   - Enables neovim as default editor
-   - Installs LSP servers and formatters
-   - Symlinks existing nvim config
-
-5. **terminal.nix**: Terminal multiplexers and emulators
-   - Herdr configuration
-   - Wezterm configuration
-   - Yazi file manager
-   - Symlinks to existing configs
-
-**Design Pattern**: Each module is self-contained and can be independently enabled/disabled by commenting out the import.
-
-### Layer 5: Existing Dotfiles
-
-**Purpose**: Actual application configurations
-
-**Structure**:
-```
-app-name/
-  .config/
-    app-name/
-      config-files
-```
-
-This structure is compatible with GNU Stow and is symlinked by Home Manager using `mkOutOfStoreSymlink`.
-
-**Why symlink instead of copy?**
-- Allows editing configs directly without rebuilding
-- Keeps configs in familiar locations
-- Maintains git history in dotfiles repo
-- Compatible with manual management if needed
-
-## Configuration Flow
-
-### NixOS WSL2 Deployment
-
-```
-1. User runs: sudo nixos-rebuild switch --flake .#nixos-wsl
-                                              │
-2. Nix evaluates flake.nix ─────────────────┘
-                │
-3. Loads nixosConfigurations.nixos-wsl
-                │
-4. Applies systems/wsl/configuration.nix
-   - Creates user3301
-   - Configures WSL settings
-   - Enables zsh
-                │
-5. Loads Home Manager module (integrated)
-                │
-6. Evaluates home/nixos-wsl.nix
-   - Sets username/home directory
-   - Imports shared modules
-                │
-7. Each module does its job
-   - Installs packages
-   - Configures programs
-   - Creates symlinks to existing dotfiles
-                │
-8. System is now configured!
+```sh
+nix build --no-link \
+  .#checks.x86_64-linux.nix-quality \
+  .#checks.x86_64-linux.lua-format \
+  .#checks.x86_64-linux.zsh-syntax \
+  .#checks.x86_64-linux.bash-syntax
+nix eval --raw '.#nixosConfigurations.nixos-wsl.config.system.build.toplevel.drvPath'
 ```
 
-### Archlinux Deployment
-
-```
-1. User runs: home-manager switch --flake .#user@linux
-                                           │
-2. Nix evaluates flake.nix ───────────────┘
-                │
-3. Loads homeConfigurations.user@linux
-                │
-4. Evaluates home/archlinux.nix
-   - Sets username/home directory
-   - Enables genericLinux target
-   - Imports shared modules
-                │
-5. Each module does its job
-   - Installs packages (to Nix profile)
-   - Configures programs
-   - Creates symlinks to existing dotfiles
-                │
-6. User environment is now configured!
-   (System packages still managed by pacman)
-```
-
-## Key Architectural Decisions
-
-### 1. Why separate system and home configurations?
-
-**Reason**: Enables both full NixOS systems and non-NixOS systems (Archlinux) to share the same user-level configuration.
-
-**Trade-off**: Slightly more complex structure, but much more flexible.
-
-### 2. Why use mkOutOfStoreSymlink?
-
-**Reason**: Allows editing dotfiles directly without Nix rebuilds. Configs remain in version control and can be modified interactively.
-
-**Alternative**: Use `home.file."path".source = ./path` to copy files into Nix store (immutable, requires rebuild to change).
-
-### 3. Why minimal system packages?
-
-**Reason**:
-- Portability: Same packages work on NixOS and non-NixOS
-- Rollback: Home Manager rollbacks are faster and don't affect system
-- Separation: Clear boundary between system and user concerns
-
-**Exception**: System services and daemons should be in system config.
-
-### 4. Why not use nix-darwin for everything on macOS?
-
-**Reason**: Some macOS applications (especially GUI apps) are better managed via Homebrew due to notarization, automatic updates, and integration with macOS app store.
-
-**Hybrid approach**:
-- nix-darwin for system settings and CLI tools
-- Homebrew for GUI applications (Brewfile)
-- Home Manager for user-level dotfiles
-
-### 5. Why flakes instead of channels?
-
-**Reason**:
-- **Reproducibility**: Flakes pin exact versions (flake.lock)
-- **Composability**: Easy to combine inputs
-- **Portability**: Self-contained, no channel state
-- **Modern**: Official Nix direction
-
-**Trade-off**: Requires Nix 2.4+ and experimental features enabled.
-
-## Module Interaction
-
-### Dependency Graph
-
-```
-common.nix (base, required)
-    │
-    ├── shell.nix (depends on common for home.homeDirectory)
-    │       │
-    │       └── Sources existing zsh configs
-    │
-    ├── dev-tools.nix (standalone)
-    │       │
-    │       └── Provides tools for other modules (gcc, etc.)
-    │
-    ├── neovim.nix (depends on dev-tools for LSPs)
-    │       │
-    │       └── Symlinks existing nvim config
-    │
-    └── terminal.nix (standalone)
-            │
-            └── Symlinks existing terminal configs
-```
-
-### Avoiding Circular Dependencies
-
-- **common.nix** has no dependencies
-- **shell.nix** only reads from common
-- Other modules can depend on common and dev-tools
-- No module depends on terminal (it's a leaf node)
-
-### Override Mechanism
-
-Platform-specific configs can override any module setting:
-
-```nix
-# In home/nixos-wsl.nix
-imports = [ ./modules/common.nix ];
-
-# Override a setting from common.nix
-home.sessionVariables.EDITOR = "vim";  # Override from "nvim"
-```
-
-## Extension Points
-
-### Adding a New Platform
-
-1. Create system config (if NixOS-based): `systems/newplatform/configuration.nix`
-2. Create home config: `home/newplatform.nix`
-3. Add to `flake.nix` outputs
-4. Update DEPLOYMENT.md
-
-### Adding a New Module
-
-1. Create `home/modules/newmodule.nix`
-2. Import in relevant platform configs
-3. Document in DEPLOYMENT.md
-
-### Adding Platform-Specific Packages
-
-Option 1: In platform's home config:
-```nix
-# home/nixos-wsl.nix
-home.packages = with pkgs; [ wsl-specific-tool ];
-```
-
-Option 2: Conditional in module:
-```nix
-# home/modules/dev-tools.nix
-home.packages = with pkgs; [
-  git
-] ++ lib.optionals stdenv.isLinux [
-  linux-specific-tool
-];
-```
-
-### Adding System Services (NixOS only)
-
-In system configuration:
-```nix
-# systems/native/configuration.nix
-services.myservice = {
-  enable = true;
-  # configuration
-};
-```
-
-## Security Considerations
-
-### Secrets Management
-
-**Current approach**: Manual management for simplicity
-- Git SSH keys are manually generated on each machine
-- No automated secret management to reduce complexity
-- Sensitive credentials kept outside of version control
-
-**Alternatives** (if needed in the future):
-- **agenix**: Age-encrypted secrets
-- **git-crypt**: Transparent git encryption
-- **Local overrides**: `.zshenv.local` pattern (already in .gitignore)
-
-### Unfree Packages
-
-Currently enabled globally. To restrict:
-
-```nix
-# In relevant config
-nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-  "vscode"
-  "slack"
-];
-```
-
-## Performance Optimizations
-
-### Build Caching
-
-- **Binary cache**: nixos.org enabled by default
-- **Local cache**: Nix store auto-optimizes with hard links
-- **Flake lock**: Prevents re-downloading unchanged inputs
-
-### Lazy Evaluation
-
-- Modules are only evaluated if imported
-- Unused platform configs don't slow down builds
-- Conditional package installation uses `lib.optionals`
-
-### Garbage Collection
-
-System configs enable automatic GC (weekly, 7-day retention).
-
-Manual GC:
-```bash
-# Delete generations older than 7 days
-nix-collect-garbage --delete-older-than 7d
-
-# Delete all old generations
-nix-collect-garbage -d
-```
-
-## Testing Strategy
-
-### Local Testing
-
-```bash
-# Test without switching
-sudo nixos-rebuild test --flake .#nixos-wsl
-
-# Build without activating
-nix build .#nixosConfigurations.nixos-wsl.config.system.build.toplevel
-
-# Check for errors
-nix flake check
-```
-
-### CI/CD (Future)
-
-Consider GitHub Actions:
-```yaml
-- name: Check flake
-  run: nix flake check
-
-- name: Build all configs
-  run: |
-    nix build .#nixosConfigurations.nixos-wsl.config.system.build.toplevel
-    nix build .#homeConfigurations.user@linux.activationPackage
-```
-
-## Migration Path
-
-### Phase 1: Minimal deployment (current)
-- Basic system config
-- Shared modules for dev tools
-- Symlinks to existing dotfiles
-
-### Phase 2: Enhance modules
-- Add more language-specific tools
-- Configure more applications via Nix
-- Add platform-specific optimizations
-
-### Phase 3: Advanced features
-- Secrets management
-- Custom NixOS modules
-- Per-project development shells (flake.nix in projects)
-
-### Phase 4: Full declarative system
-- All applications via Nix
-- Automated backups
-- Declarative VM configurations
-
-## Troubleshooting
-
-### Common Issues
-
-**Issue**: Symlinks conflict with existing files
-**Solution**: Remove existing files or use `home.file."path".force = true`
-
-**Issue**: Module not found
-**Solution**: Check import path is relative to file location
-
-**Issue**: Infinite recursion
-**Solution**: Check for circular dependencies between modules
-
-**Issue**: Package not found
-**Solution**: Search at search.nixos.org, ensure correct attribute path
-
-## Resources
-
-- **NixOS Manual**: https://nixos.org/manual/nixos/stable/
-- **Home Manager Manual**: https://nix-community.github.io/home-manager/
-- **Nix Pills**: https://nixos.org/guides/nix-pills/
-- **Discourse**: https://discourse.nixos.org/
-
----
-
-This architecture balances **reproducibility**, **flexibility**, and **pragmatism**. It allows you to maintain your existing workflow while gaining the benefits of declarative configuration management.
+Nix quality runs nixfmt, statix, and deadnix on Nix files. Lua formatting uses
+StyLua for Neovim and WezTerm. Shell checks parse the Bash and Zsh startup
+files. CI does not build full NixOS systems, evaluate the native host, install
+Homebrew/pacman packages, or activate Stow links.
+
+`nix develop` provides deadnix, Git, nil, nixfmt, statix, StyLua, Vim, and Zsh.

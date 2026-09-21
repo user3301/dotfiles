@@ -1,468 +1,250 @@
-# Deployment Guide for Cross-Platform Dotfiles
+# Deployment Guide
 
-This repository provides reproducible configurations for:
-- **NixOS WSL2** (Windows Subsystem for Linux)
-- **NixOS Native** (bare metal or VM)
-- **Archlinux** with Nix + Home Manager
-- **macOS** with nix-darwin (current setup)
+| Platform | Packages | Dotfiles |
+| --- | --- | --- |
+| macOS | Homebrew Bundle using the root `Brewfile` | GNU Stow |
+| Arch Linux | pacman using the root `pacman-packages.txt` | GNU Stow |
+| NixOS WSL2 | Nix flake, `nixos-wsl` | Integrated Home Manager |
+| Native NixOS | Nix flake, `nixos-native` | Integrated Home Manager |
 
-## Directory Structure
+Nix is not required or configured for macOS or Arch Linux. The native package
+lists do not mirror the larger NixOS package set.
 
-```
-dotfiles/
-├── flake.nix                  # Main flake configuration
-├── home/                      # Home Manager configurations
-│   ├── modules/              # Shared modules
-│   │   ├── common.nix        # Common settings
-│   │   ├── shell.nix         # Shell configuration
-│   │   ├── dev-tools.nix     # Development tools
-│   │   ├── neovim.nix        # Neovim configuration
-│   │   └── terminal.nix      # Terminal multiplexers & emulators
-│   ├── nixos-wsl.nix         # WSL2-specific home config
-│   ├── nixos-native.nix      # Native NixOS home config
-│   ├── archlinux.nix         # Archlinux home config
-│   └── darwin.nix            # macOS home config
-├── systems/                   # NixOS system configurations
-│   ├── wsl/
-│   │   └── configuration.nix # WSL2 system config
-│   ├── native/
-│   │   └── configuration.nix # Native NixOS system config
-│   └── darwin/
-│       └── configuration.nix # macOS system config
-└── [app-configs]/            # Existing dotfiles (nvim, herdr, wezterm, etc.)
-```
+## Before installing
 
-## Prerequisites
+Review the configuration before using it on another machine. Back up individual
+files that would conflict with symlinks; neither Stow nor Home Manager should
+overwrite your existing configuration. Do not use `stow --adopt` unless you
+intend to move existing files into this repository.
 
-All platforms need Nix with flakes enabled. Choose your platform:
+Keep the checkout at `~/dotfiles`. NixOS explicitly expects
+`/home/user3301/dotfiles`, and the Zsh local override also uses `~/dotfiles`.
+Do not run Stow on paths already managed by Home Manager.
 
-### For NixOS (WSL2 or Native)
-Nix is already installed. Ensure flakes are enabled in `/etc/nixos/configuration.nix`:
-```nix
-nix.settings.experimental-features = [ "nix-command" "flakes" ];
-```
+For macOS and Arch Linux, start with Git installed and clone the repository:
 
-### For Archlinux or other Linux distributions
-```bash
-# Install Nix using Determinate Systems installer (recommended)
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-
-# Or use official installer
-sh <(curl -L https://nixos.org/nix/install) --daemon
-```
-
-### For macOS
-```bash
-# Install Nix (if not already installed)
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-```
-
-## Bootstrap Process (First-Time Setup on Clean NixOS)
-
-**The Chicken-and-Egg Problem**: On a fresh NixOS installation (WSL2 or Native), git is not installed by default, but you need git to clone the dotfiles repository. Here's how to solve this:
-
-### Option 1: Using nix-shell (Traditional Method)
-
-```bash
-# Enter a temporary shell with git
-nix-shell -p git
-
-# Clone the dotfiles repo (while in nix-shell)
+```sh
 git clone https://github.com/user3301/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-
-# Link the NixOS configuration and build
-make setup-wsl-nixos  # for WSL2 (stages config for next boot)
-
-# Exit the temporary shell
-exit
-
-# Then restart WSL (in PowerShell): wsl --shutdown
-# Reopen NixOS and run: cd ~/dotfiles && make switch
-
-# Now git is permanently installed as part of your system!
 ```
 
-### Option 2: Using nix run (Modern Method)
+On macOS, Apple's Command Line Tools provide Git and Make; install them with
+`xcode-select --install` if needed. On Arch Linux, install Git first with
+`sudo pacman -Syu --needed git`. If Make is not yet available, use the direct
+package installation commands below; the Arch list includes `base-devel`.
 
-```bash
-# Clone using temporary git (no shell needed)
-nix run nixpkgs#git -- clone https://github.com/user3301/dotfiles.git ~/dotfiles
+## macOS
+
+Install [Homebrew](https://brew.sh/) if necessary (`make install-brew` runs its
+installer). Follow the installer's shell setup instructions so `brew` is on
+`PATH`; the prefix differs between Apple Silicon and Intel.
+
+```sh
 cd ~/dotfiles
-
-# Link the NixOS configuration and build
-make setup-wsl-nixos  # for WSL2 (stages config for next boot)
-
-# Then restart WSL (in PowerShell): wsl --shutdown
-# Reopen NixOS and run: cd ~/dotfiles && make switch
+brew bundle --file=Brewfile
 ```
 
-**After the first deployment**, git is permanently installed as part of `environment.systemPackages`, so you can use it normally for updates:
+The Brewfile installs GNU Stow, git-delta, Herdr, WezTerm, and AeroSpace. It does
+not install the full NixOS toolchain or manage macOS system preferences.
 
-```bash
+Before enabling the Zsh configuration, read [Shell and application
+dependencies](#shell-and-application-dependencies). Then preview and create links:
+
+```sh
+stow --simulate --verbose --target="$HOME" \
+  bash fastfetch git herdr lazygit nvim wezterm yazi zsh aerospace
+stow --target="$HOME" \
+  bash fastfetch git herdr lazygit nvim wezterm yazi zsh aerospace
+```
+
+`make setup-mac` runs the Brewfile installation and Stow steps in order. It
+requires Homebrew to be installed already and does not change your login shell.
+On later updates, rerun `brew bundle --file=Brewfile` for manifest changes and
+Stow when adding config files or packages.
+
+## Arch Linux
+
+Install the root package list using a full system upgrade, avoiding partial
+upgrades:
+
+```sh
 cd ~/dotfiles
-git pull
-make switch
+sudo pacman -Syu --needed - < pacman-packages.txt
 ```
 
----
+The list includes Git, OpenSSH, Stow, Zsh, eza, Lazygit, fd, ripgrep, GitHub CLI,
+xclip, `base-devel`, sudo, and which. It does not include every configured
+application: for example, Neovim and delta need to be installed separately if
+you use the editor and Git configurations.
 
-## Deployment Instructions
+After preparing the dependencies below, link the desired packages:
 
-After the first Nix build on a new machine, manually install the Herdr plugins [Auto Title](https://github.com/kryptamine/herdr-auto-title) and [reviewr](https://github.com/persiyanov/herdr-reviewr). These two plugins are not managed by Nix.
-
-### 1. NixOS WSL2
-
-**First-time setup on clean WSL2:**
-
-```bash
-# Step 1: Get temporary git access (choose one method from Bootstrap Process above)
-nix-shell -p git
-
-# Step 2: Clone the dotfiles repo
-git clone https://github.com/user3301/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-
-# Step 3: Link config, build, and stage the system for next boot
-make setup-wsl-nixos
-
-# Step 4: Exit temporary shell and restart WSL
-exit
+```sh
+stow --simulate --verbose --target="$HOME" \
+  bash fastfetch git herdr lazygit nvim wezterm yazi zsh
+stow --target="$HOME" \
+  bash fastfetch git herdr lazygit nvim wezterm yazi zsh
 ```
 
-Then in **PowerShell / Windows Terminal**:
+With Make available, `make setup-arch` installs the pacman list and then creates
+these links. AeroSpace is macOS-only and is not included.
+
+## Shell and application dependencies
+
+Stow only creates links; it does not install applications or their dependencies.
+Add desired macOS packages to `Brewfile`, or Arch packages to
+`pacman-packages.txt`, and rerun the corresponding install command.
+
+The shared Zsh config unconditionally loads Oh My Zsh from `~/.oh-my-zsh`.
+On macOS and Arch Linux, install it before opening a shell with this config.
+If that directory does not already exist:
+
+```sh
+git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
+```
+
+Zsh uses the `pygmalion` theme and the Git, z, colored-man-pages, asdf, and vi-mode
+plugins. Its `ls` aliases require eza. Both shells select `nvim` as the editor,
+so install Neovim or adjust the editor setting. McFly is optional; Bash also
+uses zoxide when installed. The asdf plugin/shim path does not install asdf or
+any language runtimes.
+
+Git and Lazygit use delta. Configure your Git identity and signing key using
+the [Git README](../git/.config/git/README.md). Language-server and formatter
+dependencies are covered in the [Neovim README](../nvim/.config/nvim/README.md).
+WezTerm's font configuration requests JetBrains Mono, Ubuntu Mono, and More
+Perfect DOS VGA; install desired fonts separately on non-NixOS machines.
+
+The default `make stow` selection is:
+`bash fastfetch git herdr lazygit nvim wezterm yazi zsh`.
+You can link a smaller subset:
+
+```sh
+make stow STOW_PACKAGES="git nvim"
+```
+
+`make setup-mac` adds `aerospace` to that selection. `vim` is another Stow
+package, but it is not linked by default: its file is `~/.config/vim/vimrc`.
+If your Vim does not discover that path, load it explicitly with
+`vim -u ~/.config/vim/vimrc` or source it from your own `~/.vimrc`.
+
+After installing Zsh, `make set-default-shell` registers it in `/etc/shells`
+if needed and calls `chsh`. Log out and back in afterward.
+
+### Migrating an existing Nix-managed macOS or Arch home
+
+Removing this repository's old Nix configuration does not uninstall Nix or
+remove links from a previously activated generation. Back up local overrides,
+install native replacements, and retire the previous Home Manager/nix-darwin
+setup using the tooling that created it before Stowing the same paths. Check
+existing links with `ls -l`; do not let Stow write through an old Nix-managed
+directory. NixOS homes should continue using Home Manager instead.
+
+## NixOS WSL2
+
+Start with an existing [NixOS-WSL](https://github.com/nix-community/NixOS-WSL)
+distribution, not Ubuntu or another WSL distribution. From a user able to run
+sudo:
+
+```sh
+nix --extra-experimental-features 'nix-command flakes' run github:user3301/dotfiles#bootstrap-wsl
+```
+
+The app in `scripts/bootstrap-nixos-wsl.sh` checks for WSL and `nixos-rebuild`,
+then switches to `nixos-wsl-bootstrap`. That configuration creates `user3301`
+and clones the repository to `/home/user3301/dotfiles` before Home Manager
+activation. An existing Git checkout is left intact; an existing non-checkout
+at that path is rejected. It can be rerun after an interrupted bootstrap.
+`DOTFILES_FLAKE` overrides the rebuild's flake reference, not the clone URL.
+
+From PowerShell, restart WSL:
+
 ```powershell
 wsl --shutdown
 ```
 
-Reopen your NixOS WSL2 distro:
-```bash
-# Step 5: Verify the configuration is active
+Reopen as `user3301`, then use the normal output for subsequent changes:
+
+```sh
 cd ~/dotfiles
 make switch
 ```
 
-> **Why `boot` then restart?** NixOS 25.05+ changed the default D-Bus
-> implementation from `dbus` to `dbus-broker`. A live `switch` on a fresh
-> install triggers a switch inhibitor for this critical component change.
-> Using `boot` stages the config cleanly, and the WSL restart activates it.
+The WSL configuration enables Zsh, Docker, Windows interoperability, and
+`nix-ld`; the SSH server is disabled. WezTerm is not installed or linked by this
+home configuration: the terminal runs on the Windows host and must be configured
+there separately.
 
-The system will have:
-- Configured WSL2 settings
-- Created user `user3301`
-- Installed Home Manager packages
-- Symlinked all dotfiles
-- Permanently installed git and other system packages
+For an existing checkout at the expected user path, `make setup-wsl-nixos` is
+the alternate boot-staging workflow. It links the WSL system module into
+`/etc/nixos/configuration.nix` and runs `nixos-rebuild boot --flake .#nixos-wsl`.
+Restart WSL afterward. Continue using explicit `--flake` commands: that module
+alone is not the full configuration.
 
-**Subsequent updates:**
-```bash
+## Native NixOS
+
+This is a configuration for an already installed x86_64 NixOS system, not a disk
+installer. It currently imports `systems/hardware/hardware-vb.nix`, which
+contains VirtualBox-specific modules and filesystem UUIDs. **Replace that
+hardware import before deploying to another machine.**
+
+If Git is unavailable, obtain it temporarily with `nix-shell -p git`. Clone as
+the intended user into `/home/user3301/dotfiles`, then:
+
+```sh
 cd ~/dotfiles
-make switch
+sudo nixos-generate-config --show-hardware-config > systems/native/hardware-configuration.nix
 ```
 
-**Important Notes for WSL2:**
-- Username is `user3301` (configured in `systems/wsl/configuration.nix`)
-- Default shell is zsh
-- WSL interoperability is enabled by default
-- Windows paths are accessible via `/mnt/c/...`
+Change the `imports` entry in `systems/native/configuration.nix` from
+`../hardware/hardware-vb.nix` to `./hardware-configuration.nix`. Add the new file
+to Git so the local Git-backed flake can see it:
 
-### 2. NixOS Native
-
-**First-time setup on clean NixOS:**
-
-```bash
-# Step 1: Get temporary git access (see Bootstrap Process above)
-nix-shell -p git
-
-# Step 2: Clone the dotfiles repo
-git clone https://github.com/user3301/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-
-# Step 3: IMPORTANT - Generate hardware configuration first
-sudo nixos-generate-config --show-hardware-config > ~/dotfiles/systems/native/hardware-configuration.nix
-
-# Step 4: Edit systems/native/configuration.nix to uncomment the hardware import:
-# imports = [ ./hardware-configuration.nix ];
-
-# Step 5: Customize your setup in systems/native/configuration.nix:
-#   - Choose display manager, desktop environment
-#   - Configure graphics drivers
-#   - Set hostname, timezone, locale
-
-# Step 6: Deploy the system configuration
-sudo nixos-rebuild switch --flake .#nixos-native
-
-# Step 7: Exit temporary shell
-exit
+```sh
+git add systems/native/hardware-configuration.nix
 ```
 
-**Subsequent updates:**
-```bash
-cd ~/dotfiles
+Review bootloader, user, hostname, networking, and graphics settings. The
+current desktop uses X11, Qtile, and LightDM; NetworkManager and the SSH server
+are enabled, with password and root SSH login disabled.
+
+```sh
+sudo nixos-rebuild build --flake .#nixos-native
 sudo nixos-rebuild switch --flake .#nixos-native
 ```
 
-**Customization:**
-Before deploying, edit `systems/native/configuration.nix` to:
-- Choose display manager (lightdm, gdm, etc.)
-- Choose desktop environment (GNOME, KDE, i3, etc.)
-- Configure graphics drivers (NVIDIA, AMD, Intel)
-- Set timezone and locale
-- Configure networking hostname
+If flakes are not enabled yet, pass the setting to the rebuild explicitly:
 
-### 3. Archlinux with Nix + Home Manager
-
-**First-time setup:**
-
-```bash
-# 1. Install Nix (if not already done)
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-
-# 2. Clone dotfiles
-git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-
-# 3. Edit home/archlinux.nix to set your actual username
-# Change 'user3301' to your actual Arch username
-
-# 4. Deploy Home Manager configuration
-nix run home-manager/master -- switch --flake .#user@linux
-
-# Note: Replace 'user@linux' with 'username@linux' if you changed the username
+```sh
+sudo env NIX_CONFIG='experimental-features = nix-command flakes' \
+  nixos-rebuild build --flake .#nixos-native
 ```
 
-**Subsequent updates:**
-```bash
-cd ~/dotfiles
-home-manager switch --flake .#user@linux
-```
+Use the same prefix for `switch`. The deployed configuration enables flakes
+permanently.
 
-**Important Notes for Archlinux:**
-- This is a **standalone Home Manager** setup (no NixOS)
-- System packages should still be installed via `pacman`
-- Nix manages development tools and user applications
-- Username must match your actual Arch username
-- Edit `home/archlinux.nix` to set correct username and home directory
+Both NixOS outputs hard-code `user3301`. To change it, update the system user,
+the matching `home-manager.users` key in `flake.nix`, and `home.username` and
+`home.homeDirectory` in the selected home module. WSL bootstrap additionally
+hard-codes its user and clone location in the flake and bootstrap script.
 
-### 4. macOS (Current Setup)
+## Local settings and manual steps
 
-**First-time setup:**
+The following local overrides are already ignored by Git:
 
-```bash
-# Already set up via nix-darwin
-# Use existing Makefile commands:
-make setup-mac
-```
+| File | Loaded by |
+| --- | --- |
+| `git/.config/git/config.local` | Shared Git config, after the defaults |
+| `zsh/.zshenv.local` | `~/.zshenv`, from `~/dotfiles` |
+| `bash/.bashrc.local` | Interactive Bash, from `$DOTFILES/bash` |
 
-**Subsequent updates:**
-```bash
-darwin-rebuild switch --flake .#aarch64  # For Apple Silicon
-# or
-darwin-rebuild switch --flake .#x86_64   # For Intel Macs
-```
+Do not commit credentials or private keys. There is no automated secrets
+provisioning.
 
-## Configuration Customization
+Install Herdr's [Auto Title](https://github.com/kryptamine/herdr-auto-title) and
+[reviewr](https://github.com/persiyanov/herdr-reviewr) plugins manually when using
+Herdr. The tracked config binds `Alt+r` to reviewr; plugin state is ignored.
+Herdr and Fastfetch auto-start snippets in `.zshrc` are commented out.
 
-### Changing Username or Email
-
-Edit the appropriate home configuration file:
-- **WSL2**: `home/nixos-wsl.nix`
-- **Native NixOS**: `home/nixos-native.nix`
-- **Archlinux**: `home/archlinux.nix`
-- **macOS**: `home/darwin.nix`
-
-```nix
-programs.git = {
-  enable = true;
-  userName = "Your Name";
-  userEmail = "your.email@example.com";
-};
-```
-
-### Adding New Packages
-
-**System-wide packages (NixOS only):**
-Edit `systems/{wsl,native}/configuration.nix`:
-```nix
-environment.systemPackages = with pkgs; [
-  vim
-  git
-  # Add your packages here
-];
-```
-
-**User packages (all platforms):**
-Edit `home/modules/dev-tools.nix` or your platform-specific home config:
-```nix
-home.packages = with pkgs; [
-  # Add your packages here
-  htop
-  docker
-];
-```
-
-### Adding New Modules
-
-Create a new module in `home/modules/` and import it in your platform configs:
-
-```nix
-# home/modules/mymodule.nix
-{ config, pkgs, lib, ... }:
-{
-  # Your module configuration
-}
-
-# Then import in home/nixos-wsl.nix (or other configs)
-imports = [
-  ./modules/common.nix
-  ./modules/mymodule.nix  # Add this
-];
-```
-
-## Updating Flake Inputs
-
-```bash
-# Update all inputs
-nix flake update
-
-# Update specific input
-nix flake lock --update-input nixpkgs
-
-# Then rebuild your system
-sudo nixos-rebuild switch --flake .#nixos-wsl  # or your config
-```
-
-## Troubleshooting
-
-### Symlinks not working on Archlinux
-
-On non-NixOS systems, Home Manager uses `mkOutOfStoreSymlink` which requires absolute paths. Ensure `config.home.homeDirectory` is set correctly in `home/archlinux.nix`.
-
-### "conflicting files" error
-
-Home Manager won't overwrite existing files. Either:
-1. Backup and remove conflicting files: `mv ~/.config/nvim ~/.config/nvim.bak`
-2. Or let Home Manager manage the files by using `home.file."path".force = true`
-
-### WSL2 specific issues
-
-**Permission denied on /etc/nixos:**
-```bash
-sudo mkdir -p /etc/nixos
-sudo chown -R $USER:$USER /etc/nixos
-```
-
-**Windows paths not accessible:**
-Ensure WSL interop is enabled in `systems/wsl/configuration.nix`:
-```nix
-wsl.interop.register = true;
-```
-
-### Flake evaluation errors
-
-```bash
-# Check for syntax errors
-nix flake check
-
-# Show detailed evaluation
-nix flake show --allow-import-from-derivation
-```
-
-## Migration Strategy
-
-### From existing non-Nix setup
-
-1. **Backup existing configs**:
-   ```bash
-   mv ~/.config ~/.config.backup
-   ```
-
-2. **Deploy minimal configuration first**:
-   Comment out modules in your home config and add them incrementally
-
-3. **Test each module**:
-   After adding each module, rebuild and verify it works
-
-4. **Keep both systems during transition**:
-   You can keep your old configs and gradually migrate
-
-### From NixOS without flakes
-
-1. **Enable flakes** in your current `/etc/nixos/configuration.nix`:
-   ```nix
-   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-   ```
-
-2. **Rebuild to enable flakes**:
-   ```bash
-   sudo nixos-rebuild switch
-   ```
-
-3. **Then switch to flake configuration**:
-   ```bash
-   cd ~/dotfiles
-   sudo nixos-rebuild switch --flake .#nixos-wsl
-   ```
-
-## Platform-Specific Notes
-
-### NixOS WSL2
-- **Pros**: Full NixOS experience, declarative system config
-- **Cons**: WSL2 limitations (no systemd by default, handled by nixos-wsl)
-- **Use case**: Development environment on Windows
-
-### NixOS Native
-- **Pros**: Full system control, best Nix experience
-- **Cons**: Learning curve, need to configure hardware
-- **Use case**: Primary workstation, servers
-
-### Archlinux + Nix/Home Manager
-- **Pros**: Best of both worlds (pacman + Nix), gradual adoption
-- **Cons**: Two package managers, can't configure system via Nix
-- **Use case**: Already on Arch, want reproducible user environment
-
-### macOS + nix-darwin
-- **Pros**: Declarative package management on macOS
-- **Cons**: Still need Homebrew for some GUI apps, macOS updates can break Nix
-- **Use case**: Development on macOS
-
-## Advanced Usage
-
-### Testing configurations without switching
-
-```bash
-# NixOS
-sudo nixos-rebuild test --flake .#nixos-wsl
-
-# Home Manager
-home-manager build --flake .#user@linux
-./result/activate
-```
-
-### Building for different architecture
-
-```bash
-# Build for ARM64 from x86_64
-nix build .#homeConfigurations.user@linux-arm64.activationPackage \
-  --system aarch64-linux
-```
-
-### Using direnv (optional)
-
-Create `.envrc` in project directories:
-```bash
-use flake
-```
-
-Then `direnv allow` to auto-load Nix environments.
-
-## Support
-
-For issues or questions:
-1. Check the NixOS Wiki: https://nixos.wiki/
-2. NixOS Discourse: https://discourse.nixos.org/
-3. Home Manager Manual: https://nix-community.github.io/home-manager/
-
----
-
-**Remember**: The beauty of this setup is reproducibility. Once configured, you can deploy identical environments across all your machines with a single command!
+See [NixOS maintenance](README.nix.md) and the
+[command reference](QUICK_REFERENCE.md) for updates and troubleshooting.

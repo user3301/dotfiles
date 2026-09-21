@@ -1,12 +1,48 @@
-Fully Reproducible dotfiles config
+Dotfiles
+========
 
-"Dotfiles managed by Nix: because spending 40 hours to save 4 minutes is a lifestyle. Fully reproducible - I've tested it on my Windows gaming rig (NixOS-WSL2), my wife's MacBook Air, and my own laptop (I use Arch BTW). If it works there, it'll work anywhere."
+Shared application configuration with platform-specific package management:
 
-Follows the XDG Base Directory Specification - keeping your home directory clean and uncluttered by organizing all configuration files in ~/.config instead of scattering dotfiles everywhere.
+  NixOS WSL2 / native NixOS   Nix flakes + integrated Home Manager
+  macOS                      Homebrew Bundle (Brewfile) + GNU Stow
+  Arch Linux                 pacman (pacman-packages.txt) + GNU Stow
 
-For Nix setup and usage, see docs/README.nix.md.
+Nix is only used for NixOS. There are no macOS or standalone Linux Home
+Manager configurations. The native package lists are smaller than the NixOS
+development environment; they do not install every configured application.
 
-FAQ
+Most application configs live under .config in Stow-compatible directories.
+Zsh and Bash startup files live directly in the home directory. Symlinks keep
+the checkout editable; application config changes take effect after reloading
+the application, without a Nix rebuild.
 
-Q: Why Nix?
-A: Because I like pain and reproducibility.
+Getting started
+---------------
+
+Read docs/DEPLOYMENT.md first for prerequisites, shell dependencies, existing
+file conflicts, and native NixOS hardware customization.
+
+From a checkout at ~/dotfiles:
+
+  macOS:       make setup-mac     (requires Homebrew on PATH)
+  Arch Linux:  make setup-arch    (requires sudo and pacman)
+
+For a fresh, already installed NixOS-WSL distribution:
+
+  nix --extra-experimental-features 'nix-command flakes' run github:user3301/dotfiles#bootstrap-wsl
+
+For ongoing NixOS WSL updates: make switch
+For native NixOS: sudo nixos-rebuild switch --flake .#nixos-native
+Both NixOS configurations use /home/user3301/dotfiles.
+
+Documentation
+-------------
+
+  docs/DEPLOYMENT.md              Installation, migration, and local settings
+  docs/QUICK_REFERENCE.md         Common commands
+  docs/ARCHITECTURE.md            Source layout, modules, and CI
+  docs/README.nix.md              NixOS usage and maintenance
+  docs/EXAMPLE-VERSION-PINNING.md  The Nix package pins used by this repo
+  docs/IMPLEMENTATION_SUMMARY.md  Current platform support and boundaries
+  git/.config/git/README.md       Git identity and SSH commit signing
+  nvim/.config/nvim/README.md     LazyVim and language-server setup

@@ -1,365 +1,135 @@
-# Cross-Platform Dotfiles with Nix Flakes
+# NixOS Dotfiles
 
-Fully reproducible dotfiles configuration supporting:
-- **NixOS WSL2** (Windows Subsystem for Linux)
-- **NixOS Native** (bare metal or VM)
-- **Archlinux** with Nix + Home Manager
-- **macOS** with nix-darwin
+Nix manages **native NixOS and NixOS WSL2 only**. For macOS (Homebrew + Stow) or
+Arch Linux (pacman + Stow), use the [deployment guide](DEPLOYMENT.md).
 
-> "Dotfiles managed by Nix: because spending 40 hours to save 4 minutes is a lifestyle. Fully reproducible - I've tested it on my Windows gaming rig (NixOS-WSL2), my wife's MacBook Air, and my own laptop (I use Arch BTW). If it works there, it'll work anywhere."
+## First deployment
 
-## Quick Start
+The repository includes `flake.lock`; use those revisions for the initial
+deployment rather than updating inputs immediately.
 
-For Nix installation prerequisites and alternative installers, see the [deployment guide](DEPLOYMENT.md#prerequisites). The repository includes `flake.lock`; use it for the initial deployment rather than updating package versions.
+On an existing NixOS-WSL distribution:
 
-After the first Nix build on a new machine, manually install the Herdr plugins [Auto Title](https://github.com/kryptamine/herdr-auto-title) and [reviewr](https://github.com/persiyanov/herdr-reviewr). These two plugins are not managed by Nix.
-
-Choose your platform:
-
-### NixOS WSL2
-
-On a fresh NixOS-WSL installation, run:
-
-```bash
+```sh
 nix --extra-experimental-features 'nix-command flakes' run github:user3301/dotfiles#bootstrap-wsl
 ```
 
-`nixos-anywhere` is not used here because WSL has already created and mounted
-the distribution's virtual disk; `nixos-anywhere` is intended to provision an
-SSH target and normally repartition its disks.
+This creates the `user3301` configuration and clones the mutable checkout into
+`/home/user3301/dotfiles` before Home Manager activation. Restart with
+`wsl --shutdown` from PowerShell and reopen the distribution.
 
-The bootstrap configuration clones the repository to
-`/home/user3301/dotfiles` as part of NixOS activation, before Home Manager
-starts. This remains reliable even when changing WSL's default user terminates
-the original shell session. It is safe to rerun after an interrupted bootstrap.
-When it completes, run `wsl --shutdown` from PowerShell and reopen the
-distribution.
+For native NixOS, first clone the checkout and replace the checked-in
+VirtualBox hardware import as described in
+[Native NixOS deployment](DEPLOYMENT.md#native-nixos). Then:
 
-### NixOS Native
-```bash
-git clone <your-repo> ~/dotfiles
-cd ~/dotfiles
-
-# Generate hardware config first
-sudo nixos-generate-config --show-hardware-config > systems/native/hardware-configuration.nix
-
-# Edit systems/native/configuration.nix to uncomment hardware import
-# Then deploy
+```sh
 sudo nixos-rebuild switch --flake .#nixos-native
 ```
 
-### Archlinux + Nix/Home Manager
+Both host configurations are x86_64 and integrate Home Manager. There is no
+separate `home-manager switch --flake` workflow. Most packages and application
+links are defined in `home/modules/`; system settings are under `systems/`.
 
-Also suitable for other Linux distributions. Check your architecture with `uname -m` and choose the matching command below.
+## Editing and applying changes
 
-```bash
-# Install Nix first
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-
-git clone https://github.com/user3301/dotfiles.git ~/dotfiles
+```sh
 cd ~/dotfiles
 
-# Edit home/archlinux.nix to set home.username and home.homeDirectory
-# Then deploy on x86_64 Linux:
-nix run home-manager/master -- switch --flake .#user@linux
+# WSL: rebuild the system and integrated home together
+make switch
 
-# Or on ARM64 Linux:
-nix run home-manager/master -- switch --flake .#user@linux-arm64
+# Native NixOS
+sudo nixos-rebuild switch --flake .#nixos-native
 ```
 
-The `user@linux` and `user@linux-arm64` names are fixed flake outputs, not placeholders for your username.
+Edit shared user packages in the appropriate `home/modules/*.nix` file, or
+platform packages in `home/nixos-wsl.nix` / `home/nixos-native.nix`. Add new
+modules to the selected home's imports. Git-backed flakes exclude new,
+untracked files until they are added with `git add`.
 
-### macOS + nix-darwin
+Application configuration is linked to the checkout, so editing Lua, TOML,
+shell, or Git config normally only needs an application reload. Do not Stow
+over the links managed by Home Manager. Git identity belongs in the ignored
+`git/.config/git/config.local`, not a generated `programs.git` configuration.
 
-From the repository checkout, install Nix, activate nix-darwin with Home Manager, and install Homebrew apps:
+Keep `system.stateVersion` and `home.stateVersion` at their existing values
+unless you have reviewed the relevant migration guidance. They select
+compatibility defaults; they are not the package channel version.
 
-```bash
-make setup-mac
-```
+## Updating packages
 
-If Nix is already installed, activate the Nix configuration directly instead:
-
-```bash
-uname -m
-
-# Apple Silicon (uname -m reports arm64):
-nix run nix-darwin -- switch --flake .#aarch64
-
-# Intel (uname -m reports x86_64):
-nix run nix-darwin -- switch --flake .#x86_64
-```
-
-Before activation, customize `home.username` and `home.homeDirectory` in `home/darwin.nix` and the corresponding `home-manager.users` key in `flake.nix` if needed. Usernames and home directories are configured explicitly, not detected from `$USER`. Home Manager is integrated with nix-darwin; this flake does not provide standalone macOS Home Manager outputs.
-
-## What's Included
-
-### Development Tools
-- **Editors**: Neovim
-- **Terminal**: Herdr, Wezterm, Yazi
-- **Shell**: Zsh (primary, oh-my-zsh + mcfly) with a minimal Bash fallback (zoxide + mcfly)
-- **Version Control**: Git, GitHub CLI, Lazygit
-- **CLI Tools**: ripgrep, fd, bat, fzf, jq, and more
-- **Rust Toolchain**: rustc, Cargo, Clippy, and rustfmt (managed by Nix)
-- **Language Servers**: For Nix, Lua, TypeScript, Python, Rust, Go
-
-### Configuration Management
-- **Modular**: Shared modules + platform-specific overrides
-- **Symlinked**: Your existing dotfiles are symlinked (edit directly, no rebuild needed)
-- **Stow-compatible**: each top-level config directory is also a GNU Stow package, so the same repo works on non-Nix machines (`stow bash zsh nvim`)
-- **Reproducible**: Same environment across all machines
-- **Declarative**: Everything in version control
-
-## Directory Structure
-
-```
-dotfiles/
-├── flake.nix                    # Main configuration entry point
-│
-├── home/                        # Home Manager configurations
-│   ├── modules/                 # Shared modules
-│   │   ├── common.nix          # Base settings
-│   │   ├── shell.nix           # Zsh + Bash configuration
-│   │   ├── dev-tools.nix       # Development packages
-│   │   ├── neovim.nix          # Neovim + LSPs
-│   │   └── terminal.nix        # Herdr, Wezterm, Yazi
-│   │
-│   ├── nixos-wsl.nix           # WSL2 home config
-│   ├── nixos-native.nix        # Native NixOS home config
-│   ├── archlinux.nix           # Archlinux home config
-│   └── darwin.nix              # macOS home config
-│
-├── systems/                     # NixOS system configurations
-│   ├── wsl/
-│   │   └── configuration.nix   # WSL2 system config
-│   ├── native/
-│   │   └── configuration.nix   # Native NixOS system config
-│   └── darwin/
-│       └── configuration.nix   # macOS system config
-│
-├── [existing dotfiles]/         # Your actual configs
-│   ├── nvim/.config/nvim/
-│   ├── herdr/.config/herdr/
-│   ├── wezterm/.config/wezterm/
-│   ├── yazi/.config/yazi/
-│   ├── zsh/
-│   └── bash/                    # Minimal fallback shell
-│
-└── docs/
-    ├── DEPLOYMENT.md           # Detailed deployment guide
-    ├── ARCHITECTURE.md         # Architecture documentation
-    └── QUICK_REFERENCE.md      # Command cheat sheet
-```
-
-## Documentation
-
-- **[DEPLOYMENT.md](DEPLOYMENT.md)**: Detailed deployment instructions for each platform
-- **[ARCHITECTURE.md](ARCHITECTURE.md)**: Architecture design and rationale
-- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)**: Command cheat sheet and quick tips
-
-## Common Tasks
-
-### Update Configuration
-```bash
-# NixOS
+```sh
 cd ~/dotfiles
+nix flake update                  # all inputs
+# Or update only selected inputs:
+nix flake update nixpkgs home-manager
+
 sudo nixos-rebuild switch --flake .#nixos-wsl
-
-# Archlinux / other Linux (use .#user@linux-arm64 on ARM64)
-cd ~/dotfiles
-home-manager switch --flake .#user@linux
-
-# macOS Apple Silicon (use .#x86_64 on Intel)
-cd ~/dotfiles
-darwin-rebuild switch --flake .#aarch64
+# Use .#nixos-native for the native host
 ```
 
-### Add New Package
-Edit `home/modules/dev-tools.nix`:
-```nix
-home.packages = with pkgs; [
-  # Add your package here
-  htop
-];
-```
-Then rebuild.
+Review and commit `flake.lock` alongside intentional input changes. Updating
+the lockfile alone does not activate packages. The Azure CLI revision and
+Copilot CLI version/hash override require deliberate edits; see
+[version pinning](EXAMPLE-VERSION-PINNING.md).
 
-### Update All Packages
-```bash
-nix flake update
-```
+`make update` updates inputs; `make upgrade` updates and rebuilds WSL.
+`make switch`, `make build`, and `make upgrade` are WSL-specific, not host
+auto-detection commands.
 
-Then run your platform's command under [Update Configuration](#update-configuration) to activate the updated packages. Commit the updated `flake.lock` to keep package versions reproducible.
+## Validation and troubleshooting
 
-### Inspect the Flake and Search Packages
-```bash
-# Check the configuration
+```sh
+nix flake show
 nix flake check
 
-# Show available outputs
-nix flake show
+# Build without activation
+sudo nixos-rebuild build --flake .#nixos-wsl
 
-# Search for a package
-nix search nixpkgs <package-name>
+# Evaluate with a trace if necessary
+nix eval --show-trace --raw \
+  '.#nixosConfigurations.nixos-wsl.config.system.build.toplevel.drvPath'
 ```
 
-### Rollback
-```bash
-# NixOS
+`nixos-rebuild test` **does activate** the configuration, but does not make it
+the boot default. Use `build` when you want no running-system changes.
+
+CI's narrower quality/evaluation commands are listed in
+[Architecture](ARCHITECTURE.md#existing-ci). Native hardware must be reviewed
+on the target machine even if evaluation succeeds.
+
+For initial commands on a system without flakes enabled, use
+`nix --extra-experimental-features 'nix-command flakes' ...`. The bootstrap app
+also enables those features for its rebuild.
+
+If Home Manager reports a file conflict, inspect and back up that specific
+path, then rebuild. Do not force replacement of the entire `~/.config`
+directory. Inspect activation failures with:
+
+```sh
+journalctl -u home-manager-user3301.service -b
+```
+
+## Rollback and garbage collection
+
+```sh
 sudo nixos-rebuild switch --rollback
-
-# Home Manager
-home-manager switch --rollback
+make generations
+make gc
 ```
 
-## Platform-Specific Features
+Integrated Home Manager packages and generated configuration belong to the
+system generation. Mutable symlink targets are not rolled back; restore
+application files separately from Git if necessary.
 
-### NixOS WSL2
-- Full NixOS experience on Windows
-- WSL interoperability enabled
-- Windows paths accessible via `/mnt/c/`
-- Username: `user3301`
+Both NixOS systems enable weekly garbage collection with seven-day retention.
+`make clean` runs `sudo nix-collect-garbage --delete-older-than 7d`; this removes
+older system generations and can eliminate rollback options. It is not a
+build-error recovery step.
 
-### NixOS Native
-- Full system control
-- Hardware configuration included
-- Desktop environment support
-- Username: `user3301`
+## Manual components
 
-### Archlinux + Nix/Home Manager
-- Best of both worlds (pacman + Nix)
-- System packages via pacman
-- User packages via Nix
-- Gradual migration path
-
-### macOS + nix-darwin
-- System settings via Nix
-- GUI apps via Homebrew (Brewfile)
-- User configs via Home Manager
-
-## Design Principles
-
-1. **Reproducibility**: Same command, same result, every time
-2. **Modularity**: Shared code across platforms, platform-specific when needed
-3. **Flexibility**: Works on NixOS and non-NixOS systems
-4. **Familiarity**: Preserves your existing dotfiles structure
-5. **Separation**: System vs. user configuration
-
-## Advanced Features
-
-### Secrets Management
-**Current approach**: Manual management for simplicity
-- Generate SSH keys manually on each machine: `ssh-keygen -t ed25519`
-- Keep sensitive credentials outside version control
-- Use local overrides (`.zshenv.local` / `.bashrc.local` pattern) for machine-specific secrets
-
-### Development Shells
-Create project-specific environments:
-```nix
-# In your project directory
-{
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-  outputs = { nixpkgs, ... }: {
-    devShells.x86_64-linux.default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
-      buildInputs = [ nodejs python3 ];
-    };
-  };
-}
-```
-
-Then: `nix develop`
-
-### CI/CD
-Add GitHub Actions to test configurations:
-```yaml
-- name: Check flake
-  run: nix flake check
-```
-
-## Troubleshooting
-
-### "experimental features not enabled"
-```bash
-# NixOS: Add to configuration.nix
-nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-# Non-NixOS: Add to ~/.config/nix/nix.conf
-experimental-features = nix-command flakes
-```
-
-### Conflicting files
-```bash
-# Backup existing configs
-mv ~/.config/nvim ~/.config/nvim.backup
-
-# Then rebuild
-home-manager switch --flake .#user@linux
-```
-
-### Build errors
-```bash
-# Show detailed trace
-nix build --show-trace .#nixosConfigurations.nixos-wsl.config.system.build.toplevel
-
-# Clean and rebuild
-nix-collect-garbage -d
-sudo nixos-rebuild switch --flake .#nixos-wsl
-```
-
-## Migration Guide
-
-### From existing non-Nix setup
-1. Start with minimal configuration
-2. Add modules incrementally
-3. Test each change
-4. Keep backups during transition
-
-### From NixOS without flakes
-1. Enable flakes in current config
-2. Rebuild with `nixos-rebuild switch`
-3. Clone this repo
-4. Switch to flake: `sudo nixos-rebuild switch --flake .#nixos-wsl`
-
-### From home-manager without flakes
-1. Backup current config
-2. Install from this repo
-3. Gradually migrate custom settings
-
-## Contributing
-
-Feel free to:
-- Report issues
-- Suggest improvements
-- Share your configurations
-- Submit pull requests
-
-## Resources
-
-- [NixOS Manual](https://nixos.org/manual/nixos/stable/)
-- [Home Manager Manual](https://nix-community.github.io/home-manager/)
-- [Nix Pills](https://nixos.org/guides/nix-pills/)
-- [NixOS Discourse](https://discourse.nixos.org/)
-- [NixOS Wiki](https://nixos.wiki/)
-
-## FAQ
-
-**Q: Why Nix?**
-A: Reproducibility, declarative configuration, and one package manager to rule them all.
-
-**Q: Can I use this on Ubuntu/Fedora?**
-A: Yes! Use the Archlinux configuration as a template (standalone Home Manager).
-
-**Q: Do I need to use Nix for everything?**
-A: No. You can keep using your OS package manager for system packages and use Nix for user-level tools.
-
-**Q: What if I want to customize?**
-A: All configurations are modular. Edit the relevant module or create a new one.
-
-**Q: How do I update packages?**
-A: `nix flake update` updates all inputs, then rebuild your configuration.
-
-**Q: Can I test changes without breaking my system?**
-A: Yes! Use `sudo nixos-rebuild test` or `home-manager build` to test first.
-
----
-
-**Remember**: The goal is reproducibility. Once configured, you can deploy this exact environment on any new machine with a single command!
+LazyVim downloads plugins independently of Nix. Herdr's Auto Title and reviewr
+plugins need manual installation. SSH keys, signing keys, and credentials are
+not provisioned. See [deployment](DEPLOYMENT.md#local-settings-and-manual-steps)
+and the [Neovim README](../nvim/.config/nvim/README.md).
