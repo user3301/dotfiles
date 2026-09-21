@@ -1,269 +1,100 @@
-# How to Pin Specific Package Versions in Nix
+# Nix Package Version Pinning
 
-This guide shows how to use different versions of packages from different nixpkgs commits.
+This guide describes the overrides in `flake.nix`. They apply to NixOS only;
+macOS and Arch Linux packages come from `Brewfile` and `pacman-packages.txt`.
 
-## Scenario
+## Main package set
 
-You want:
-- **Package A** (e.g., neovim 0.11.5) from nixpkgs commit `abc123`
-- **Package B** (e.g., ripgrep 14.0.0) from nixpkgs commit `def456`
-- **Everything else** from the latest unstable
+`nixpkgs` tracks `nixos-26.05` and Home Manager tracks `release-26.05`.
+`flake.lock` pins their resolved commits. Updates are explicit:
 
-## Step 1: Find the Right Commits
-
-### Method 1: Using nixpkgs commit history
-
-1. Go to https://github.com/NixOS/nixpkgs/commits/master
-2. Search for commits that updated your package
-3. Or use GitHub search: `repo:NixOS/nixpkgs neovim 0.11.5`
-
-### Method 2: Using search.nixos.org
-
-1. Visit https://search.nixos.org/packages
-2. Search for your package (e.g., "neovim")
-3. Select different channels/versions to see what's available
-4. Note the channel name (e.g., `nixos-24.05`, `nixpkgs-unstable`)
-
-### Method 3: Using Nix CLI to check versions
-
-```bash
-# Check version in current unstable
-nix eval nixpkgs#neovim.version
-
-# Check version at a specific commit
-nix eval github:NixOS/nixpkgs/abc123def456#neovim.version
-
-# Search for a package
-nix search nixpkgs#neovim
+```sh
+nix flake update nixpkgs home-manager
 ```
 
-## Step 2: Update flake.nix
+This updates the lockfile, not the running system. Rebuild the selected NixOS
+configuration afterward.
 
-Add additional nixpkgs inputs for each version you need:
+## Azure CLI: a separate nixpkgs revision
+
+The flake pins `nixpkgs-azure-cli` to
+`286615174c6bd765907ef9975d0acdc799c7bf7e`, which provides Azure CLI 2.77.0.
+It does not follow the main nixpkgs input. The overlay imports that package set
+for the host system and exposes its Azure CLI:
 
 ```nix
-{
-  description = "Gaiz's dotfiles - Nix flake configuration";
-
-  inputs = {
-    # Main nixpkgs (latest unstable)
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-
-    # Pinned version for Package A (neovim 0.11.5)
-    # Replace 'abc123def456' with actual commit hash
-    nixpkgs-neovim.url = "github:NixOS/nixpkgs/abc123def456";
-
-    # Pinned version for Package B (ripgrep 14.0.0)
-    # Replace 'def789ghi012' with actual commit hash
-    nixpkgs-ripgrep.url = "github:NixOS/nixpkgs/def789ghi012";
-
-    # You can also use branch names or tags
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
-
-    nix-darwin = {
-      url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-
-  outputs = { self, nixpkgs, nixpkgs-neovim, nixpkgs-ripgrep, nix-darwin, home-manager, ... }:
-    let
-      username = builtins.getEnv "USER";
-
-      # Helper to create package sets for different nixpkgs
-      mkPkgs = system: nixpkgsInput: import nixpkgsInput {
-        inherit system;
-        config.allowUnfree = true;
-      };
-
-      mkSystem = system:
-        let
-          pkgs = mkPkgs system nixpkgs;
-          pkgs-neovim = mkPkgs system nixpkgs-neovim;
-          pkgs-ripgrep = mkPkgs system nixpkgs-ripgrep;
-        in
-        nix-darwin.lib.darwinSystem {
-          inherit system;
-          modules = [
-            home-manager.darwinModules.home-manager
-            {
-              nix.settings.experimental-features = "nix-command flakes";
-              system.stateVersion = 5;
-
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.${username} = import ./home.nix;
-
-              # Pass the custom package sets to home-manager
-              home-manager.extraSpecialArgs = {
-                inherit pkgs-neovim pkgs-ripgrep;
-              };
-            }
-          ];
-        };
-
-      mkHome = system:
-        let
-          pkgs = mkPkgs system nixpkgs;
-          pkgs-neovim = mkPkgs system nixpkgs-neovim;
-          pkgs-ripgrep = mkPkgs system nixpkgs-ripgrep;
-        in
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [
-            ./home.nix
-          ];
-          # Pass the custom package sets to home.nix
-          extraSpecialArgs = {
-            inherit pkgs-neovim pkgs-ripgrep;
-          };
-        };
-    in
-    {
-      darwinConfigurations = {
-        "aarch64" = mkSystem "aarch64-darwin";
-        "x86_64" = mkSystem "x86_64-darwin";
-      };
-
-      homeConfigurations = {
-        "${username}-aarch64" = mkHome "aarch64-darwin";
-        "${username}-x86_64" = mkHome "x86_64-darwin";
-      };
-    };
-}
+azureCliOverlay = final: _prev: {
+  inherit (import inputs.nixpkgs-azure-cli { inherit (final.stdenv.hostPlatform) system; })
+    azure-cli
+    ;
+};
 ```
 
-## Step 3: Update home.nix
+`mkSystem` installs the overlay in `nixpkgs.overlays`. Because integrated Home
+Manager uses the global package set, `pkgs.azure-cli` in
+`home/modules/dev-tools.nix` resolves to the pinned version.
 
-Use the pinned packages in your home configuration:
+Inspect the actual package selected by the system:
 
-```nix
-{ config, pkgs, lib, pkgs-neovim ? pkgs, pkgs-ripgrep ? pkgs, ... }:
-
-let
-  username = builtins.getEnv "USER";
-in
-{
-  home.username = username;
-  home.homeDirectory = lib.mkDefault "/Users/${username}";
-  home.stateVersion = "24.11";
-
-  programs.home-manager.enable = true;
-
-  home.packages = [
-    # Use default nixpkgs
-    pkgs.git
-    pkgs.fzf
-    pkgs.bat
-
-    # Use pinned neovim from specific commit
-    pkgs-neovim.neovim
-
-    # Use pinned ripgrep from specific commit
-    pkgs-ripgrep.ripgrep
-  ];
-}
+```sh
+nix eval --raw '.#nixosConfigurations.nixos-wsl.pkgs.azure-cli.version'
 ```
 
-## Step 4: Lock and Build
+To change it, choose a nixpkgs commit containing the desired package, change
+the input URL, and run `nix flake lock`. Updating other inputs does not move
+this explicit commit pin.
 
-```bash
-# Generate/update flake.lock
-nix flake lock
+## Copilot CLI: version and source override
 
-# Check what versions you'll get
-nix eval .#homeConfigurations.${USER}-aarch64.config.home.packages.0.version
+`copilotOverlay` overrides the existing `github-copilot-cli` derivation's
+version and source. It currently selects 1.0.70 and platform-specific
+`linux-x64` / `linux-arm64` release archives, each with its own hash, while
+retaining the nixpkgs packaging logic.
 
-# Build and activate
-darwin-rebuild switch --flake .#aarch64
-# OR
-home-manager switch --flake .#$USER-aarch64
+```sh
+nix eval --raw '.#nixosConfigurations.nixos-wsl.pkgs.github-copilot-cli.version'
 ```
 
-## Alternative: Using Overlays (Advanced)
+When changing this override, update both the version and each supported
+platform's archive hash in `flake.nix`. A version edit without matching hashes
+is insufficient. Build the package before deploying:
 
-If you prefer, you can use overlays to override package versions:
-
-```nix
-# In home.nix
-{ config, pkgs, lib, ... }:
-
-{
-  nixpkgs.overlays = [
-    # Override neovim to a specific version
-    (final: prev: {
-      neovim = prev.neovim.overrideAttrs (oldAttrs: rec {
-        version = "0.11.5";
-        src = prev.fetchFromGitHub {
-          owner = "neovim";
-          repo = "neovim";
-          rev = "v${version}";
-          hash = "sha256-..."; # Use nix-prefetch-url to get this
-        };
-      });
-    })
-  ];
-
-  home.packages = with pkgs; [
-    neovim  # Will use overridden version
-    git
-  ];
-}
+```sh
+nix build --no-link '.#nixosConfigurations.nixos-wsl.pkgs.github-copilot-cli'
 ```
 
-## Finding Commit Hashes
+The flake comment links the upstream nixpkgs issue motivating this workaround.
+Remove the overlay when the pinned main package set supplies the desired
+working package.
 
-### Quick method using Nix:
+## Claude Code and Herdr
 
-```bash
-# Find commits for a specific package version
-nix-locate --at-root --top-level --whole-name "bin/nvim" | grep "neovim-0.11"
+Claude Code comes from `claude-code-nix.overlays.default`. Herdr is installed
+directly from `inputs.herdr.packages.<system>.default` in `terminal.nix`.
+Both inputs follow the main nixpkgs package set and have their own revisions
+recorded in `flake.lock`.
 
-# Or check nixpkgs history
-git clone https://github.com/NixOS/nixpkgs --depth 1000
-cd nixpkgs
-git log --all --grep="neovim.*0.11.5" --oneline
+```sh
+nix flake update claude-code-nix herdr
 ```
 
-### Using nixpkgs-review:
+## Adding another pin
 
-```bash
-# Search nixpkgs history
-nix run nixpkgs#gh -- search commits --repo=NixOS/nixpkgs "neovim 0.11.5"
+Prefer the existing pattern: add a commit-pinned input when you need the
+package and its dependency set from that revision, then add a narrowly scoped
+overlay to `mkSystem`. For a source-only override, review whether the current
+nixpkgs patches, dependencies, and build steps still apply to the new source.
+Do not merely change `version` and assume the package source changed with it.
+
+Keep overrides at the system package-set level so both NixOS and integrated
+Home Manager see the same package. Review the lockfile diff to avoid unrelated
+upgrades.
+
+```sh
+nix flake check
+sudo nixos-rebuild build --flake .#nixos-wsl
+sudo nixos-rebuild switch --flake .#nixos-wsl
 ```
 
-## Summary
-
-**For multiple package versions:**
-
-1. Add each nixpkgs input with desired commit/branch:
-   ```nix
-   nixpkgs-packageA.url = "github:NixOS/nixpkgs/<commit>";
-   nixpkgs-packageB.url = "github:NixOS/nixpkgs/<commit>";
-   ```
-
-2. Create package sets for each:
-   ```nix
-   pkgs-packageA = mkPkgs system nixpkgs-packageA;
-   ```
-
-3. Pass them to home.nix:
-   ```nix
-   extraSpecialArgs = { inherit pkgs-packageA pkgs-packageB; };
-   ```
-
-4. Use in home.nix:
-   ```nix
-   { pkgs, pkgs-packageA, pkgs-packageB, ... }:
-   home.packages = [
-     pkgs-packageA.packageA
-     pkgs-packageB.packageB
-   ];
-   ```
-
-This gives you complete control over each package's version!
+Use `.#nixos-native` for the native host. Commit deliberate flake and lockfile
+changes together.

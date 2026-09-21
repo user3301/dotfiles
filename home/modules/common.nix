@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  # Common configuration shared across all platforms
+  # Common configuration shared by the NixOS homes
 
   # Let Home Manager manage itself
   programs.home-manager.enable = true;

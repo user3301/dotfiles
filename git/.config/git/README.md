@@ -1,62 +1,43 @@
 # Git Configuration
 
-This directory contains the shared git configuration that works across all platforms (NixOS, macOS, Linux, WSL).
+`config` is shared by NixOS (Home Manager symlink) and macOS/Arch Linux (GNU
+Stow). It sets Neovim as the editor, delta as the pager/diff filter, `input`
+line-ending conversion, `zdiff3` merge conflicts, and SSH commit signing.
+Install Neovim and delta when using it outside NixOS.
 
-## OS-Specific Configurations
-
-You can create OS-specific git configuration files that will be automatically included:
-
-### Setup
-
-Add the following to the bottom of `config`:
+The tracked identity is a default. Set your own identity and signing key in
+`~/.config/git/config.local`, which is already included **after** the defaults:
 
 ```gitconfig
-# OS-specific configurations
-# These will be loaded if the files exist
-[include]
-	path = ~/.config/git/config.local
-	path = ~/.config/git/config.darwin
-	path = ~/.config/git/config.linux
-	path = ~/.config/git/config.wsl
+[user]
+    name = Your Name
+    email = you@example.com
+    signingkey = ~/.ssh/id_ed25519.pub
 ```
 
-### Create OS-Specific Files
+Use an existing SSH signing key or generate one separately; no private keys are
+provided. `commit.gpgsign = true` is enabled, so commits require a usable signing
+key and private-key/agent access. If signing is not wanted on this machine,
+override it explicitly:
 
-Then create the appropriate files:
-
-- **`config.darwin`** - macOS-specific settings
-- **`config.linux`** - Native Linux-specific settings
-- **`config.wsl`** - WSL-specific settings
-- **`config.local`** - Machine-specific settings (not tracked in git)
-
-### Example OS-Specific Files
-
-**config.darwin:**
 ```gitconfig
-# macOS-specific git configuration
-
-[core]
-	# macOS specific settings
+[commit]
+    gpgsign = false
 ```
 
-**config.linux:**
-```gitconfig
-# Linux-specific git configuration
+`git/.config/git/config.local` is ignored by the repository. When the whole
+config directory is symlinked, creating the local file writes into the checkout;
+keep it untracked. An existing `~/.gitconfig` can override XDG config settings.
+Inspect the source of effective settings with:
 
-[core]
-	# Linux specific settings
+```sh
+git config --show-origin --list
 ```
 
-**config.wsl:**
-```gitconfig
-# WSL-specific git configuration
+There are no automatic OS-specific includes. Only `config.local` is included.
+If you add more include paths yourself, Git reads all existing files at those
+paths; names such as `config.darwin` do not cause OS detection.
 
-[core]
-	# WSL might need different autocrlf handling
-```
-
-### Notes
-
-- Git will silently ignore include paths that don't exist
-- Settings in later files override earlier ones
-- You can add `config.local` to `.gitignore` for machine-specific settings
+`core.excludesfile` points to `.gitignore_global`. The sibling `ignore` file is
+not the explicitly selected global ignore file. Lazygit's separate config
+also uses delta, with `--paging=never` because Lazygit handles scrolling itself.

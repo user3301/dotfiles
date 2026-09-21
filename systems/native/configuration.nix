@@ -4,7 +4,7 @@
 }:
 
 {
-  # Import hardware configuration (will be generated on the target machine)
+  # Replace this VirtualBox configuration with the target machine's hardware config.
   imports = [ ../hardware/hardware-vb.nix ];
 
   # Boot loader configuration
@@ -27,7 +27,7 @@
   };
 
   # System configuration
-  system.stateVersion = "25.11"; # Update to match your NixOS version
+  system.stateVersion = "25.11"; # Compatibility defaults, not the package release
 
   # Nix settings
   nix = {
