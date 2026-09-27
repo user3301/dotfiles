@@ -74,30 +74,23 @@
   # X11 and desktop environment
   services.xserver = {
     enable = true;
-    windowManager.qtile.enable = true;
+    windowManager.i3.enable = true;
 
     # Display manager
-    displayManager = {
-      # Choose your display manager
-      lightdm.enable = true;
-      defaultSession = "qtile";
-      # Or use GDM:
-      # gdm.enable = true;
-    };
-
-    # Desktop environment or window manager
-    # Uncomment the one you want:
-    # desktopManager.gnome.enable = true;
-    # desktopManager.plasma5.enable = true;
-    # windowManager.i3.enable = true;
+    displayManager.lightdm.enable = true;
 
     # Keyboard layout
     xkb.layout = "us";
   };
 
+  # Default session
+  services.displayManager.defaultSession = "none+i3";
+
   # Fonts
   fonts.packages = with pkgs; [
     ubuntu-classic
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.symbols-only
   ];
 
   # System packages (minimal, most packages go in Home Manager)
