@@ -4,13 +4,8 @@
 git/.config/git/config.local
 
 # Herdr runtime state (written into the symlinked config dir; only config.toml is tracked)
-herdr/.config/herdr/*.log
-herdr/.config/herdr/session.json
-herdr/.config/herdr/plugins.json
-herdr/.config/herdr/.plugins.lock
-herdr/.config/herdr/release-notes.json
-herdr/.config/herdr/*.sock
-herdr/.config/herdr/plugins/*
+herdr/.config/herdr/*
+!herdr/.config/herdr/config.toml
 
 # Nix
 result
