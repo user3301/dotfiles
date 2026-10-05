@@ -7,8 +7,8 @@
     defaultUser = "user3301";
     startMenuLaunchers = true;
 
-    # WSL-specific interoperability
-    interop.register = true;
+    # Leave interop.register off: WSL 3 registers the .exe handler itself and
+    # locks binfmt_misc/status, which makes systemd-binfmt fail on every switch.
 
     # Use Windows SSH agent
     # wslConf.network.generateResolvConf = false;
