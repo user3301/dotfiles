@@ -30,6 +30,10 @@ Go servers, Mason management is disabled on NixOS and enabled elsewhere.
 NixOS installs servers, formatters, compiler tools, and fswatch through
 `home/modules/neovim.nix`.
 
+Go enables semantic tokens in initialization options so gopls advertises its own
+token legend. LazyVim's fallback legend does not match modern gopls tokens and
+can cause semantic-highlighting errors.
+
 The Nix server `nil` always has Mason management disabled; provide it on `PATH`
 yourself outside NixOS if you edit Nix files. Native package manifests do not
 install all language runtimes, servers, or formatters. Mason-managed tools may

@@ -59,6 +59,10 @@ return {
         },
         gopls = {
           mason = not is_nixos,
+          -- Request gopls's own legend at initialization instead of LazyVim's fallback legend.
+          init_options = {
+            semanticTokens = true,
+          },
           -- Explicitly use Nix-installed gopls on NixOS to ensure we don't pick up
           -- any other version (e.g., from Mason cache, system package, or Go install)
           cmd = is_nixos and { vim.fn.exepath("gopls") } or nil,
