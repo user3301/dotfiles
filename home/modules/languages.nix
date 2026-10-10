@@ -6,7 +6,7 @@
   home.packages = with pkgs; [
     # Golang
     go
-    pkgs.golangci-lint
+    golangci-lint
 
     # Rust
     rustc

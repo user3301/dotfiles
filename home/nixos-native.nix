@@ -1,34 +1,16 @@
-{
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 {
-  # Import common modules
+  # Shared modules (common.nix imports the rest), plus native-only ones
   imports = [
     ./modules/common.nix
-    ./modules/shell.nix
-    ./modules/dev-tools.nix
-    ./modules/git.nix
-    ./modules/neovim.nix
-    ./modules/terminal.nix
     ./modules/wezterm.nix
-    ./modules/languages.nix
   ];
 
   home = {
-    # User information
-    username = "user3301";
-    homeDirectory = "/home/user3301";
-
-    # Platform-specific packages for native NixOS
-    packages = with pkgs; [
-      gnupg
-      # GUI applications
-      wezterm
-      firefox
-      # Add more GUI apps as needed
-    ];
+    # GUI applications for native NixOS. gnupg comes from programs.gpg (git.nix)
+    # and firefox is a system package (systems/native/configuration.nix).
+    packages = [ pkgs.wezterm ];
 
     # Home Manager state version
     stateVersion = "25.11";

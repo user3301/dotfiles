@@ -17,7 +17,7 @@
     fastfetch
 
     # Build tools
-    gcc
+    gcc # also used by Neovim's Tree-sitter
     gnumake
     xdg-utils
 
@@ -28,9 +28,7 @@
     # Cloud
     azure-cli
 
-    # Nix development
-    nil # Nix LSP
-    nixpkgs-fmt
+    # Nix development (nil and nixpkgs-fmt are in neovim.nix)
     nix-tree
 
     # AI

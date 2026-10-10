@@ -223,10 +223,11 @@ sudo env NIX_CONFIG='experimental-features = nix-command flakes' \
 Use the same prefix for `switch`. The deployed configuration enables flakes
 permanently.
 
-Both NixOS outputs hard-code `user3301`. To change it, update the system user,
-the matching `home-manager.users` key in `flake.nix`, and `home.username` and
-`home.homeDirectory` in the selected home module. WSL bootstrap additionally
-hard-codes its user and clone location in the flake and bootstrap script.
+Both NixOS outputs take the username from `user` in `flake.nix` (`user3301`).
+Changing it there renames the system user, the Home Manager user and home
+directory, and the WSL bootstrap's clone target. The bootstrap script still
+names `user3301` in its messages (`target_user` in
+`scripts/bootstrap-nixos-wsl.sh`), and the clone URL names the GitHub account.
 
 ## Local settings and manual steps
 

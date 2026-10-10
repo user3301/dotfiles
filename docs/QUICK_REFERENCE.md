@@ -94,10 +94,12 @@ flake output.
 | Change | File |
 | --- | --- |
 | Nix inputs, overlays, outputs, checks | `flake.nix` |
-| WSL system services/user | `systems/wsl/configuration.nix` |
+| NixOS username | `user` in `flake.nix` |
+| Shared system settings/user/base packages | `systems/common.nix` |
+| WSL system services | `systems/wsl/configuration.nix` |
 | Native hardware import/desktop/services | `systems/native/configuration.nix` |
-| NixOS user identity/platform packages | `home/nixos-wsl.nix`, `home/nixos-native.nix` |
-| Shared NixOS user packages | `home/modules/` |
+| NixOS host-only user packages | `home/nixos-wsl.nix`, `home/nixos-native.nix` |
+| Shared NixOS user packages | `home/modules/` (imported by `common.nix`) |
 | Application settings | Respective Stow package |
 | Local Git identity/signing | `git/.config/git/config.local` (ignored) |
 | Local Zsh settings | `zsh/.zshenv.local` (ignored) |

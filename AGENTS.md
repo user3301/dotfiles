@@ -22,10 +22,12 @@ configuration, and no ARM host.
 
 | Path | What goes there |
 | --- | --- |
-| `flake.nix` | Inputs, overlays and package pins, `mkSystem`, checks, dev shell |
-| `systems/wsl/`, `systems/native/` | NixOS system settings for each host |
+| `flake.nix` | Inputs, the `user` name, overlays and package pins, `mkSystem`, checks, dev shell |
+| `systems/common.nix` | NixOS settings shared by both hosts (Nix, user, zsh, base packages) |
+| `systems/wsl/`, `systems/native/` | Host-specific NixOS settings |
 | `home/modules/*.nix` | Home Manager packages and config links, one topic per module |
-| `home/nixos-wsl.nix`, `home/nixos-native.nix` | Each host's module imports and host-only packages |
+| `home/modules/common.nix` | Imports the shared modules and defines the `config.lib.dotfiles.link` helper |
+| `home/nixos-wsl.nix`, `home/nixos-native.nix` | Each host's extra imports and host-only packages |
 | `<app>/.config/<app>/` | The application's real config files (Stow package layout) |
 | `bash/`, `zsh/` | Shell startup files, linked directly into `$HOME` |
 | `docs/` | User documentation describing the current setup |
@@ -38,7 +40,7 @@ configuration, and no ARM host.
   use the same files without Nix. Don't convert a config to Home
   Manager-generated settings (`programs.git.settings`, `programs.zsh`,
   `programs.neovim`, `programs.<app>.settings`, and so on). Link the repo files
-  with `config.lib.file.mkOutOfStoreSymlink`, as the existing modules do.
+  with `config.lib.dotfiles.link "<path in repo>"`, as the existing modules do.
 - **Home Manager's shell modules are off** (`programs.zsh` and `programs.bash`
   are not enabled). Options that inject into them, such as
   `enableZshIntegration` or `home.shellAliases`, do nothing.
@@ -89,17 +91,21 @@ configuration, and no ARM host.
 - CI runs `deadnix --fail` and `statix`. Remove module arguments (`pkgs`,
   `config`, ...) and `let` bindings you stop using.
 - Format Nix with `nixfmt` (the flake's formatter), not `nixpkgs-fmt`.
+- List each package once. Don't add a package to Home Manager when it's in
+  `environment.systemPackages` or when a `programs.<name>.enable` module
+  already installs it (for example `programs.gh`, `programs.gpg`).
 - `systemd.user.startServices = "suggest"` in the WSL home is intentional. It
   lets the bootstrap configuration activate before any user session exists.
-- The username `user3301` and the checkout path `/home/user3301/dotfiles` are
-  hard-coded in several files. Don't rename them unless asked; see
-  `docs/DEPLOYMENT.md` for every place involved.
+- The username is defined once as `user` in `flake.nix` and reaches NixOS
+  modules as the `user` argument. The checkout path is
+  `/home/<user>/dotfiles`. Don't rename either unless asked; see
+  `docs/DEPLOYMENT.md` for the places that still spell out `user3301`.
 
 ## Adding an application config
 
 1. Put the files in `<app>/.config/<app>/`.
 2. Link the directory from the matching `home/modules/*.nix` with
-   `xdg.configFile."<app>".source = config.lib.file.mkOutOfStoreSymlink ...`.
+   `xdg.configFile."<app>".source = config.lib.dotfiles.link "<app>/.config/<app>";`.
 3. If the app is also used on macOS or Arch, add `<app>` to `STOW_PACKAGES` in
    `Makefile`, and its package to `Brewfile` or `pacman-packages.txt`.
 4. Update the module table and Stow package lists in `docs/`.

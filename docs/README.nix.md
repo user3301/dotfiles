@@ -44,8 +44,10 @@ sudo nixos-rebuild switch --flake .#nixos-native
 
 Edit shared user packages in the appropriate `home/modules/*.nix` file, or
 platform packages in `home/nixos-wsl.nix` / `home/nixos-native.nix`. Add new
-modules to the selected home's imports. Git-backed flakes exclude new,
-untracked files until they are added with `git add`.
+shared modules to the imports in `home/modules/common.nix`, or host-only
+modules to that host's home file. Shared system settings live in
+`systems/common.nix`. Git-backed flakes exclude new, untracked files until they
+are added with `git add`.
 
 Application configuration is linked to the checkout, so editing Lua, TOML,
 shell, or Git config normally only needs an application reload. Do not Stow

@@ -1,10 +1,9 @@
 { config, pkgs, ... }:
 
 {
-  # Install neovim and related packages
+  # Neovim's language servers, formatters and tools. Neovim itself is a system
+  # package (systems/common.nix); ripgrep, fd and gcc come from dev-tools.nix.
   home.packages = with pkgs; [
-    neovim
-
     # LSP servers
     lua-language-server
     nil # Nix LSP
@@ -23,14 +22,10 @@
     rustfmt
 
     # Tools
-    ripgrep
-    fd
     tree-sitter
-    gcc # for treesitter compilation
     fswatch # backend for Neovim LSP file watching (used by roslyn.nvim)
   ];
 
   # Symlink your existing nvim config
-  xdg.configFile."nvim".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/dotfiles/nvim/.config/nvim";
+  xdg.configFile."nvim".source = config.lib.dotfiles.link "nvim/.config/nvim";
 }

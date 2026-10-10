@@ -22,10 +22,11 @@ set or exact versions as NixOS.
 | Path | Responsibility |
 | --- | --- |
 | `flake.nix`, `flake.lock` | NixOS outputs, pinned inputs, overlays, checks, development shells |
-| `systems/wsl/configuration.nix` | WSL user, interoperability, Docker, nix-ld, system settings |
+| `systems/common.nix` | Settings shared by both hosts: Nix, garbage collection, user, Zsh, base packages |
+| `systems/wsl/configuration.nix` | WSL integration, Docker, nix-ld |
 | `systems/native/configuration.nix` | Native boot, networking, X11/Qtile/LightDM, SSH |
 | `systems/hardware/hardware-vb.nix` | Currently imported VirtualBox hardware and filesystem config |
-| `home/nixos-wsl.nix`, `home/nixos-native.nix` | User identity, module imports, platform packages |
+| `home/nixos-wsl.nix`, `home/nixos-native.nix` | Host-only module imports, packages, and state version |
 | `home/modules/` | Shared NixOS user packages and links |
 | `scripts/bootstrap-nixos-wsl.sh` | One-time NixOS-WSL bootstrap app |
 | `Brewfile`, `pacman-packages.txt` | Native macOS and Arch package lists |
@@ -45,10 +46,13 @@ The inputs are `nixpkgs` (NixOS 26.05), `home-manager` (release-26.05),
 `nixos-wsl`, `claude-code-nix`, `herdr`, and a commit-pinned
 `nixpkgs-azure-cli`. `flake.lock` records the resolved revisions.
 
-`mkSystem` adds the Claude Code, Copilot CLI, and Azure CLI overlays to each
-NixOS configuration. Home Manager uses `useGlobalPkgs = true`, so it receives
-those same overlaid packages; `useUserPackages = true` installs home packages
-through the NixOS user profile. The flake passes `inputs` to both module layers.
+`mkSystem` builds each x86_64 host from the host's modules,
+`systems/common.nix`, the Claude Code, Copilot CLI, and Azure CLI overlays, and
+the host's Home Manager configuration. The username is defined once as `user`
+in `flake.nix` and passed to the NixOS modules as the `user` argument. Home
+Manager uses `useGlobalPkgs = true`, so it receives those same overlaid
+packages; `useUserPackages = true` installs home packages through the NixOS
+user profile. The flake passes `inputs` to both module layers.
 See [version pinning](EXAMPLE-VERSION-PINNING.md) for the package exceptions.
 
 | Output | Scope |
@@ -74,25 +78,27 @@ checkout; the native output does not create it.
 
 | Module | What it manages |
 | --- | --- |
-| `common.nix` | XDG, Home Manager CLI, editor/DOTFILES session variables, archive/download tools |
+| `common.nix` | Imports the shared modules below, `config.lib.dotfiles.link` helper, XDG, Home Manager CLI, archive tools |
 | `shell.nix` | Oh My Zsh, Bash completion, McFly, zoxide, Bash/Zsh startup symlinks |
-| `dev-tools.nix` | CLI/build tools, Kubernetes/Azure tools, Nix tools, Claude Code, Copilot CLI, devcontainer |
-| `git.nix` | Git, gh, Lazygit, delta, GPG agent, Git/Lazygit symlinks, gh SSH protocol |
-| `neovim.nix` | Neovim, language servers, formatters, Tree-sitter tools, fswatch, Neovim symlink |
-| `terminal.nix` | Herdr, Yazi and its integration settings, Herdr/Yazi/Fastfetch symlinks |
+| `dev-tools.nix` | CLI/build tools (incl. ripgrep, fd, gcc), Kubernetes/Azure tools, nix-tree, Claude Code, Copilot CLI, devcontainer |
+| `git.nix` | gh (via `programs.gh`, SSH protocol), Lazygit, delta, GnuPG and GPG agent, Git/Lazygit symlinks |
+| `neovim.nix` | Language servers, formatters, Tree-sitter, fswatch, Neovim symlink |
+| `terminal.nix` | Herdr, Yazi, Herdr/Yazi/Fastfetch symlinks |
 | `wezterm.nix` | WezTerm symlink; imported only by the native home |
 | `languages.nix` | Go, Rust, .NET 8, Protobuf, Python, Node.js toolchains |
 
 The WSL home adds PowerShell and sets `systemd.user.startServices = "suggest"`
 so activation does not try to start user services before a normal WSL login.
-The native home adds GnuPG, WezTerm, and Firefox. NixOS enables Zsh system-wide;
-the shell module links the hand-written startup files rather than generating
-them with Home Manager's shell programs.
+The native home adds WezTerm and its config link. Neovim, Git, wget, and curl
+(plus Docker Compose on WSL and Firefox on native) are system packages and are
+not repeated in Home Manager. NixOS enables Zsh system-wide; the shell module
+links the hand-written startup files rather than generating them with Home
+Manager's shell programs, so shell environment variables live in those files.
 
 ## Mutable configuration and reproducibility
 
-Home Manager uses `mkOutOfStoreSymlink` to link application directories or
-startup files into `/home/user3301/dotfiles`. Stow links the same files on macOS
+Home Manager uses `mkOutOfStoreSymlink` (wrapped by `config.lib.dotfiles.link`)
+to link application directories or startup files into `/home/user3301/dotfiles`. Stow links the same files on macOS
 and Arch Linux. Editing a linked file changes the checkout immediately; reload
 the application to pick it up. Adding a Nix module, package, or link requires a
 NixOS rebuild; adding Stow-managed paths may require rerunning Stow.
