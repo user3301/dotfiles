@@ -1,5 +1,6 @@
 {
   pkgs,
+  user,
   ...
 }:
 
@@ -29,47 +30,12 @@
   # System configuration
   system.stateVersion = "25.11"; # Compatibility defaults, not the package release
 
-  # Nix settings
-  nix = {
-    settings = {
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      auto-optimise-store = true;
-    };
-
-    # Garbage collection
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
-  };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # Timezone (adjust to your preference)
-  time.timeZone = "Australia/Melbourne";
-
-  # Locale settings
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  # User configuration
-  users.users.user3301 = {
-    isNormalUser = true;
-    extraGroups = [
-      "wheel"
-      "networkmanager"
-      "video"
-      "audio"
-    ];
-    shell = pkgs.zsh;
-  };
-
-  # Enable ZSH system-wide
-  programs.zsh.enable = true;
+  # Extra groups for the user (wheel and the rest come from systems/common.nix)
+  users.users.${user}.extraGroups = [
+    "networkmanager"
+    "video"
+    "audio"
+  ];
 
   # X11 and desktop environment
   services.xserver = {
@@ -100,12 +66,8 @@
     ubuntu-classic
   ];
 
-  # System packages (minimal, most packages go in Home Manager)
+  # System packages on top of systems/common.nix
   environment.systemPackages = with pkgs; [
-    neovim
-    git
-    wget
-    curl
     firefox # Or your preferred browser
   ];
 

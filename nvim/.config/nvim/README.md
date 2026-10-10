@@ -27,8 +27,9 @@ separate manual step.
 `lua/plugins/lsp.lua` detects NixOS via `/etc/NIXOS` or `/etc/nixos`.
 For the explicitly configured Lua, TypeScript/web, Python (Pyright), Rust, and
 Go servers, Mason management is disabled on NixOS and enabled elsewhere.
-NixOS installs servers, formatters, compiler tools, and fswatch through
-`home/modules/neovim.nix`.
+NixOS installs servers, formatters, Tree-sitter, and fswatch through
+`home/modules/neovim.nix`; Neovim itself is a system package, and ripgrep, fd,
+and gcc come from `home/modules/dev-tools.nix`.
 
 The Nix server `nil` always has Mason management disabled; provide it on `PATH`
 yourself outside NixOS if you edit Nix files. Native package manifests do not
