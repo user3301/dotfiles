@@ -13,8 +13,8 @@
     cargo
     clippy
 
-    # C# (.NET SDK 8.0.421)
-    dotnet-sdk_8
+    # C# (.NET SDK 10)
+    dotnet-sdk_10
 
     # Protobuf
     protobuf_33

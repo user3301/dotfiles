@@ -85,7 +85,10 @@ checkout; the native output does not create it.
 | `neovim.nix` | Language servers, formatters, Tree-sitter, fswatch, Neovim symlink |
 | `terminal.nix` | Herdr, Yazi, Herdr/Yazi/Fastfetch symlinks |
 | `wezterm.nix` | WezTerm symlink; imported only by the native home |
-| `languages.nix` | Go, Rust, .NET 8, Protobuf, Python, Node.js toolchains |
+| `languages.nix` | Go, Rust, .NET 10, Protobuf, Python, Node.js toolchains |
+
+Both NixOS homes use .NET SDK 10 (10.0.401 in the current lockfile) from the
+shared `languages.nix` module, replacing .NET 8.
 
 The WSL home adds PowerShell and sets `systemd.user.startServices = "suggest"`
 so activation does not try to start user services before a normal WSL login.
