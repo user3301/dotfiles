@@ -32,7 +32,7 @@ stow --delete --target="$HOME" git nvim
 stow --target="$HOME" aerospace
 ```
 
-`make stow` selects `bash fastfetch git herdr lazygit nvim wezterm yazi zsh`.
+`make stow` selects `bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh`.
 `make setup-mac` adds `aerospace`. Do not Stow paths managed by Home Manager.
 
 ## NixOS WSL2

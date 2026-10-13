@@ -7,6 +7,7 @@
     ./dev-tools.nix
     ./git.nix
     ./neovim.nix
+    ./helix.nix
     ./terminal.nix
     ./languages.nix
   ];

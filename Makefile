@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-STOW_PACKAGES ?= bash fastfetch git herdr lazygit nvim wezterm yazi zsh
+STOW_PACKAGES ?= bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh
 
 .PHONY: help
 help:

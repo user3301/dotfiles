@@ -1,0 +1,25 @@
+[language-server.csharp-ls]
+command = "csharp-ls"
+timeout = 60
+
+[language-server.powershell-editor-services]
+command = "powershell-editor-services"
+args = ["-Stdio", "-LogLevel", "Warning"]
+timeout = 60
+
+[[language]]
+name = "c-sharp"
+language-id = "csharp"
+language-servers = ["csharp-ls"]
+
+[[language]]
+name = "go"
+language-servers = ["gopls"]
+
+[[language]]
+name = "powershell"
+language-servers = ["powershell-editor-services"]
+
+[[language]]
+name = "rust"
+language-servers = ["rust-analyzer"]
