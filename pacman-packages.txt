@@ -4,6 +4,7 @@ git
 openssh
 xclip
 stow
+helix
 zsh
 eza
 lazygit

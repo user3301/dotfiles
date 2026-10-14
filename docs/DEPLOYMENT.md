@@ -44,7 +44,7 @@ cd ~/dotfiles
 brew bundle --file=Brewfile
 ```
 
-The Brewfile installs GNU Stow, git-delta, Herdr, WezTerm, and AeroSpace. It does
+The Brewfile installs GNU Stow, git-delta, Helix, Herdr, WezTerm, and AeroSpace. It does
 not install the full NixOS toolchain or manage macOS system preferences.
 
 Before enabling the Zsh configuration, read [Shell and application
@@ -52,9 +52,9 @@ dependencies](#shell-and-application-dependencies). Then preview and create link
 
 ```sh
 stow --simulate --verbose --target="$HOME" \
-  bash fastfetch git herdr lazygit nvim wezterm yazi zsh aerospace
+  bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh aerospace
 stow --target="$HOME" \
-  bash fastfetch git herdr lazygit nvim wezterm yazi zsh aerospace
+  bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh aerospace
 ```
 
 `make setup-mac` runs the Brewfile installation and Stow steps in order. It
@@ -72,7 +72,7 @@ cd ~/dotfiles
 sudo pacman -Syu --needed - < pacman-packages.txt
 ```
 
-The list includes Git, OpenSSH, Stow, Zsh, eza, Lazygit, fd, ripgrep, GitHub CLI,
+The list includes Git, OpenSSH, Stow, Helix, Zsh, eza, Lazygit, fd, ripgrep, GitHub CLI,
 xclip, `base-devel`, sudo, and which. It does not include every configured
 application: for example, Neovim and delta need to be installed separately if
 you use the editor and Git configurations.
@@ -81,9 +81,9 @@ After preparing the dependencies below, link the desired packages:
 
 ```sh
 stow --simulate --verbose --target="$HOME" \
-  bash fastfetch git herdr lazygit nvim wezterm yazi zsh
+  bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh
 stow --target="$HOME" \
-  bash fastfetch git herdr lazygit nvim wezterm yazi zsh
+  bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh
 ```
 
 With Make available, `make setup-arch` installs the pacman list and then creates
@@ -112,11 +112,13 @@ any language runtimes.
 Git and Lazygit use delta. Configure your Git identity and signing key using
 the [Git README](../git/.config/git/README.md). Language-server and formatter
 dependencies are covered in the [Neovim README](../nvim/.config/nvim/README.md).
+Helix's C#, Go, PowerShell, and Rust setup is covered in the
+[Helix guide](HELIX.md); native manifests install the editor, not its language servers.
 WezTerm's font configuration requests JetBrains Mono, Ubuntu Mono, and More
 Perfect DOS VGA; install desired fonts separately on non-NixOS machines.
 
 The default `make stow` selection is:
-`bash fastfetch git herdr lazygit nvim wezterm yazi zsh`.
+`bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh`.
 You can link a smaller subset:
 
 ```sh

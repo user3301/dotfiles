@@ -34,7 +34,7 @@ set or exact versions as NixOS.
 | `.github/workflows/ci.yml` | Quality checks and WSL evaluation |
 | Application directories | Stow-compatible, editable configuration |
 
-Stow packages are `aerospace`, `bash`, `fastfetch`, `git`, `herdr`, `lazygit`,
+Stow packages are `aerospace`, `bash`, `fastfetch`, `git`, `helix`, `herdr`, `lazygit`,
 `nvim`, `vim`, `wezterm`, `yazi`, and `zsh`. Most use
 `<package>/.config/<application>/`; Bash and Zsh contain home-directory startup
 files. AeroSpace is macOS-only. Vim's XDG config requires explicit loading on
@@ -83,6 +83,7 @@ checkout; the native output does not create it.
 | `dev-tools.nix` | CLI/build tools (incl. ripgrep, fd, gcc), Kubernetes/Azure tools, nix-tree, Claude Code, Copilot CLI, devcontainer |
 | `git.nix` | gh (via `programs.gh`, SSH protocol), Lazygit, delta, GnuPG and GPG agent, Git/Lazygit symlinks |
 | `neovim.nix` | Language servers, formatters, Tree-sitter, fswatch, Neovim symlink |
+| `helix.nix` | Helix (`hx`), csharp-ls, PowerShell Editor Services, Helix symlink; reuses gopls and rust-analyzer |
 | `terminal.nix` | Herdr, Yazi, Herdr/Yazi/Fastfetch symlinks |
 | `wezterm.nix` | WezTerm symlink; imported only by the native home |
 | `languages.nix` | Go, Rust, .NET 10, Protobuf, Python, Node.js toolchains |

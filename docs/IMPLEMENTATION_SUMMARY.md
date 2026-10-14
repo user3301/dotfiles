@@ -17,8 +17,8 @@ Application files remain Stow-compatible. NixOS links them with Home Manager's
 `mkOutOfStoreSymlink`; macOS and Arch link them with Stow. NixOS expects the
 checkout at `/home/user3301/dotfiles`.
 
-The eight Home Manager modules cover common settings, shells, development
-tools, Git, Neovim, terminal tools, WezTerm, and language toolchains. They are
+The nine Home Manager modules cover common settings, shells, development
+tools, Git, Neovim, Helix, terminal tools, WezTerm, and language toolchains. They are
 used only by the NixOS homes. Native package manifests are independent and
 smaller; installing one does not reproduce the entire NixOS environment.
 

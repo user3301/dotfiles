@@ -1,5 +1,6 @@
 brew 'stow'
 brew 'git-delta'
+brew 'helix'
 brew 'herdr'
 cask 'wezterm'
 cask 'nikitabobko/tap/aerospace'
