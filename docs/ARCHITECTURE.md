@@ -47,8 +47,8 @@ The inputs are `nixpkgs` (NixOS 26.05), `home-manager` (release-26.05),
 `nixpkgs-azure-cli`. `flake.lock` records the resolved revisions.
 
 `mkSystem` builds each x86_64 host from the host's modules,
-`systems/common.nix`, the Claude Code, Copilot CLI, and Azure CLI overlays, and
-the host's Home Manager configuration. The username is defined once as `user`
+`systems/common.nix`, the Claude Code, Copilot CLI, Roslyn, and Azure CLI
+overlays, and the host's Home Manager configuration. The username is defined once as `user`
 in `flake.nix` and passed to the NixOS modules as the `user` argument. Home
 Manager uses `useGlobalPkgs = true`, so it receives those same overlaid
 packages; `useUserPackages = true` installs home packages through the NixOS
@@ -82,7 +82,7 @@ checkout; the native output does not create it.
 | `shell.nix` | Oh My Zsh, Bash completion, McFly, zoxide, Bash/Zsh startup symlinks |
 | `dev-tools.nix` | CLI/build tools (incl. ripgrep, fd, gcc), Kubernetes/Azure tools, nix-tree, Claude Code, Copilot CLI, devcontainer |
 | `git.nix` | gh (via `programs.gh`, SSH protocol), Lazygit, delta, GnuPG and GPG agent, Git/Lazygit symlinks |
-| `neovim.nix` | Language servers, formatters, Tree-sitter, fswatch, Neovim symlink |
+| `neovim.nix` | Language servers, formatters, Tree-sitter, inotify-tools, Neovim symlink |
 | `helix.nix` | Helix (`hx`), csharp-ls, PowerShell Editor Services, Helix symlink; reuses gopls and rust-analyzer |
 | `terminal.nix` | Herdr, Yazi, Herdr/Yazi/Fastfetch symlinks |
 | `wezterm.nix` | WezTerm symlink; imported only by the native home |

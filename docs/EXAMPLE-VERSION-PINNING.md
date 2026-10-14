@@ -67,6 +67,31 @@ The flake comment links the upstream nixpkgs issue motivating this workaround.
 Remove the overlay when the pinned main package set supplies the desired
 working package.
 
+## Roslyn: a newer package recipe
+
+`roslynOverlay` supplies `roslyn-ls` 5.12.0-1.26475.2 for the pinned
+`roslyn.nvim` plugin, which requires at least 5.12.0-1.26453.19. The main
+package set's older server does not meet that requirement.
+
+The overlay fetches the Roslyn recipe from nixpkgs commit
+`ca0dc65018ebc2b7669325a31e2519c524866f81` and calls it with the existing
+package set. It does not import a second package set or update any flake
+inputs. This retains upstream's source build, NuGet dependency lock, and
+patch that puts the composition cache in `$XDG_CACHE_HOME/roslyn` (or
+`~/.cache/roslyn`) rather than beside the read-only server assembly.
+
+The recipe uses the existing .NET 11 SDK at build time. The server runtime
+and the SDK installed for interactive development remain .NET 10.
+
+```sh
+nix eval --raw '.#nixosConfigurations.nixos-wsl.pkgs.roslyn-ls.version'
+nix build --no-link '.#nixosConfigurations.nixos-wsl.pkgs.roslyn-ls'
+```
+
+When updating this pin, update the recipe commit and its source hash together,
+review its SDK requirements, and build the package. Remove the overlay when
+the main package set provides a compatible server with the needed Nix fixes.
+
 ## Claude Code and Herdr
 
 Claude Code comes from `claude-code-nix.overlays.default`. Herdr is installed

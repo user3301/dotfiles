@@ -82,6 +82,21 @@
         );
       };
 
+      # roslyn.nvim requires a newer server than this channel provides.
+      roslynOverlay =
+        final: _prev:
+        let
+          recipe = final.fetchFromGitHub {
+            owner = "NixOS";
+            repo = "nixpkgs";
+            rev = "ca0dc65018ebc2b7669325a31e2519c524866f81";
+            hash = "sha256-147ZUA9Sqw17lyo+Fntiqv73Nu0c6IfVb/0ilcFcZYQ=";
+          };
+        in
+        {
+          roslyn-ls = final.callPackage "${recipe}/pkgs/by-name/ro/roslyn-ls/package.nix" { };
+        };
+
       # azure-cli 2.77.0 (see nixpkgs-azure-cli input above) instead of
       # whatever version the main nixpkgs channel currently carries.
       azureCliOverlay = final: _prev: {
@@ -103,6 +118,7 @@
               nixpkgs.overlays = [
                 claudeOverlay
                 copilotOverlay
+                roslynOverlay
                 azureCliOverlay
               ];
               home-manager = {

@@ -12,7 +12,7 @@
     pyright
     rust-analyzer
     gopls
-    roslyn-ls # C# LSP (Microsoft.CodeAnalysis.LanguageServer, driven by roslyn.nvim)
+    roslyn-ls # C# LSP, pinned by roslynOverlay in flake.nix
 
     # Formatters
     stylua
@@ -23,7 +23,7 @@
 
     # Tools
     tree-sitter
-    fswatch # backend for Neovim LSP file watching (used by roslyn.nvim)
+    inotify-tools # Neovim 0.12's native Linux file-watching backend
   ];
 
   # Symlink your existing nvim config
