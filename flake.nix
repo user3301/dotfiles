@@ -58,7 +58,7 @@
       # runs unpatched (see nixpkgs#534884 — drop once it lands)
       copilotOverlay = final: prev: {
         github-copilot-cli = prev.github-copilot-cli.overrideAttrs (
-          finalAttrs: _:
+          finalAttrs: oldAttrs:
           let
             platform =
               {
@@ -68,13 +68,23 @@
               .${prev.stdenv.hostPlatform.system};
           in
           {
-            version = "1.0.70";
+            version = "1.0.98";
+            buildInputs = oldAttrs.buildInputs ++ [
+              final.webkitgtk_4_1
+              final.gtk3
+              final.cairo
+              final.gdk-pixbuf
+              final.libsoup_3
+              final.wayland
+              final.dbus
+              final.xdotool
+            ];
             src = final.fetchurl {
               url = "https://github.com/github/copilot-cli/releases/download/v${finalAttrs.version}/github-copilot-${finalAttrs.version}-${platform}.tgz";
               hash =
                 {
-                  "x86_64-linux" = "sha256-z70Rb+FZviiaut8sK/GKJairCe7KVKCR1AJeHLzaRwk=";
-                  "aarch64-linux" = "sha256-saIHbLOlh+uivG9HjONeU/IKNNDWm0GAdDmzMC3191o=";
+                  "x86_64-linux" = "sha256-pPX/6cooiGypsfiQFpmjpFZQJl27RzzBdXcsv8e4io8=";
+                  "aarch64-linux" = "sha256-jAlbr0kiWueOUWMy1Qa4rQil2mD6pBu5OSXb1s4pkKc=";
                 }
                 .${prev.stdenv.hostPlatform.system};
             };
