@@ -15,6 +15,7 @@ help:
 	@echo "NixOS WSL2 Commands:"
 	@echo "  make switch               - Rebuild NixOS system (slow, needs sudo)"
 	@echo "  make build                - Build system without switching (test config)"
+	@echo "  make outdated             - List package versions an update would change"
 	@echo "  make update               - Update flake inputs"
 	@echo "  make upgrade              - Update flake inputs and rebuild"
 	@echo "  make generations          - List system generations"
@@ -109,6 +110,29 @@ switch:
 build:
 	@echo "Building NixOS system (without switching)..."
 	sudo nixos-rebuild build --flake .#nixos-wsl
+
+.PHONY: outdated
+outdated:
+	@echo "Checking flake inputs for updates (flake.lock is left untouched)..."
+	@LOCK=$$(mktemp); trap 'rm -f "$$LOCK"' EXIT; \
+	nix flake update --output-lock-file "$$LOCK" || exit 1; \
+	if [ ! -s "$$LOCK" ] || cmp -s flake.lock "$$LOCK"; then \
+		echo "✅ All flake inputs are up to date."; \
+		exit 0; \
+	fi; \
+	echo "Building the updated system (without switching)..."; \
+	NEW=$$(nix build --no-link --print-out-paths --no-write-lock-file \
+		--reference-lock-file "$$LOCK" \
+		.#nixosConfigurations.nixos-wsl.config.system.build.toplevel) || exit 1; \
+	DIFF=$$(nix store diff-closures /run/current-system "$$NEW") || exit 1; \
+	CHANGES=$$(printf '%s\n' "$$DIFF" | grep -F '→'); \
+	echo ""; \
+	if [ -n "$$CHANGES" ]; then \
+		echo "Package version changes from the running system:"; \
+		printf '%s\n' "$$CHANGES"; \
+	else \
+		echo "No package version changes."; \
+	fi
 
 .PHONY: update
 update:

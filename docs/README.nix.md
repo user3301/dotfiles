@@ -76,8 +76,12 @@ Copilot CLI version/hash override require deliberate edits; see
 [version pinning](EXAMPLE-VERSION-PINNING.md).
 
 `make update` updates inputs; `make upgrade` updates and rebuilds WSL.
-`make switch`, `make build`, and `make upgrade` are WSL-specific, not host
-auto-detection commands.
+`make outdated` previews an update without changing `flake.lock`: it builds the
+WSL system against a temporary updated lock, without activating it, and lists
+the package version changes from `/run/current-system`, so configuration edits
+that are not switched yet also appear. `make switch`, `make build`,
+`make upgrade`, and `make outdated` are WSL-specific, not host auto-detection
+commands.
 
 ## Validation and troubleshooting
 

@@ -48,6 +48,9 @@ make switch
 # Build without activation
 make build
 
+# List package version changes an update would bring (flake.lock untouched)
+make outdated
+
 # Update locked inputs, then rebuild
 make update
 make switch
