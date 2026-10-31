@@ -23,7 +23,7 @@ set or exact versions as NixOS.
 | --- | --- |
 | `flake.nix`, `flake.lock` | NixOS outputs, pinned inputs, overlays, checks, development shells |
 | `systems/common.nix` | Settings shared by both hosts: Nix, garbage collection, user, Zsh, base packages |
-| `systems/wsl/configuration.nix` | WSL integration, Docker, nix-ld |
+| `systems/wsl/configuration.nix` | WSL integration, Docker, nix-ld, `/bin` extras for VS Code |
 | `systems/native/configuration.nix` | Native boot, networking, X11/Qtile/LightDM, SSH |
 | `systems/hardware/hardware-vb.nix` | Currently imported VirtualBox hardware and filesystem config |
 | `home/nixos-wsl.nix`, `home/nixos-native.nix` | Host-only module imports, packages, and state version |

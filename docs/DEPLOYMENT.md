@@ -173,7 +173,9 @@ make switch
 ```
 
 The WSL configuration enables Zsh, Docker, Windows interoperability, and
-`nix-ld`; the SSH server is disabled. WezTerm is not installed or linked by this
+`nix-ld`; the SSH server is disabled. It also links `uname` into `/bin`
+(`wsl.extraBin`) because VS Code's WSL agent host runs `uname` before a login
+shell sets up the NixOS `PATH`. WezTerm is not installed or linked by this
 home configuration: the terminal runs on the Windows host and must be configured
 there separately.
 

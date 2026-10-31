@@ -8,6 +8,11 @@
 
     # Leave interop.register off: WSL 3 registers the .exe handler itself and
     # locks binfmt_misc/status, which makes systemd-binfmt fail on every switch.
+
+    # VS Code's WSL agent host runs `wsl.exe -e uname -s -m` before starting a
+    # login shell, so uname must be on WSL's initial PATH (/bin), not just in
+    # /run/current-system/sw/bin.
+    extraBin = [ { src = "${pkgs.coreutils}/bin/uname"; } ];
   };
 
   # System configuration
