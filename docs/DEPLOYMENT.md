@@ -52,9 +52,9 @@ dependencies](#shell-and-application-dependencies). Then preview and create link
 
 ```sh
 stow --simulate --verbose --target="$HOME" \
-  bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh aerospace
+  bash fastfetch git helix herdr lazygit nvim vim wezterm yazi zsh aerospace
 stow --target="$HOME" \
-  bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh aerospace
+  bash fastfetch git helix herdr lazygit nvim vim wezterm yazi zsh aerospace
 ```
 
 `make setup-mac` runs the Brewfile installation and Stow steps in order. It
@@ -81,9 +81,9 @@ After preparing the dependencies below, link the desired packages:
 
 ```sh
 stow --simulate --verbose --target="$HOME" \
-  bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh
+  bash fastfetch git helix herdr lazygit nvim vim wezterm yazi zsh
 stow --target="$HOME" \
-  bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh
+  bash fastfetch git helix herdr lazygit nvim vim wezterm yazi zsh
 ```
 
 With Make available, `make setup-arch` installs the pacman list and then creates
@@ -118,17 +118,17 @@ WezTerm's font configuration requests JetBrains Mono, Ubuntu Mono, and More
 Perfect DOS VGA; install desired fonts separately on non-NixOS machines.
 
 The default `make stow` selection is:
-`bash fastfetch git helix herdr lazygit nvim wezterm yazi zsh`.
+`bash fastfetch git helix herdr lazygit nvim vim wezterm yazi zsh`.
 You can link a smaller subset:
 
 ```sh
 make stow STOW_PACKAGES="git nvim"
 ```
 
-`make setup-mac` adds `aerospace` to that selection. `vim` is another Stow
-package, but it is not linked by default: its file is `~/.config/vim/vimrc`.
-If your Vim does not discover that path, load it explicitly with
-`vim -u ~/.config/vim/vimrc` or source it from your own `~/.vimrc`.
+`make setup-mac` adds `aerospace` to that selection. On macOS and Arch, the
+`vim` package links `~/.vimrc` to `vim/.vimrc`. On NixOS, Home Manager links
+the same file. After linking, `vim` loads it automatically; `v` and `$EDITOR`
+still use Neovim.
 
 After installing Zsh, `make set-default-shell` registers it in `/etc/shells`
 if needed and calls `chsh`. Log out and back in afterward.

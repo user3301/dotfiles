@@ -8,7 +8,7 @@ syntax on                     " enable syntax highlighting
 " ============================================================
 " UI
 " ============================================================
-set number relativenumber     " show absolute line number on cursor line, relative elsewhere
+set number norelativenumber   " show absolute line numbers
 set signcolumn=yes            " always show sign column (prevents layout shift)
 set cursorline                " highlight the line the cursor is on
 set scrolloff=8               " keep 8 lines visible above/below cursor when scrolling
@@ -47,4 +47,3 @@ set autoread                  " reload file if it changes on disk outside Vim
 set hidden                    " allow switching buffers without saving
 set noswapfile                " disable swap files
 set nobackup                  " disable backup files
-

@@ -37,8 +37,8 @@ set or exact versions as NixOS.
 Stow packages are `aerospace`, `bash`, `fastfetch`, `git`, `helix`, `herdr`, `lazygit`,
 `nvim`, `vim`, `wezterm`, `yazi`, and `zsh`. Most use
 `<package>/.config/<application>/`; Bash and Zsh contain home-directory startup
-files. AeroSpace is macOS-only. Vim's XDG config requires explicit loading on
-Vim versions that do not discover it.
+files. AeroSpace is macOS-only. Both Stow and Home Manager link Vim's
+`vim/.vimrc` to `~/.vimrc`.
 
 ## Nix flake
 
@@ -80,7 +80,7 @@ checkout; the native output does not create it.
 | --- | --- |
 | `common.nix` | Imports the shared modules below, `config.lib.dotfiles.link` helper, XDG, Home Manager CLI, archive tools |
 | `shell.nix` | Oh My Zsh, Bash completion, McFly, zoxide, Bash/Zsh startup symlinks |
-| `dev-tools.nix` | CLI/build tools (incl. ripgrep, fd, gcc), Kubernetes/Azure tools, nix-tree, Claude Code, Copilot CLI, devcontainer |
+| `dev-tools.nix` | CLI/build tools (incl. Vim, ripgrep, fd, gcc), Vim config link, Kubernetes/Azure tools, nix-tree, Claude Code, Copilot CLI, devcontainer |
 | `git.nix` | gh (via `programs.gh`, SSH protocol), Lazygit, delta, GnuPG and GPG agent, Git/Lazygit symlinks |
 | `neovim.nix` | Language servers, formatters, Tree-sitter, inotify-tools, Neovim symlink |
 | `helix.nix` | Helix (`hx`), csharp-ls, PowerShell Editor Services, Helix symlink; reuses gopls and rust-analyzer |

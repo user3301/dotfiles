@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   # Development packages
@@ -38,4 +38,6 @@
     # Dev containers
     devcontainer
   ];
+
+  home.file.".vimrc".source = config.lib.dotfiles.link "vim/.vimrc";
 }
