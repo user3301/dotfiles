@@ -47,10 +47,13 @@ this explicit commit pin.
 ## Copilot CLI: version and source override
 
 `copilotOverlay` overrides the existing `github-copilot-cli` derivation's
-version and source. It currently selects 1.0.98 and platform-specific
+version and source. It currently selects 1.0.110 and platform-specific
 `linux-x64` / `linux-arm64` release archives, each with its own hash, while
 retaining the nixpkgs packaging logic. The override also supplies the GTK,
 WebKitGTK, and related shared libraries required by the bundled webview.
+Like upstream nixpkgs, it ignores the optional Foundry Local SDK's missing
+ONNX Runtime libraries during patching. The release archive does not bundle
+them, so Foundry Local inference is not supported by this package.
 
 ```sh
 nix eval --raw '.#nixosConfigurations.nixos-wsl.pkgs.github-copilot-cli.version'

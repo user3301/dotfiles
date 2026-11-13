@@ -68,7 +68,7 @@
               .${prev.stdenv.hostPlatform.system};
           in
           {
-            version = "1.0.98";
+            version = "1.0.110";
             buildInputs = oldAttrs.buildInputs ++ [
               final.webkitgtk_4_1
               final.gtk3
@@ -79,12 +79,17 @@
               final.dbus
               final.xdotool
             ];
+            # Match upstream nixpkgs for optional Foundry Local libraries.
+            autoPatchelfIgnoreMissingDeps = oldAttrs.autoPatchelfIgnoreMissingDeps ++ [
+              "libonnxruntime-genai.so"
+              "libonnxruntime.so.1"
+            ];
             src = final.fetchurl {
               url = "https://github.com/github/copilot-cli/releases/download/v${finalAttrs.version}/github-copilot-${finalAttrs.version}-${platform}.tgz";
               hash =
                 {
-                  "x86_64-linux" = "sha256-pPX/6cooiGypsfiQFpmjpFZQJl27RzzBdXcsv8e4io8=";
-                  "aarch64-linux" = "sha256-jAlbr0kiWueOUWMy1Qa4rQil2mD6pBu5OSXb1s4pkKc=";
+                  "x86_64-linux" = "sha256-Xc/U6+s+LLMuTv/hPmQUc0jIYAXECFbYE2ZamhVRHpw=";
+                  "aarch64-linux" = "sha256-DrRp9tyIcuQRORaVfdaRR0ktDcwFROyyuvzoLCK/8O8=";
                 }
                 .${prev.stdenv.hostPlatform.system};
             };
