@@ -99,6 +99,11 @@ not repeated in Home Manager. NixOS enables Zsh system-wide; the shell module
 links the hand-written startup files rather than generating them with Home
 Manager's shell programs, so shell environment variables live in those files.
 
+Fastfetch keeps the auto-detected logo beside the system information. Its WM
+module shows the window manager name, protocol, and any detected plugin, but
+omits the version: WSLg can report multiline build metadata as its version,
+which would overwrite the logo.
+
 ## Mutable configuration and reproducibility
 
 Home Manager uses `mkOutOfStoreSymlink` (wrapped by `config.lib.dotfiles.link`)

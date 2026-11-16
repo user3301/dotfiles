@@ -16,7 +16,11 @@
     "packages",
     "shell",
     "terminal",
-    "wm",
+    {
+      "type": "wm",
+      // WSLg's detected version can contain newlines that overwrite the logo.
+      "format": "{pretty-name}{?protocol-name} ({protocol-name}){?}{?plugin-name} (with {plugin-name}){?}"
+    },
     "cpu",
     "gpu",
     "memory",
